@@ -428,7 +428,7 @@ export const HeroSection: React.FC = () => {
               animate="animate"
             >
               <ProfilePhoto
-                imageSrc="/images/profile/developer-photo.png"
+                imageSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
                 altText="Developer Profile"
               />
             </motion.div>

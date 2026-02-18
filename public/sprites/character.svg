@@ -199,9 +199,9 @@
   <rect x="130" y="100" width="10" height="10" fill="#000000"/>
   <rect x="140" y="100" width="10" height="10" fill="#f0b281"/>
   <rect x="150" y="100" width="10" height="10" fill="#f0b281"/>
-  <rect x="160" y="100" width="10" height="10" fill="#000000"/>
+  <rect x="160" y="100" width="10" height="10" fill="#f0b281"/>
   <rect x="170" y="100" width="10" height="10" fill="#000000"/>
-  <rect x="180" y="100" width="10" height="10" fill="#000000"/>
+  <rect x="180" y="100" width="10" height="10" fill="#1f1b1b"/>
   <rect x="190" y="100" width="10" height="10" fill="#000000"/>
   <rect x="200" y="100" width="10" height="10" fill="#f0b281"/>
   <rect x="210" y="100" width="10" height="10" fill="#f0b281"/>
@@ -209,7 +209,7 @@
   <rect x="230" y="100" width="10" height="10" fill="#000000"/>
   <rect x="240" y="100" width="10" height="10" fill="#000000"/>
   <rect x="250" y="100" width="10" height="10" fill="#000000"/>
-  <rect x="260" y="100" width="10" height="10" fill="#000000"/>
+  <rect x="260" y="100" width="10" height="10" fill="#f0b281"/>
   <rect x="270" y="100" width="10" height="10" fill="#000000"/>
   <rect x="40" y="110" width="10" height="10" fill="#000000"/>
   <rect x="50" y="110" width="10" height="10" fill="#000000"/>
@@ -279,9 +279,9 @@
   <rect x="200" y="130" width="10" height="10" fill="#f0b281"/>
   <rect x="210" y="130" width="10" height="10" fill="#f0b281"/>
   <rect x="220" y="130" width="10" height="10" fill="#000000"/>
-  <rect x="230" y="130" width="10" height="10" fill="#000000"/>
+  <rect x="230" y="130" width="10" height="10" fill="#fff"/>
   <rect x="240" y="130" width="10" height="10" fill="#000000"/>
-  <rect x="250" y="130" width="10" height="10" fill="#ffffff"/>
+  <rect x="250" y="130" width="10" height="10" fill="#000"/>
   <rect x="260" y="130" width="10" height="10" fill="#ffffff"/>
   <rect x="270" y="130" width="10" height="10" fill="#000000"/>
   <rect x="30" y="140" width="10" height="10" fill="#000000"/>
@@ -304,9 +304,9 @@
   <rect x="200" y="140" width="10" height="10" fill="#f0b281"/>
   <rect x="210" y="140" width="10" height="10" fill="#f0b281"/>
   <rect x="220" y="140" width="10" height="10" fill="#000000"/>
-  <rect x="230" y="140" width="10" height="10" fill="#000000"/>
+  <rect x="230" y="140" width="10" height="10" fill="#fff"/>
   <rect x="240" y="140" width="10" height="10" fill="#000000"/>
-  <rect x="250" y="140" width="10" height="10" fill="#ffffff"/>
+  <rect x="250" y="140" width="10" height="10" fill="#000"/>
   <rect x="260" y="140" width="10" height="10" fill="#ffffff"/>
   <rect x="270" y="140" width="10" height="10" fill="#000000"/>
   <rect x="20" y="150" width="10" height="10" fill="#000000"/>

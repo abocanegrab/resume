@@ -130,7 +130,7 @@ export const skills: Skill[] = [
     name: 'Angular',
     level: 78,
     icon: SiAngular,
-    color: '#DD0031',
+    color: '#C14FC1',
     category: 'frontend',
   },
 
@@ -139,14 +139,14 @@ export const skills: Skill[] = [
     name: 'SQL Server',
     level: 95,
     icon: TbDatabase,
-    color: '#CC2927',
+    color: '#E0A526',
     category: 'database',
   },
   {
     name: 'Oracle',
     level: 88,
     icon: SiOracle,
-    color: '#F80000',
+    color: '#E87020',
     category: 'database',
   },
   {

@@ -299,7 +299,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
 
   // Load SVG on mount
   useEffect(() => {
-    fetch('/sprites/character.svg')
+    fetch(`${import.meta.env.BASE_URL}sprites/character.svg`)
       .then(response => response.text())
       .then(text => setSvgContent(text))
       .catch(err => console.error('Failed to load sprite:', err));

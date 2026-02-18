@@ -200,7 +200,7 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ onComplete }) => {
                 <TileFront>?</TileFront>
                 <TileBack row={row} col={col}>
                   <SvgImage
-                    src="/sprites/character.svg"
+                    src={`${import.meta.env.BASE_URL}sprites/character.svg`}
                     alt=""
                     row={row}
                     col={col}
