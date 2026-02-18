@@ -1,0 +1,24 @@
+{
+  "title": "Transmit Signal",
+  "subtitle": "Open a comm channel for your next mission",
+  "info": {
+    "location": {
+      "label": "Base Location",
+      "value": "Peru (Remote Ops)"
+    },
+    "email": {
+      "label": "Comm Channel",
+      "value": "abocanegrab@gmail.com"
+    },
+    "responseTime": {
+      "label": "Response Time",
+      "value": "Within 24 hours"
+    }
+  },
+  "ctaText": "Ready to start a new mission together? Send a direct transmission to my comm channel and I'll respond within 24 hours.",
+  "ctaButton": "Send Transmission",
+  "availability": "Available for new missions",
+  "social": {
+    "title": "Or <1>connect</1> with me"
+  }
+}

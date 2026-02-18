@@ -1,0 +1,14 @@
+{
+  "title": "Poderes Equipados",
+  "subtitle": "Sistemas de armas y herramientas de batalla en el arsenal",
+  "allCategory": "Todos",
+  "categories": {
+    "backend": "Backend",
+    "frontend": "Frontend",
+    "database": "Base de Datos",
+    "devops": "DevOps & Cloud",
+    "tools": "Herramientas"
+  },
+  "spriteTitle": "Armadura de Poder",
+  "helpText": "Pasa el cursor sobre un poder para cambiar el color de la armadura"
+}

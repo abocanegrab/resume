@@ -1,0 +1,58 @@
+{
+  "nav": {
+    "home": "Base",
+    "about": "Perfil",
+    "skills": "Poderes",
+    "experience": "Misiones",
+    "projects": "Etapas",
+    "contact": "Transmitir"
+  },
+  "footer": {
+    "description": "Maverick Hunter con mas de 13 anos de experiencia en combate construyendo sistemas de armas empresariales, fortalezas en la nube y plataformas de batalla escalables.",
+    "quickLinks": "Enlaces Rapidos",
+    "connect": "Conectar",
+    "links": {
+      "home": "Base",
+      "about": "Perfil del Cazador",
+      "skills": "Poderes Equipados",
+      "projects": "Etapas Conquistadas",
+      "contact": "Transmitir Senal"
+    },
+    "copyright": "Construido con React y Pasion de Batalla",
+    "status": "SISTEMA EN LINEA",
+    "secretCabin": "Acceder a la Cabina Secreta"
+  },
+  "secret": {
+    "password": {
+      "title": "INGRESE CONTRASENA",
+      "submit": "ENVIAR",
+      "denied": "ACCESO DENEGADO",
+      "hint": "Solo los verdaderos Maverick Hunters conocen el codigo"
+    },
+    "reveal": {
+      "loading": "DESENCRIPTANDO DATOS DEL CAZADOR...",
+      "complete": "DATOS DEL CAZADOR CARGADOS",
+      "start": "INICIAR MISION"
+    },
+    "game": {
+      "title": "MAVERICK RUNNER",
+      "start": "PRESIONA ESPACIO PARA INICIAR",
+      "startMobile": "TOCA PARA INICIAR",
+      "gameOver": "MISION FALLIDA",
+      "score": "PUNTOS",
+      "highScore": "MEJOR",
+      "retry": "PRESIONA ESPACIO PARA REINTENTAR"
+    },
+    "back": "Volver a la Base"
+  },
+  "buttons": {
+    "viewProjects": "Ver Batallas",
+    "downloadCV": "Descargar Chip de Datos",
+    "sendMessage": "Transmitir Senal",
+    "contactHQ": "Contactar Base",
+    "viewCode": "Ver Codigo",
+    "liveDemo": "Demo en Vivo",
+    "sending": "Transmitiendo...",
+    "featured": "Destacado"
+  }
+}

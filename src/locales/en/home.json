@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "playerData": "Hunter Data",
+    "ready": "READY",
+    "name": "Aaron Bocanegra",
+    "classLabel": "Class:",
+    "roles": ["Senior Combat Engineer", "Fullstack Maverick", "Systems Architect", "Tech Commander"],
+    "description": "Maverick Hunter with 13+ years of combat experience building enterprise weapon systems. Specialized in .NET arsenal, AWS cloud fortresses, and modern React battle interfaces. Co-founded a tech guild & passionate about turning ideas into scalable war machines.",
+    "online": "ONLINE",
+    "characterLabel": "[ Maverick Hunter ]"
+  },
+  "stats": {
+    "title": "Combat Status",
+    "experience": "Combat Years",
+    "projects": "Missions Complete",
+    "companies": "Allied Bases",
+    "technologies": "Weapons Mastered"
+  }
+}

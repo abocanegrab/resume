@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "playerData": "Datos del Cazador",
+    "ready": "LISTO",
+    "name": "Aaron Bocanegra",
+    "classLabel": "Clase:",
+    "roles": ["Ingeniero de Combate Senior", "Maverick Fullstack", "Arquitecto de Sistemas", "Comandante Tech"],
+    "description": "Maverick Hunter con mas de 13 anos de experiencia en combate construyendo sistemas de armas empresariales. Especializado en arsenal .NET, fortalezas en la nube AWS e interfaces de batalla React modernas. Co-fundo un gremio tech y apasionado por convertir ideas en maquinas de guerra escalables.",
+    "online": "EN LINEA",
+    "characterLabel": "[ Maverick Hunter ]"
+  },
+  "stats": {
+    "title": "Estado de Combate",
+    "experience": "Anos de Combate",
+    "projects": "Misiones Completadas",
+    "companies": "Bases Aliadas",
+    "technologies": "Armas Dominadas"
+  }
+}

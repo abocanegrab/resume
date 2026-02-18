@@ -1,0 +1,1 @@
+export { BioCard } from './BioCard';

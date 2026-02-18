@@ -1,0 +1,58 @@
+{
+  "nav": {
+    "home": "HQ",
+    "about": "Hunter Profile",
+    "skills": "Powers",
+    "experience": "Mission Log",
+    "projects": "Stages",
+    "contact": "Transmit"
+  },
+  "footer": {
+    "description": "Maverick Hunter with 13+ years of combat experience building enterprise-grade weapon systems, cloud fortresses, and scalable battle platforms.",
+    "quickLinks": "Quick Links",
+    "connect": "Connect",
+    "links": {
+      "home": "HQ",
+      "about": "Hunter Profile",
+      "skills": "Equipped Powers",
+      "projects": "Conquered Stages",
+      "contact": "Transmit Signal"
+    },
+    "copyright": "Built with React & Battle Passion",
+    "status": "SYSTEM ONLINE",
+    "secretCabin": "Access the Secret Cabin"
+  },
+  "secret": {
+    "password": {
+      "title": "ENTER PASSWORD",
+      "submit": "SUBMIT",
+      "denied": "ACCESS DENIED",
+      "hint": "Only true Maverick Hunters know the code"
+    },
+    "reveal": {
+      "loading": "DECRYPTING HUNTER DATA...",
+      "complete": "HUNTER DATA LOADED",
+      "start": "START MISSION"
+    },
+    "game": {
+      "title": "MAVERICK RUNNER",
+      "start": "PRESS SPACE TO START",
+      "startMobile": "TAP TO START",
+      "gameOver": "MISSION FAILED",
+      "score": "SCORE",
+      "highScore": "BEST",
+      "retry": "PRESS SPACE TO RETRY"
+    },
+    "back": "Back to Base"
+  },
+  "buttons": {
+    "viewProjects": "View Battles",
+    "downloadCV": "Download Data Chip",
+    "sendMessage": "Transmit Signal",
+    "contactHQ": "Contact HQ",
+    "viewCode": "View Code",
+    "liveDemo": "Live Demo",
+    "sending": "Transmitting...",
+    "featured": "Featured"
+  }
+}

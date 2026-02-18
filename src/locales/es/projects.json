@@ -1,0 +1,91 @@
+{
+  "title": "Etapas Conquistadas",
+  "subtitle": "Batallas de jefes ganadas y etapas completadas",
+  "categories": {
+    "all": "Todas las Etapas",
+    "enterprise": "Empresarial",
+    "startup": "Startup",
+    "government": "Gobierno",
+    "industrial": "Industrial",
+    "fullstack": "Full-Stack"
+  },
+  "noProjects": "No se encontraron etapas en esta zona.",
+  "modal": {
+    "highlights": "Tacticas de Batalla Clave",
+    "technologies": "Sistemas de Armas Usados"
+  },
+  "entries": [
+    {
+      "id": "1",
+      "title": "JobStack 2.0",
+      "description": "Plataforma de batalla empresarial de staffing para TrueBlue con arquitectura de microservicios, micro-frontends React e integraciones de armas AWS.",
+      "longDescription": "Lidero el asalto a JobStack 2.0, una plataforma de staffing integral para TrueBlue. Construida con microservicios .NET y micro-frontends React, con Hangfire para operaciones en segundo plano, Amazon Aurora (PostgreSQL) para persistencia de datos, y extensas integraciones de armas AWS incluyendo SNS, SQS, CloudFormation para infraestructura como codigo.",
+      "highlights": [
+        "Arquitectura de microservicios con .NET",
+        "Micro-frontends React",
+        "Integraciones AWS (SNS, SQS, CloudFormation)",
+        "CI/CD con Jenkins y Octopus Deploy"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "TAP - Sistema de Cultura Organizacional",
+      "description": "Plataforma de batalla SaaS para medir y analizar cultura organizacional, construida desde cero como co-fundador del gremio.",
+      "longDescription": "Co-fundo el gremio Grodivo y lidero el desarrollo de TAP, un sistema para medir cultura organizacional. Diseno toda la arquitectura de batalla incluyendo microservicios .NET 9, frontend React con TypeScript y Styled Components, y fortaleza serverless AWS con Lambda, SNS, SQS, SES y S3.",
+      "highlights": [
+        "Construido desde cero como co-fundador del gremio",
+        "Arquitectura de fortaleza serverless AWS",
+        "MediatR para patron de batalla CQRS",
+        "Monorepo con TurboRepo"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Apps de Trazabilidad Minera",
+      "description": "Apps moviles de batalla para el Ministerio de Energia y Minas de Peru para rastrear transporte de minerales con generacion y escaneo de codigos QR.",
+      "longDescription": "Desarrollo dos aplicaciones moviles de batalla .NET MAUI para apoyar el plan de formalizacion de mineria informal de Peru. La app de Registro de Transferencias registra transporte de minerales y genera codigos QR, mientras la app de Fiscalizacion permite a operativos de campo escanear y validar registros contra bases de datos en la nube.",
+      "highlights": [
+        "Apps moviles multiplataforma con .NET MAUI",
+        "Generacion y escaneo de codigos QR",
+        "Offline-first con sincronizacion cloud",
+        "CI/CD con runners auto-hospedados"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "SJE - Sistema de Gestion Electoral",
+      "description": "Campana de transformacion digital para JNE (Jurado Nacional de Elecciones) con modulos de gestion electoral y archivo de documentos.",
+      "longDescription": "Operativo senior en el proyecto SJE como parte de la campana de transformacion digital del JNE. Diseno y desplego modulos para gestion electoral, registro, candidatos, autoridades y archivo de documentos. Construyo una aplicacion WinForms para escaneo de documentos con reconocimiento de codigo de barras integrado con FTP y servicios cloud.",
+      "highlights": [
+        "Modulos de gestion electoral",
+        "Archivo de documentos con reconocimiento de codigo de barras",
+        "Generacion y manejo de PDF",
+        "Mejoras de seguridad y rendimiento"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "APOLO - Monitor de Pesaje de Refineria",
+      "description": "Sistema de administracion y monitoreo para equipos de pesaje de refineria en Cajamarquilla (Nexa Resources).",
+      "longDescription": "Lidero el desarrollo de APOLO, un sistema integral de monitoreo para equipos de pesaje industrial en la refineria de Cajamarquilla operada por Nexa Resources. El sistema provee monitoreo en tiempo real, administracion y capacidades de reporte para operaciones de pesaje criticas en el sector minero y de refineria.",
+      "highlights": [
+        "Monitoreo de equipos en tiempo real",
+        "Integracion con dispositivos industriales",
+        "Reportes de operaciones criticas",
+        "Implementacion en sector minero"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "PESACON TRUCK",
+      "description": "Sistema de pesaje multi-punto de camiones con intercambio de datos SAP, migrado de VB6 a .NET moderno.",
+      "longDescription": "Desarrollo PESACON TRUCK, un sistema de pesaje multi-punto de camiones que se integra con SAP para intercambio de datos en tiempo real. El proyecto involucro migrar del codigo legado VB6 a .NET Framework moderno manteniendo integracion con equipos de pesaje industrial a traves de protocolos TCP y RS-232.",
+      "highlights": [
+        "Integracion SAP via RFC",
+        "Coordinacion de pesaje multi-punto",
+        "Migracion de VB6 legado",
+        "Soporte de protocolos industriales"
+      ]
+    }
+  ]
+}

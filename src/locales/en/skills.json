@@ -1,0 +1,14 @@
+{
+  "title": "Equipped Powers",
+  "subtitle": "Weapon systems and battle tools in the arsenal",
+  "allCategory": "All",
+  "categories": {
+    "backend": "Backend",
+    "frontend": "Frontend",
+    "database": "Database",
+    "devops": "DevOps & Cloud",
+    "tools": "Tools"
+  },
+  "spriteTitle": "Power Armor",
+  "helpText": "Hover over a power to change armor color"
+}

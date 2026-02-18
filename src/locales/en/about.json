@@ -1,0 +1,29 @@
+{
+  "title": "Hunter Profile",
+  "subtitle": "Intel report on the hunter behind the code",
+  "bioTitle": "Hunter Dossier",
+  "bio": {
+    "p1": "Maverick Hunter with 13+ years of combat experience building enterprise weapon systems. Specialized in the .NET arsenal, cloud fortress architecture with AWS, and modern React battle interfaces. Led strike teams and built war machines from scratch as a tech guild co-founder.",
+    "p2": "Currently upgrading at TEC de Monterrey's AI Combat Academy, combining battle-hardened software engineering with cutting-edge AI weapon technologies. Passionate about clean architecture protocols, microservices battle formations, and creating scalable systems that neutralize real business threats.",
+    "p3": "Beyond the battlefield, I enjoy training rookie hunters, contributing to tech guild communities, and leading the Hatch-Futures Peru growth initiative. During downtime, you can find me replaying classic missions in Megaman X."
+  },
+  "interests": ["AI & Machine Learning", "Cloud Architecture", "Microservices", "Startup Building", "Retro Games", "Tech Community"],
+  "info": {
+    "location": {
+      "label": "Base Location",
+      "value": "Peru (Remote Ops)"
+    },
+    "email": {
+      "label": "Comm Channel",
+      "value": "abocanegrab@gmail.com"
+    },
+    "experience": {
+      "label": "Combat Experience",
+      "value": "13+ Years"
+    },
+    "passion": {
+      "label": "Primary Directive",
+      "value": "Enterprise Systems & Startup Missions"
+    }
+  }
+}

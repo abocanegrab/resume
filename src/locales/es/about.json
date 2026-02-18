@@ -1,0 +1,29 @@
+{
+  "title": "Perfil del Cazador",
+  "subtitle": "Reporte de inteligencia sobre el cazador detras del codigo",
+  "bioTitle": "Expediente del Cazador",
+  "bio": {
+    "p1": "Maverick Hunter con mas de 13 anos de experiencia en combate construyendo sistemas de armas empresariales. Especializado en el arsenal .NET, arquitectura de fortalezas en la nube con AWS e interfaces de batalla React modernas. Lidero equipos de ataque y construyo maquinas de guerra desde cero como co-fundador de un gremio tech.",
+    "p2": "Actualmente en entrenamiento avanzado en la Academia de Combate IA del TEC de Monterrey, combinando ingenieria de software forjada en batalla con tecnologias de armas IA de vanguardia. Apasionado por protocolos de arquitectura limpia, formaciones de batalla con microservicios y creacion de sistemas escalables que neutralizan amenazas de negocio reales.",
+    "p3": "Fuera del campo de batalla, disfruto entrenando cazadores novatos, contribuyendo a comunidades de gremios tech y liderando la iniciativa de crecimiento Hatch-Futures Peru. En tiempo de descanso, me encuentras rejugando misiones clasicas de Megaman X."
+  },
+  "interests": ["IA & Machine Learning", "Arquitectura Cloud", "Microservicios", "Creacion de Startups", "Juegos Retro", "Comunidad Tech"],
+  "info": {
+    "location": {
+      "label": "Base de Operaciones",
+      "value": "Peru (Operaciones Remotas)"
+    },
+    "email": {
+      "label": "Canal de Comunicacion",
+      "value": "abocanegrab@gmail.com"
+    },
+    "experience": {
+      "label": "Experiencia de Combate",
+      "value": "13+ Anos"
+    },
+    "passion": {
+      "label": "Directiva Principal",
+      "value": "Sistemas Empresariales & Misiones Startup"
+    }
+  }
+}
