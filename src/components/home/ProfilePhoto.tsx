@@ -11,11 +11,16 @@ interface ProfilePhotoProps {
 
 const PhotoContainer = styled(motion.div)`
   position: relative;
-  width: 280px;
-  height: 280px;
+  width: 320px;
+  height: 320px;
   cursor: pointer;
 
-  @media (max-width: ${theme.breakpoints.tablet}) {
+  @media (max-width: ${theme.breakpoints.laptop}) {
+    width: 260px;
+    height: 260px;
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
     width: 220px;
     height: 220px;
   }

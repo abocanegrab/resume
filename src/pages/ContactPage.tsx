@@ -57,7 +57,7 @@ const InfoCard = styled(motion.div)`
 const InfoContent = styled.div`
   .label {
     font-size: ${theme.typography.sizes.xs};
-    color: ${theme.colors.neutral.lightGray};
+    color: ${theme.colors.neutral.silver};
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin-bottom: ${theme.spacing.xs};

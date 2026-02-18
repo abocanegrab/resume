@@ -65,9 +65,9 @@ const HeroContent = styled(motion.div)`
 // Megaman-style frame around the text content
 const BossSelectFrame = styled(motion.div)`
   flex: 1;
-  max-width: 650px;
+  max-width: 560px;
   position: relative;
-  padding: ${theme.spacing.xl};
+  padding: ${theme.spacing.lg};
   background: linear-gradient(
     135deg,
     ${theme.colors.background.secondary}ee 0%,
@@ -160,7 +160,7 @@ const PlayerTag = styled.div`
 `;
 
 const HeroTitle = styled(motion.h1)`
-  font-size: ${theme.typography.sizes['5xl']};
+  font-size: ${theme.typography.sizes['4xl']};
   font-weight: ${theme.typography.weights.extrabold};
   line-height: ${theme.typography.lineHeights.tight};
   margin-bottom: ${theme.spacing.md};
@@ -406,9 +406,11 @@ export const HeroSection: React.FC = () => {
                 {tc('buttons.viewProjects')} <FaArrowRight />
               </Button>
             </Link>
-            <Button variant="outline" size="lg">
-              {tc('buttons.downloadCV')} <FaDownload />
-            </Button>
+            <a href={`${import.meta.env.BASE_URL}AaronBocanegra_Resume.pdf`} download>
+              <Button variant="outline" size="lg">
+                {tc('buttons.downloadCV')} <FaDownload />
+              </Button>
+            </a>
           </HeroButtons>
         </BossSelectFrame>
 

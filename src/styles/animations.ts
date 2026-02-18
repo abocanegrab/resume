@@ -185,15 +185,18 @@ export const glitchVariants: Variants = {
   animate: {
     textShadow: [
       '0 0 0 transparent',
-      '3px 0 #FF1493, -3px 0 #39FF14',
-      '-2px 0 #FF1493, 2px 0 #39FF14',
+      '5px 0 #FF1493, -5px 0 #39FF14',
+      '-3px 2px #FF1493, 3px -2px #39FF14',
+      '4px -1px #FF1493, -4px 1px #39FF14',
+      '-6px 0 #FF1493, 6px 0 #39FF14',
+      '2px 1px #FF1493, -2px -1px #39FF14',
       '0 0 0 transparent',
       '0 0 0 transparent',
     ],
     transition: {
-      duration: 0.3,
+      duration: 0.4,
       repeat: Infinity,
-      repeatDelay: 4,
+      repeatDelay: 2,
     },
   },
 };
