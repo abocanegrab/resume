@@ -95,6 +95,9 @@ const PX = 10;
 const FRAME_MS = 150;
 const RUN_FRAME_MS = 100;
 
+// Bump whenever the sprite art changes so browsers drop their cached copies
+const SPRITE_VERSION = '2';
+
 // Skin tone used to cover the eyes while blinking
 const SKIN = '#f0b281';
 
@@ -348,7 +351,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
 
   // Load SVG on mount
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}sprites/character.svg`)
+    fetch(`${import.meta.env.BASE_URL}sprites/character.svg?v=${SPRITE_VERSION}`)
       .then(response => response.text())
       .then(text => setSvgContent(text))
       .catch(err => console.error('Failed to load sprite:', err));
@@ -360,7 +363,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
     let alive = true;
     Promise.all(
       [1, 2, 3].map(n =>
-        fetch(`${import.meta.env.BASE_URL}sprites/character-run-${n}.svg`).then(r => r.text())
+        fetch(`${import.meta.env.BASE_URL}sprites/character-run-${n}.svg?v=${SPRITE_VERSION}`).then(r => r.text())
       )
     )
       .then(texts => {
