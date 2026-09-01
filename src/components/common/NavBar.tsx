@@ -127,6 +127,23 @@ const NavLink = styled(motion.li)<{ isActive: boolean }>`
   }
 `;
 
+// Stage-select cursor: blinking pixel arrow next to the active section
+const StageCursor = styled.span`
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 12px;
+  line-height: 1;
+  color: ${theme.colors.primary.main};
+  animation: cursorBlink 1s step-end infinite;
+
+  @keyframes cursorBlink {
+    50% { opacity: 0; }
+  }
+`;
+
 const Underline = styled(motion.div)`
   position: absolute;
   bottom: 0;
@@ -229,9 +246,6 @@ export const NavBar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location]);
 
   return (
     <>
@@ -254,6 +268,9 @@ export const NavBar: React.FC = () => {
                   key={item.path}
                   isActive={location.pathname === item.path}
                 >
+                  {location.pathname === item.path && (
+                    <StageCursor aria-hidden="true">▶</StageCursor>
+                  )}
                   <Link to={item.path}>{item.label}</Link>
                   {location.pathname === item.path && (
                     <Underline
@@ -304,7 +321,9 @@ export const NavBar: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Link to={item.path}>{item.label}</Link>
+                <Link to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
+                  {item.label}
+                </Link>
               </MobileNavLink>
             ))}
             <LanguageSwitcher />

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { theme } from '../../styles/theme';
-import { fadeInUp, glitchVariants } from '../../styles/animations';
+import { fadeInUp, readyFlicker } from '../../styles/animations';
 
 interface SectionTitleProps {
   title: string;
@@ -56,6 +56,9 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
   align = 'center',
   glitchEffect = true,
 }) => {
+  const reduced = useReducedMotion();
+  const flicker = glitchEffect && !reduced;
+
   return (
     <TitleWrapper
       align={align}
@@ -64,12 +67,8 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       whileInView="animate"
       viewport={{ once: true, margin: '-50px' }}
     >
-      <Title
-        variants={glitchEffect ? glitchVariants : undefined}
-        initial="initial"
-        animate={glitchEffect ? "animate" : undefined}
-      >
-        <Decorator>//</Decorator>
+      <Title variants={flicker ? readyFlicker : undefined}>
+        <Decorator aria-hidden="true">{'//'}</Decorator>
         {title}
       </Title>
       {subtitle && (

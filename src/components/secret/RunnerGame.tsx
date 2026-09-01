@@ -193,7 +193,9 @@ export const RunnerGame: React.FC = () => {
   const { t } = useTranslation('common');
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState>('idle');
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile] = useState(
+    () => 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  );
   const rafRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
 
@@ -220,7 +222,6 @@ export const RunnerGame: React.FC = () => {
   ]);
 
   useEffect(() => {
-    setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
     const stored = localStorage.getItem('megaman-runner-highscore');
     if (stored) highScoreRef.current = parseInt(stored, 10);
   }, []);

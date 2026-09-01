@@ -128,14 +128,16 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     return () => clearInterval(interval);
   }, [minDuration, onComplete]);
 
-  // Generate random particles
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 4 + 2,
-    duration: Math.random() * 3 + 2,
-  }));
+  // Generate random particles once, outside the render path
+  const [particles] = useState(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 4 + 2,
+      duration: Math.random() * 3 + 2,
+    }))
+  );
 
   return (
     <AnimatePresence>

@@ -177,26 +177,15 @@ export const staggerItem: Variants = {
   },
 };
 
-// Glitch Effect
-export const glitchVariants: Variants = {
-  initial: {
-    textShadow: '0 0 0 transparent',
-  },
+// "READY" stage-start flicker: three hard blinks, then steady
+export const readyFlicker: Variants = {
+  initial: { opacity: 0 },
   animate: {
-    textShadow: [
-      '0 0 0 transparent',
-      '5px 0 #FF1493, -5px 0 #39FF14',
-      '-3px 2px #FF1493, 3px -2px #39FF14',
-      '4px -1px #FF1493, -4px 1px #39FF14',
-      '-6px 0 #FF1493, 6px 0 #39FF14',
-      '2px 1px #FF1493, -2px -1px #39FF14',
-      '0 0 0 transparent',
-      '0 0 0 transparent',
-    ],
+    opacity: [0, 1, 0, 1, 0, 1],
     transition: {
-      duration: 0.4,
-      repeat: Infinity,
-      repeatDelay: 2,
+      duration: 0.45,
+      times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+      ease: 'linear',
     },
   },
 };
@@ -235,35 +224,6 @@ export const energyBarFill: Variants = {
       delay: 0.3,
     },
   }),
-};
-
-// Helmet Hover Effect (for profile photo)
-export const helmetReveal: Variants = {
-  initial: {
-    opacity: 0,
-    scale: 0.8,
-    y: -20,
-  },
-  hover: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 25,
-    },
-  },
-};
-
-export const photoOverlay: Variants = {
-  initial: {
-    filter: 'brightness(1)',
-  },
-  hover: {
-    filter: 'brightness(0.7)',
-    transition: smoothTransition,
-  },
 };
 
 // Floating Animation
