@@ -96,7 +96,7 @@ const FRAME_MS = 150;
 const RUN_FRAME_MS = 100;
 
 // Bump whenever the sprite art changes so browsers drop their cached copies
-const SPRITE_VERSION = '2';
+const SPRITE_VERSION = '3';
 
 // Skin tone used to cover the eyes while blinking
 const SKIN = '#f0b281';
