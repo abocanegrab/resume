@@ -67,11 +67,11 @@ const ORIGINAL_ARMOR_DARK = '#0f71de';
 // Colors that belong to head (hair, skin, eyes, teeth)
 const HEAD_COLORS = ['#000000', '#f0b281', '#ffffff'];
 
-// Armor colors
-const ARMOR_COLORS = ['#12d5cd', '#0f71de'];
-
 // Body part Y boundaries for armor pieces
 const TORSO_END_Y = 290;
+
+// Head colors below this line belong to the body (hair on shoulders, outlines)
+const HEAD_MAX_Y = 220;
 
 // Arm X boundaries (armor elements far left or right are arms)
 const LEFT_ARM_MAX_X = 80;
@@ -139,22 +139,19 @@ function parseSvgToGroups(svgContent: string): {
     const y = parseInt(yMatch[1]);
     const fill = normalizeHex(fillMatch[1]);
 
-    if (HEAD_COLORS.includes(fill)) {
+    if (HEAD_COLORS.includes(fill) && y < HEAD_MAX_Y) {
       groups.head.push(rect);
-    } else if (ARMOR_COLORS.includes(fill)) {
-      if (y < TORSO_END_Y) {
-        if (x <= LEFT_ARM_MAX_X) {
-          groups.leftArm.push(rect);
-        } else if (x >= RIGHT_ARM_MIN_X) {
-          groups.rightArm.push(rect);
-        } else {
-          groups.torso.push(rect);
-        }
+    } else if (y < TORSO_END_Y) {
+      // Armor fills and outline pixels alike, split by position
+      if (x <= LEFT_ARM_MAX_X) {
+        groups.leftArm.push(rect);
+      } else if (x >= RIGHT_ARM_MIN_X) {
+        groups.rightArm.push(rect);
       } else {
-        groups.legs.push(rect);
+        groups.torso.push(rect);
       }
     } else {
-      groups.torso.push(rect);
+      groups.legs.push(rect);
     }
   });
 
