@@ -10,7 +10,7 @@ import {
   floating,
 } from '../../styles/animations';
 import { Button } from '../common/Button';
-import { ProfilePhoto } from './ProfilePhoto';
+import { PixelMorphPhoto } from './PixelMorphPhoto';
 import { FaArrowRight, FaDownload, FaEnvelope } from 'react-icons/fa';
 
 const HeroWrapper = styled.section`
@@ -429,9 +429,10 @@ export const HeroSection: React.FC = () => {
               initial="initial"
               animate="animate"
             >
-              <ProfilePhoto
-                imageSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
-                altText={t('hero.photoAlt')}
+              <PixelMorphPhoto
+                photoSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
+                pixelSrc={`${import.meta.env.BASE_URL}images/profile/pixel-portrait.svg`}
+                alt={t('hero.photoAlt')}
               />
             </motion.div>
             <CharacterLabel>{t('hero.characterLabel')}</CharacterLabel>
