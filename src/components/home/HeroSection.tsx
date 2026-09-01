@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import {
@@ -334,9 +334,23 @@ export const HeroSection: React.FC = () => {
   const { t: tc } = useTranslation('common');
 
   const roles = t('hero.roles', { returnObjects: true }) as string[];
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     const targetText = roles[currentRole];
+
+    if (reduced) {
+      // No typewriter: show the full role, rotate slowly
+      const timeout = setTimeout(() => {
+        if (displayedText !== targetText) {
+          setDisplayedText(targetText);
+        } else {
+          setCurrentRole((prev) => (prev + 1) % roles.length);
+        }
+      }, displayedText === targetText ? 5000 : 0);
+      return () => clearTimeout(timeout);
+    }
+
     const typeSpeed = isDeleting ? 50 : 100;
 
     const timeout = setTimeout(() => {
@@ -357,12 +371,12 @@ export const HeroSection: React.FC = () => {
     }, typeSpeed);
 
     return () => clearTimeout(timeout);
-  }, [displayedText, isDeleting, currentRole, roles]);
+  }, [displayedText, isDeleting, currentRole, roles, reduced]);
 
   return (
     <HeroWrapper>
-      <HeroBackground />
-      <GridPattern />
+      <HeroBackground aria-hidden="true" />
+      <GridPattern aria-hidden="true" />
 
       <HeroContent
         variants={staggerContainer}
@@ -378,6 +392,7 @@ export const HeroSection: React.FC = () => {
             <div>
               <DataLabel>{t('hero.playerData')}</DataLabel>
               <ScanLine
+                aria-hidden="true"
                 animate={{ scaleX: [0, 1, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               />
@@ -391,8 +406,10 @@ export const HeroSection: React.FC = () => {
 
           <RoleContainer>
             <RoleLabel>{t('hero.classLabel')}</RoleLabel>
-            <RoleText>
-              {displayedText}<Cursor />
+            <RoleText aria-label={roles[currentRole]}>
+              <span aria-hidden="true">
+                {displayedText}<Cursor />
+              </span>
             </RoleText>
           </RoleContainer>
 
@@ -420,7 +437,7 @@ export const HeroSection: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <CharacterFrame>
-            <StatusIndicator>
+            <StatusIndicator aria-hidden="true">
               <StatusDot />
               {t('hero.online')}
             </StatusIndicator>
