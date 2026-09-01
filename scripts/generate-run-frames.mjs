@@ -52,14 +52,17 @@ const shift = (cluster, dx, dy) => cluster.map(p => ({ ...p, x: p.x + dx, y: p.y
 // the sprite's own palette (K outline, B blue, C cyan trim) as a compact
 // front-view block, and stamped per frame.
 const PALETTE = { K: '#000000', B: '#0f71de', C: '#12d5cd' };
+// Chunky MMX-style boot seen from the front: wide shin with cyan trim,
+// flared foot, double black sole. 11 cols x 8 rows.
 const FRONT_BOOT = [
-  '.KKKKKK.',
-  'KBBCCBBK',
-  'KBBBBBBK',
-  'KBBBBBBK',
-  'KBBBBBBK',
-  'KKKKKKKK',
-  'KKKKKKKK',
+  '.KKKKKKKKK.',
+  '.KBBCCCBBK.',
+  '.KBBBBBBBK.',
+  '.KBBBBBBBK.',
+  'KBBBBBBBBBK',
+  'KBBBBBBBBBK',
+  'KKKKKKKKKKK',
+  'KKKKKKKKKKK',
 ];
 
 function stampBoot(x0, y0) {
@@ -87,15 +90,17 @@ function emit(name, parts, globalDy = 0) {
 const c = splitClusters(pixels);
 
 // The original splayed boots (c.leftBoot / c.rightBoot) are dropped entirely
-// in the run poses; forward-facing boots are stamped in their place. The
-// ground line is y36..42, so a grounded boot starts at y36.
+// in the run poses; forward-facing boots are stamped in their place. Boots
+// start at y35 so they tuck under the thigh band (y33-35) and their soles
+// rest on the ground line (y42). Grounded stamp positions: left (6,35),
+// right (18,35) — slightly wider than the hips, like the game's boots.
 
 // run-1: right knee up. Right boot lifted 2px (in front of the thigh), left
 // boot planted under the body; left fist pumps up beside the chest.
 emit('character-run-1.svg', [
   c.body,
-  stampBoot(10, 36),
-  stampBoot(19, 34),
+  stampBoot(6, 35),
+  stampBoot(18, 33),
   shift(c.leftFist, 1, -5),
   c.rightFist,
 ]);
@@ -106,8 +111,8 @@ emit(
   'character-run-2.svg',
   [
     c.body,
-    stampBoot(10, 36),
-    stampBoot(19, 36),
+    stampBoot(6, 35),
+    stampBoot(18, 35),
     shift(c.leftFist, 0, -2),
     shift(c.rightFist, 0, -2),
   ],
@@ -117,8 +122,8 @@ emit(
 // run-3: left knee up (mirror of run-1).
 emit('character-run-3.svg', [
   c.body,
-  stampBoot(19, 36),
-  stampBoot(10, 34),
+  stampBoot(18, 35),
+  stampBoot(6, 33),
   shift(c.rightFist, -1, -5),
   c.leftFist,
 ]);
