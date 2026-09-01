@@ -55,4 +55,10 @@ i18n
     },
   });
 
+// Keep the document language in sync for assistive tech
+document.documentElement.lang = i18n.resolvedLanguage ?? 'en';
+i18n.on('languageChanged', (lng) => {
+  document.documentElement.lang = lng;
+});
+
 export default i18n;

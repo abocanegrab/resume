@@ -177,6 +177,19 @@ export const globalStyles = css`
     outline-offset: 2px;
   }
 
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   /* Utility Classes */
   .container {
     width: 100%;
