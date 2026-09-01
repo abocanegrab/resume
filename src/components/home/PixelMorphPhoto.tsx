@@ -9,6 +9,9 @@ interface PixelMorphPhotoProps {
   photoSrc: string;
   pixelSrc: string;
   alt: string;
+  /** Fixed square size in px; overrides the responsive default */
+  size?: number;
+  showHint?: boolean;
 }
 
 type Phase = 'photo' | 'toPixel' | 'pixel' | 'toPhoto';
@@ -159,6 +162,8 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
   photoSrc,
   pixelSrc,
   alt,
+  size,
+  showHint = true,
 }) => {
   const [phase, setPhase] = useState<Phase>('photo');
   const [flashOn, setFlashOn] = useState(false);
@@ -268,6 +273,7 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
       role="img"
       aria-label={alt}
       tabIndex={0}
+      style={size ? { width: size, height: size } : undefined}
       onMouseEnter={activate}
       onMouseLeave={deactivate}
       onFocus={activate}
@@ -310,9 +316,11 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <HintText visible={!photoFailed && phase === 'photo'} aria-hidden="true">
-        {t('hero.hintPhoto')}
-      </HintText>
+      {showHint && (
+        <HintText visible={!photoFailed && phase === 'photo'} aria-hidden="true">
+          {t('hero.hintPhoto')}
+        </HintText>
+      )}
     </PhotoContainer>
   );
 };

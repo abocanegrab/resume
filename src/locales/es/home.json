@@ -9,7 +9,11 @@
     "online": "EN LÍNEA",
     "characterLabel": "[ Maverick Hunter ]",
     "hintPhoto": "[ HOVER: MODO 8-BIT ]",
-    "photoAlt": "Foto de Aarón Bocanegra; al pasar el cursor se convierte en su personaje de 8 bits"
+    "photoAlt": "Foto de Aarón Bocanegra; al pasar el cursor se convierte en su personaje de 8 bits",
+    "hud": {
+      "energy": "ENERGÍA",
+      "exp": "EXP · 13+ AÑOS"
+    }
   },
   "stats": {
     "title": "Estado de Combate",
