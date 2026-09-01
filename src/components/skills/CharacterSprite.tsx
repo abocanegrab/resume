@@ -195,7 +195,8 @@ const AnimatedSprite: React.FC<{
   armorColor: string;
   isCharging: boolean;
   mode: 'idle' | 'run';
-}> = ({ svgContent, armorColor, isCharging, mode }) => {
+  runFrames: string[][] | null;
+}> = ({ svgContent, armorColor, isCharging, mode, runFrames }) => {
   const groups = useMemo(() => parseSvgToGroups(svgContent), [svgContent]);
   const reduced = useReducedMotion();
 
@@ -262,20 +263,32 @@ const AnimatedSprite: React.FC<{
       ? `drop-shadow(0 0 15px ${armorColor})`
       : 'none';
 
-  const running = mode === 'run' && !reduced;
-  // Run cycle: legs scissor (±1px), arms swing opposite, body bounces on the
-  // in-between frames — the scrolling scenery sells the rest of the motion.
-  const stride = running ? (pose.runStep === 0 ? 1 : pose.runStep === 2 ? -1 : 0) : 0;
-  const bodyBounce = running && pose.runStep % 2 === 1 ? `translate(0,-${PX})` : undefined;
+  // Real redrawn run poses (character-run-1..3.svg), cycled 1-2-3-2 like a
+  // game sprite sheet — no live limb translation.
+  const running = mode === 'run' && !reduced && runFrames !== null && runFrames.length === 3;
+
+  if (running) {
+    const frameIndex = [0, 1, 2, 1][pose.runStep];
+    return (
+      <div style={{ filter }}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={groups.viewBox}
+          width="180"
+          height="220"
+          style={{ overflow: 'visible' }}
+          aria-hidden="true"
+        >
+          <g dangerouslySetInnerHTML={{ __html: replaceColors(runFrames[frameIndex]) }} />
+        </svg>
+      </div>
+    );
+  }
 
   // Exhale drops the head one pixel; the chin overlaps the torso so no gap shows.
-  const headTransform = pose.inhale ? undefined : running ? undefined : `translate(0,${PX})`;
-  // Inhale lifts the shoulders/arms one pixel; running swings them instead.
+  const headTransform = pose.inhale ? undefined : `translate(0,${PX})`;
+  // Inhale lifts the shoulders/arms one pixel.
   const armsBreath = pose.inhale ? `translate(0,-${PX})` : undefined;
-  const leftArmTransform = running ? `translate(${PX * stride},0)` : armsBreath;
-  const rightArmTransform = running ? `translate(${-PX * stride},0)` : armsBreath;
-  const leftLegTransform = running ? `translate(${-PX * stride},0)` : undefined;
-  const rightLegTransform = running ? `translate(${PX * stride},0)` : undefined;
 
   return (
     <div style={{ filter }}>
@@ -287,13 +300,13 @@ const AnimatedSprite: React.FC<{
         style={{ overflow: 'visible' }}
         aria-hidden="true"
       >
-        <g transform={bodyBounce}>
-        <g transform={leftLegTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftLeg) }} />
-        <g transform={rightLegTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightLeg) }} />
+        <g>
+        <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftLeg) }} />
+        <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightLeg) }} />
         <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.torso) }} />
 
-        <g transform={leftArmTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftArm) }} />
-        <g transform={rightArmTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightArm) }} />
+        <g transform={armsBreath} dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftArm) }} />
+        <g transform={armsBreath} dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightArm) }} />
 
         <g transform={headTransform}>
           <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.head) }} />
@@ -330,6 +343,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   mode = 'idle',
 }) => {
   const [svgContent, setSvgContent] = useState<string>('');
+  const [runFrames, setRunFrames] = useState<string[][] | null>(null);
   const { t } = useTranslation('skills');
 
   // Load SVG on mount
@@ -339,6 +353,24 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
       .then(text => setSvgContent(text))
       .catch(err => console.error('Failed to load sprite:', err));
   }, []);
+
+  // Load the redrawn run poses only when the run mode is requested
+  useEffect(() => {
+    if (mode !== 'run') return;
+    let alive = true;
+    Promise.all(
+      [1, 2, 3].map(n =>
+        fetch(`${import.meta.env.BASE_URL}sprites/character-run-${n}.svg`).then(r => r.text())
+      )
+    )
+      .then(texts => {
+        if (alive) setRunFrames(texts.map(t => t.match(/<rect[^>]+>/g) ?? []));
+      })
+      .catch(err => console.error('Failed to load run frames:', err));
+    return () => {
+      alive = false;
+    };
+  }, [mode]);
 
   if (!svgContent) {
     return (
@@ -358,6 +390,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
           armorColor={armorColor}
           isCharging={isCharging}
           mode={mode}
+          runFrames={runFrames}
         />
       </SpriteWrapper>
 
