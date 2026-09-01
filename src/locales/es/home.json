@@ -11,8 +11,8 @@
     "hintPhoto": "[ HOVER: MODO 8-BIT ]",
     "photoAlt": "Foto de Aarón Bocanegra; al pasar el cursor se convierte en su personaje de 8 bits",
     "hud": {
-      "energy": "ENERGÍA",
-      "exp": "EXP · 13+ AÑOS"
+      "energy": "HP",
+      "exp": "EXP"
     }
   },
   "stats": {

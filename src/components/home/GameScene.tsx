@@ -113,6 +113,12 @@ const Floor = styled.div`
     linear-gradient(180deg, ${theme.colors.secondary.medium} 0%, ${theme.colors.secondary.dark} 30%, #0A1420 100%);
   border-top: 2px solid ${theme.colors.primary.dark};
   box-shadow: 0 -4px 16px rgba(0, 212, 255, 0.15);
+  animation: floorScroll 0.4s linear infinite;
+
+  @keyframes floorScroll {
+    from { background-position-x: 0; }
+    to { background-position-x: -48px; }
+  }
 `;
 
 const SpriteAnchor = styled.div`
@@ -133,8 +139,8 @@ const Hud = styled.div`
   top: calc(${theme.spacing['3xl']} + ${theme.spacing.xl});
   left: ${theme.spacing.xl};
   display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.sm};
+  align-items: flex-start;
+  gap: ${theme.spacing.md};
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     left: ${theme.spacing.md};
@@ -142,10 +148,11 @@ const Hud = styled.div`
   }
 `;
 
-const HudRow = styled.div`
+const BarColumn = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: ${theme.spacing.sm};
+  gap: 4px;
 `;
 
 const HudLabel = styled.span`
@@ -153,16 +160,12 @@ const HudLabel = styled.span`
   font-size: 12px;
   color: ${theme.colors.neutral.white};
   text-shadow: 2px 2px 0 ${theme.colors.neutral.black};
-  min-width: 130px;
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    min-width: 0;
-    display: none;
-  }
 `;
 
+// Vertical life-bar style track, like the MMX HUD: cells stack bottom-up
 const BarTrack = styled.div`
   display: flex;
+  flex-direction: column-reverse;
   gap: 2px;
   padding: 3px;
   background: ${theme.colors.neutral.black}cc;
@@ -171,11 +174,11 @@ const BarTrack = styled.div`
 `;
 
 const BarCell = styled.span<{ filled: boolean; tone: string }>`
-  width: 7px;
-  height: 14px;
+  width: 14px;
+  height: 6px;
   background: ${props =>
     props.filled
-      ? `linear-gradient(180deg, #FFFFFF 0%, ${props.tone} 35%, ${props.tone} 100%)`
+      ? `linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 20%, ${props.tone} 20%, ${props.tone} 100%)`
       : theme.colors.neutral.darkGray};
 `;
 
@@ -216,14 +219,14 @@ const HudBar: React.FC<{ label: string; filled: number; total: number; tone: str
   total,
   tone,
 }) => (
-  <HudRow>
-    <HudLabel>{label}</HudLabel>
+  <BarColumn>
     <BarTrack>
       {Array.from({ length: total }, (_, i) => (
         <BarCell key={i} filled={i < filled} tone={tone} />
       ))}
     </BarTrack>
-  </HudRow>
+    <HudLabel>{label}</HudLabel>
+  </BarColumn>
 );
 
 export const GameScene: React.FC = () => {
@@ -232,8 +235,8 @@ export const GameScene: React.FC = () => {
   return (
     <SceneWrapper>
       <GridPattern aria-hidden="true" />
-      <SkylineLayer aria-hidden="true" image={FAR_SKYLINE} height={260} duration={90} />
-      <SkylineLayer aria-hidden="true" image={NEAR_SKYLINE} height={180} duration={50} />
+      <SkylineLayer aria-hidden="true" image={FAR_SKYLINE} height={260} duration={45} />
+      <SkylineLayer aria-hidden="true" image={NEAR_SKYLINE} height={180} duration={16} />
 
       <Hud aria-hidden="true">
         <HudBar label={t('hero.hud.energy')} filled={16} total={16} tone={theme.colors.primary.main} />
@@ -243,7 +246,7 @@ export const GameScene: React.FC = () => {
       <StatusTag aria-hidden="true">{t('hero.online')}</StatusTag>
 
       <SpriteAnchor>
-        <CharacterSprite showLabels={false} />
+        <CharacterSprite showLabels={false} mode="run" />
       </SpriteAnchor>
 
       <Floor aria-hidden="true" />

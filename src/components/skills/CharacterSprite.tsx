@@ -9,6 +9,7 @@ interface CharacterSpriteProps {
   isCharging?: boolean;
   skillName?: string;
   showLabels?: boolean;
+  mode?: 'idle' | 'run';
 }
 
 const SpriteContainer = styled(motion.div)<{ padded: boolean }>`
@@ -78,11 +79,21 @@ const HEAD_MAX_Y = 220;
 const LEFT_ARM_MAX_X = 80;
 const RIGHT_ARM_MIN_X = 260;
 
+// Vertical extent of the arms in the outer columns: shoulders start ~y200 and
+// the fist's bottom outline ends by y330; below that the outer pixels belong
+// to the thighs/boots
+const ARM_START_Y = 200;
+const ARM_END_Y = 330;
+
+// Legs split into left/right halves at the sprite's center line
+const LEGS_CENTER_X = 175;
+
 // One logical sprite pixel = 10 viewBox units
 const PX = 10;
 
-// ~SNES frame cadence
+// ~SNES frame cadence (idle); running is a bit faster
 const FRAME_MS = 150;
+const RUN_FRAME_MS = 100;
 
 // Skin tone used to cover the eyes while blinking
 const SKIN = '#f0b281';
@@ -112,7 +123,8 @@ function parseSvgToGroups(svgContent: string): {
   torso: string[];
   leftArm: string[];
   rightArm: string[];
-  legs: string[];
+  leftLeg: string[];
+  rightLeg: string[];
   viewBox: string;
 } {
   const groups = {
@@ -120,7 +132,8 @@ function parseSvgToGroups(svgContent: string): {
     torso: [] as string[],
     leftArm: [] as string[],
     rightArm: [] as string[],
-    legs: [] as string[],
+    leftLeg: [] as string[],
+    rightLeg: [] as string[],
     viewBox: '0 0 350 430',
   };
 
@@ -140,44 +153,53 @@ function parseSvgToGroups(svgContent: string): {
     const y = parseInt(yMatch[1]);
     const fill = normalizeHex(fillMatch[1]);
 
-    if (HEAD_COLORS.includes(fill) && y < HEAD_MAX_Y) {
-      groups.head.push(rect);
-    } else if (y < TORSO_END_Y) {
-      // Armor fills and outline pixels alike, split by position
+    const isOuterColumn = x <= LEFT_ARM_MAX_X || x >= RIGHT_ARM_MIN_X;
+    // The full arm (shoulder outline down to the fist) lives in the outer
+    // columns between ARM_START_Y and ARM_END_Y — outlines included, so the
+    // whole limb moves as one piece and no seam appears mid-hand
+    const isArm = isOuterColumn && y >= ARM_START_Y && y < ARM_END_Y;
+
+    if (isArm) {
       if (x <= LEFT_ARM_MAX_X) {
         groups.leftArm.push(rect);
-      } else if (x >= RIGHT_ARM_MIN_X) {
-        groups.rightArm.push(rect);
       } else {
-        groups.torso.push(rect);
+        groups.rightArm.push(rect);
       }
+    } else if (HEAD_COLORS.includes(fill) && y < HEAD_MAX_Y) {
+      groups.head.push(rect);
+    } else if (y < TORSO_END_Y) {
+      groups.torso.push(rect);
+    } else if (x < LEGS_CENTER_X) {
+      groups.leftLeg.push(rect);
     } else {
-      groups.legs.push(rect);
+      groups.rightLeg.push(rect);
     }
   });
 
   return groups;
 }
 
-interface IdlePose {
+interface SpritePose {
   inhale: boolean;
   blink: boolean;
   gaze: boolean;
+  runStep: number; // 0..3, only meaningful in run mode
 }
 
-const RESTING_POSE: IdlePose = { inhale: false, blink: false, gaze: false };
+const RESTING_POSE: SpritePose = { inhale: false, blink: false, gaze: false, runStep: 0 };
 
-// Frame-stepped idle in the style of Mega Man X (SNES): poses swap instantly,
-// movements are whole sprite pixels, never eased.
+// Frame-stepped animation in the style of Mega Man X (SNES): poses swap
+// instantly, movements are whole sprite pixels, never eased.
 const AnimatedSprite: React.FC<{
   svgContent: string;
   armorColor: string;
   isCharging: boolean;
-}> = ({ svgContent, armorColor, isCharging }) => {
+  mode: 'idle' | 'run';
+}> = ({ svgContent, armorColor, isCharging, mode }) => {
   const groups = useMemo(() => parseSvgToGroups(svgContent), [svgContent]);
   const reduced = useReducedMotion();
 
-  const [pose, setPose] = useState<IdlePose>(RESTING_POSE);
+  const [pose, setPose] = useState<SpritePose>(RESTING_POSE);
   // 0 = off; 1..3 = armor-swap flash sequence (white / normal / white)
   const [flashFrame, setFlashFrame] = useState(0);
 
@@ -188,6 +210,7 @@ const AnimatedSprite: React.FC<{
     let blinkEnd = -1;
     let nextGaze = 60 + Math.floor(Math.random() * 40);
     let gazeEnd = -1;
+    const running = mode === 'run';
 
     const id = setInterval(() => {
       frame += 1;
@@ -195,19 +218,20 @@ const AnimatedSprite: React.FC<{
         blinkEnd = frame; // eyes closed for a single frame
         nextBlink = frame + 20 + Math.floor(Math.random() * 15);
       }
-      if (frame >= nextGaze) {
+      if (!running && frame >= nextGaze) {
         gazeEnd = frame + 5; // glance sideways for ~750ms
         nextGaze = frame + 60 + Math.floor(Math.random() * 40);
       }
       setPose({
-        inhale: frame % 10 >= 6, // 6 frames exhaled, 4 inhaled
+        inhale: !running && frame % 10 >= 6, // 6 frames exhaled, 4 inhaled
         blink: frame <= blinkEnd,
-        gaze: frame <= gazeEnd,
+        gaze: !running && frame <= gazeEnd,
+        runStep: frame % 4,
       });
-    }, FRAME_MS);
+    }, running ? RUN_FRAME_MS : FRAME_MS);
 
     return () => clearInterval(id);
-  }, [reduced]);
+  }, [reduced, mode]);
 
   // Weapon-swap flash: two white silhouette frames, like changing armor in-game
   useEffect(() => {
@@ -238,10 +262,20 @@ const AnimatedSprite: React.FC<{
       ? `drop-shadow(0 0 15px ${armorColor})`
       : 'none';
 
+  const running = mode === 'run' && !reduced;
+  // Run cycle: legs scissor (±1px), arms swing opposite, body bounces on the
+  // in-between frames — the scrolling scenery sells the rest of the motion.
+  const stride = running ? (pose.runStep === 0 ? 1 : pose.runStep === 2 ? -1 : 0) : 0;
+  const bodyBounce = running && pose.runStep % 2 === 1 ? `translate(0,-${PX})` : undefined;
+
   // Exhale drops the head one pixel; the chin overlaps the torso so no gap shows.
-  const headTransform = pose.inhale ? undefined : `translate(0,${PX})`;
-  // Inhale lifts the shoulders/arms one pixel.
-  const armsTransform = pose.inhale ? `translate(0,-${PX})` : undefined;
+  const headTransform = pose.inhale ? undefined : running ? undefined : `translate(0,${PX})`;
+  // Inhale lifts the shoulders/arms one pixel; running swings them instead.
+  const armsBreath = pose.inhale ? `translate(0,-${PX})` : undefined;
+  const leftArmTransform = running ? `translate(${PX * stride},0)` : armsBreath;
+  const rightArmTransform = running ? `translate(${-PX * stride},0)` : armsBreath;
+  const leftLegTransform = running ? `translate(${-PX * stride},0)` : undefined;
+  const rightLegTransform = running ? `translate(${PX * stride},0)` : undefined;
 
   return (
     <div style={{ filter }}>
@@ -253,13 +287,13 @@ const AnimatedSprite: React.FC<{
         style={{ overflow: 'visible' }}
         aria-hidden="true"
       >
-        <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.legs) }} />
+        <g transform={bodyBounce}>
+        <g transform={leftLegTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftLeg) }} />
+        <g transform={rightLegTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightLeg) }} />
         <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.torso) }} />
 
-        <g transform={armsTransform}>
-          <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftArm) }} />
-          <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightArm) }} />
-        </g>
+        <g transform={leftArmTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.leftArm) }} />
+        <g transform={rightArmTransform} dangerouslySetInnerHTML={{ __html: replaceColors(groups.rightArm) }} />
 
         <g transform={headTransform}>
           <g dangerouslySetInnerHTML={{ __html: replaceColors(groups.head) }} />
@@ -282,6 +316,7 @@ const AnimatedSprite: React.FC<{
             </>
           )}
         </g>
+        </g>
       </svg>
     </div>
   );
@@ -292,6 +327,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   isCharging = false,
   skillName,
   showLabels = true,
+  mode = 'idle',
 }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const { t } = useTranslation('skills');
@@ -321,6 +357,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
           svgContent={svgContent}
           armorColor={armorColor}
           isCharging={isCharging}
+          mode={mode}
         />
       </SpriteWrapper>
 
