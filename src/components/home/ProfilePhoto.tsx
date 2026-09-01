@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { theme } from '../../styles/theme';
 import { helmetReveal, photoOverlay, pulseGlow } from '../../styles/animations';
@@ -165,6 +166,7 @@ export const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const { t } = useTranslation('home');
 
   return (
     <PhotoContainer
@@ -378,7 +380,7 @@ export const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
         animate={{ opacity: isHovered ? 0 : 0.5 }}
         transition={{ delay: 2 }}
       >
-        [ HOVER FOR X-HUNTER MODE ]
+        {t('hero.hintPhoto')}
       </HintText>
     </PhotoContainer>
   );

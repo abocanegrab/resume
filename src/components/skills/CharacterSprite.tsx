@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 
 interface CharacterSpriteProps {
@@ -296,6 +297,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   skillName,
 }) => {
   const [svgContent, setSvgContent] = useState<string>('');
+  const { t } = useTranslation('skills');
 
   // Load SVG on mount
   useEffect(() => {
@@ -334,11 +336,11 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
         }}
         transition={{ duration: 0.2 }}
       >
-        {skillName || 'Ready'}
+        {skillName || t('sprite.ready')}
       </SkillNameDisplay>
 
       <StatusText>
-        {isCharging ? '[ POWER UP ]' : '[ STANDBY ]'}
+        {isCharging ? t('sprite.powerUp') : t('sprite.standby')}
       </StatusText>
     </SpriteContainer>
   );

@@ -10,5 +10,10 @@
     "tools": "Tools"
   },
   "spriteTitle": "Power Armor",
-  "helpText": "Hover over a power to change armor color"
+  "helpText": "Hover over a power to change armor color",
+  "sprite": {
+    "ready": "Ready",
+    "standby": "[ STANDBY ]",
+    "powerUp": "[ POWER UP ]"
+  }
 }

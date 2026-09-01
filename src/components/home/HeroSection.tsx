@@ -431,7 +431,7 @@ export const HeroSection: React.FC = () => {
             >
               <ProfilePhoto
                 imageSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
-                altText="Developer Profile"
+                altText={t('hero.photoAlt')}
               />
             </motion.div>
             <CharacterLabel>{t('hero.characterLabel')}</CharacterLabel>

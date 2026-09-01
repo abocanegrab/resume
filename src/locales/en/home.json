@@ -7,7 +7,9 @@
     "roles": ["Senior Combat Engineer", "Fullstack Maverick", "Systems Architect", "Tech Commander"],
     "description": "Maverick Hunter with 13+ years of combat experience building enterprise weapon systems. Specialized in .NET arsenal, AWS cloud fortresses, and modern React battle interfaces. Co-founded a tech guild & passionate about turning ideas into scalable war machines.",
     "online": "ONLINE",
-    "characterLabel": "[ Maverick Hunter ]"
+    "characterLabel": "[ Maverick Hunter ]",
+    "hintPhoto": "[ HOVER: 8-BIT MODE ]",
+    "photoAlt": "Photo of Aarón Bocanegra; on hover it turns into his 8-bit character"
   },
   "stats": {
     "title": "Combat Status",

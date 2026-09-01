@@ -10,5 +10,10 @@
     "tools": "Herramientas"
   },
   "spriteTitle": "Armadura de Poder",
-  "helpText": "Pasa el cursor sobre un poder para cambiar el color de la armadura"
+  "helpText": "Pasa el cursor sobre un poder para cambiar el color de la armadura",
+  "sprite": {
+    "ready": "Listo",
+    "standby": "[ EN ESPERA ]",
+    "powerUp": "[ PODER AL MÁXIMO ]"
+  }
 }
