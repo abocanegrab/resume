@@ -1,18 +1,19 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
-import { pageTransition } from '../../styles/animations';
 
 interface PageTransitionProps {
   children: React.ReactNode;
 }
+
+const ENTER_S = 0.45;
 
 const PageWrapper = styled(motion.div)`
   min-height: 100vh;
   width: 100%;
 `;
 
-const TransitionOverlay = styled(motion.div)`
+const TeleportOverlay = styled(motion.div)`
   position: fixed;
   top: 0;
   left: 0;
@@ -21,95 +22,124 @@ const TransitionOverlay = styled(motion.div)`
   background: ${theme.colors.background.primary};
   z-index: ${theme.zIndex.overlay};
   display: flex;
-  align-items: center;
   justify-content: center;
   pointer-events: none;
 `;
 
-const EnergyRing = styled(motion.div)`
-  width: 100px;
-  height: 100px;
-  border: 3px solid ${theme.colors.primary.main};
-  border-radius: 50%;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
-    border: 2px solid ${theme.colors.primary.light};
-    border-radius: 50%;
-    opacity: 0.5;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 20px;
-    height: 20px;
-    background: ${theme.colors.primary.main};
-    border-radius: 50%;
-    box-shadow: ${theme.shadows.glow.cyan};
-  }
+const Beam = styled(motion.div)`
+  width: 10px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    ${theme.colors.primary.light} 0%,
+    ${theme.colors.primary.main} 60%,
+    transparent 100%
+  );
+  box-shadow: 0 0 24px 6px ${theme.colors.primary.glow};
+  transform-origin: top;
 `;
 
+const Flash = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #ffffff;
+  z-index: ${theme.zIndex.overlay + 1};
+  pointer-events: none;
+`;
+
+// Mega Man teleport: beam drops in, flash, content materializes in one step
 const overlayVariants = {
-  initial: {
-    clipPath: 'circle(150% at 50% 50%)',
-  },
+  initial: { opacity: 1 },
   animate: {
-    clipPath: 'circle(0% at 50% 50%)',
-    transition: {
-      duration: 0.8,
-      ease: [0.76, 0, 0.24, 1] as [number, number, number, number],
-      delay: 0.2,
-    },
+    opacity: [1, 1, 0],
+    transition: { duration: ENTER_S, times: [0, 0.75, 0.8], ease: 'linear' as const },
   },
   exit: {
-    clipPath: 'circle(150% at 50% 50%)',
-    transition: {
-      duration: 0.6,
-      ease: [0.76, 0, 0.24, 1] as [number, number, number, number],
-    },
+    opacity: 1,
+    transition: { duration: 0.01, delay: 0.14 },
   },
 };
 
-const ringVariants = {
-  initial: {
-    scale: 0,
-    opacity: 0,
-    rotate: 0,
-  },
+const beamVariants = {
+  initial: { scaleY: 0, opacity: 1 },
   animate: {
-    scale: [0, 1.2, 0],
-    opacity: [0, 1, 0],
-    rotate: 180,
-    transition: {
-      duration: 0.8,
-      ease: 'easeInOut' as const,
-    },
+    scaleY: [0, 1, 1],
+    opacity: [1, 1, 0],
+    transition: { duration: ENTER_S, times: [0, 0.35, 0.8], ease: 'linear' as const },
   },
+  exit: {
+    scaleY: [0, 1],
+    opacity: 1,
+    transition: { duration: 0.2, times: [0, 1], ease: 'linear' as const },
+  },
+};
+
+const flashVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: [0, 0, 1, 0],
+    transition: { duration: ENTER_S, times: [0, 0.5, 0.55, 0.7], ease: 'linear' as const },
+  },
+  exit: { opacity: 0 },
+};
+
+const contentVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: [0, 0, 1],
+    transition: { duration: ENTER_S, times: [0, 0.55, 0.6], ease: 'linear' as const },
+  },
+  exit: {
+    opacity: 0,
+    transition: { duration: 0.12 },
+  },
+};
+
+const fadeVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
+  const reduced = useReducedMotion();
+
+  if (reduced) {
+    return (
+      <PageWrapper
+        variants={fadeVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        {children}
+      </PageWrapper>
+    );
+  }
+
   return (
     <>
-      <TransitionOverlay
+      <TeleportOverlay
+        aria-hidden="true"
         variants={overlayVariants}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <EnergyRing variants={ringVariants} />
-      </TransitionOverlay>
+        <Beam variants={beamVariants} />
+      </TeleportOverlay>
+      <Flash
+        aria-hidden="true"
+        variants={flashVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      />
       <PageWrapper
-        variants={pageTransition}
+        variants={contentVariants}
         initial="initial"
         animate="animate"
         exit="exit"
