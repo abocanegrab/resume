@@ -162,7 +162,7 @@ const FooterBottom = styled.div`
 `;
 
 const SecretCabinLink = styled(Link)`
-  font-size: 10px;
+  font-size: 12px;
   color: ${theme.colors.neutral.lightGray};
   font-family: ${theme.typography.fonts.pixel};
   text-decoration: none;

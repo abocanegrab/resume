@@ -13,7 +13,7 @@ const SwitcherButton = styled(motion.button)`
   border-radius: ${theme.borderRadius.sm};
   cursor: pointer;
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   color: ${theme.colors.neutral.silver};
   transition: all ${theme.transitions.fast};

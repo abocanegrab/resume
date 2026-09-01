@@ -126,7 +126,7 @@ const StatCard = styled(motion.div)`
 
 const StatLabel = styled.div`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 8px;
+  font-size: 12px;
   color: ${theme.colors.neutral.silver};
   text-transform: uppercase;
   letter-spacing: 0.1em;

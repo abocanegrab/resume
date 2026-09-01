@@ -101,7 +101,7 @@ const FeaturedBadge = styled.div`
   z-index: 2;
 
   svg {
-    font-size: 10px;
+    font-size: 12px;
   }
 `;
 

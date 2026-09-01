@@ -70,7 +70,7 @@ const Cell = styled.button<{ active: boolean }>`
   @media (max-width: ${theme.breakpoints.mobile}) {
     width: 60px;
     height: 60px;
-    font-size: 10px;
+    font-size: 12px;
   }
 `;
 
@@ -114,7 +114,7 @@ const DeniedText = styled.p<{ visible: boolean }>`
 
 const HintText = styled.p`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 10px;
+  font-size: 12px;
   color: ${theme.colors.neutral.lightGray};
   opacity: 0.4;
   margin-top: ${theme.spacing['2xl']};

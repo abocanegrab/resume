@@ -28,8 +28,8 @@ export const theme = {
       black: '#0A0A0F',
       darkGray: '#1A1A2E',
       gray: '#2D2D44',
-      lightGray: '#4A4A6A',
-      silver: '#8A8AA0',
+      lightGray: '#7F86AD',
+      silver: '#A5A9C4',
       white: '#E8E8F0',
     },
     // Backgrounds

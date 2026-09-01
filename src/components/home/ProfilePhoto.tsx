@@ -377,7 +377,7 @@ export const ProfilePhoto: React.FC<ProfilePhotoProps> = ({
 
       <HintText
         initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 0 : 0.5 }}
+        animate={{ opacity: isHovered ? 0 : 0.85 }}
         transition={{ delay: 2 }}
       >
         {t('hero.hintPhoto')}

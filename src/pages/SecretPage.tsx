@@ -30,7 +30,7 @@ const BackLink = styled(Link)`
   top: ${theme.spacing.lg};
   left: ${theme.spacing.lg};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 10px;
+  font-size: 12px;
   color: ${theme.colors.neutral.silver};
   text-decoration: none;
   z-index: 200;

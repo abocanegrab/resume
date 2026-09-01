@@ -97,6 +97,7 @@ const StyledButton = styled(motion.button)<{
   font-weight: ${theme.typography.weights.semibold};
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  white-space: nowrap;
   border-radius: ${theme.borderRadius.md};
   cursor: pointer;
   transition: all ${theme.transitions.fast};

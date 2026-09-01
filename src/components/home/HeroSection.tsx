@@ -119,7 +119,7 @@ const FrameHeader = styled.div`
 
 const DataLabel = styled.span`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 10px;
+  font-size: 12px;
   color: ${theme.colors.accent.green};
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -191,7 +191,7 @@ const RoleContainer = styled.div`
 
 const RoleLabel = styled.span`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 10px;
+  font-size: 12px;
   color: ${theme.colors.neutral.silver};
   text-transform: uppercase;
 `;
@@ -290,7 +290,7 @@ const CharacterLabel = styled.div`
   border: 1px solid ${theme.colors.primary.main};
   border-radius: ${theme.borderRadius.sm};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 8px;
+  font-size: 12px;
   color: ${theme.colors.primary.main};
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -305,7 +305,7 @@ const StatusIndicator = styled(motion.div)`
   align-items: center;
   gap: 4px;
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 8px;
+  font-size: 12px;
   color: ${theme.colors.accent.green};
 `;
 
