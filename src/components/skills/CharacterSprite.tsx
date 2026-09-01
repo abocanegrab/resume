@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -8,14 +8,15 @@ interface CharacterSpriteProps {
   armorColor?: string;
   isCharging?: boolean;
   skillName?: string;
+  showLabels?: boolean;
 }
 
-const SpriteContainer = styled(motion.div)`
+const SpriteContainer = styled(motion.div)<{ padded: boolean }>`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: ${theme.spacing.xl};
+  padding: ${props => (props.padded ? theme.spacing.xl : 0)};
 `;
 
 const SpriteWrapper = styled(motion.div)<{ glowColor: string }>`
@@ -290,6 +291,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   armorColor = theme.colors.primary.main,
   isCharging = false,
   skillName,
+  showLabels = true,
 }) => {
   const [svgContent, setSvgContent] = useState<string>('');
   const { t } = useTranslation('skills');
@@ -304,7 +306,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
 
   if (!svgContent) {
     return (
-      <SpriteContainer>
+      <SpriteContainer padded={showLabels}>
         <SpriteWrapper glowColor={armorColor}>
           <div style={{ width: 180, height: 220 }} />
         </SpriteWrapper>
@@ -313,7 +315,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   }
 
   return (
-    <SpriteContainer>
+    <SpriteContainer padded={showLabels}>
       <SpriteWrapper glowColor={armorColor}>
         <AnimatedSprite
           svgContent={svgContent}
@@ -322,21 +324,25 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
         />
       </SpriteWrapper>
 
-      <SkillNameDisplay
-        textColor={armorColor}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{
-          opacity: skillName ? 1 : 0.5,
-          y: 0,
-        }}
-        transition={{ duration: 0.2 }}
-      >
-        {skillName || t('sprite.ready')}
-      </SkillNameDisplay>
+      {showLabels && (
+        <>
+          <SkillNameDisplay
+            textColor={armorColor}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{
+              opacity: skillName ? 1 : 0.5,
+              y: 0,
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            {skillName || t('sprite.ready')}
+          </SkillNameDisplay>
 
-      <StatusText>
-        {isCharging ? t('sprite.powerUp') : t('sprite.standby')}
-      </StatusText>
+          <StatusText>
+            {isCharging ? t('sprite.powerUp') : t('sprite.standby')}
+          </StatusText>
+        </>
+      )}
     </SpriteContainer>
   );
 };
