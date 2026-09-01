@@ -1,13 +1,13 @@
 {
-  "title": "Transmitir Senal",
-  "subtitle": "Abre un canal de comunicacion para tu proxima mision",
+  "title": "Transmitir Señal",
+  "subtitle": "Abre un canal de comunicación para tu próxima misión",
   "info": {
     "location": {
       "label": "Base de Operaciones",
-      "value": "Peru (Operaciones Remotas)"
+      "value": "Perú (Operaciones Remotas)"
     },
     "email": {
-      "label": "Canal de Comunicacion",
+      "label": "Canal de Comunicación",
       "value": "abocanegrab@gmail.com"
     },
     "responseTime": {
@@ -15,8 +15,8 @@
       "value": "Dentro de 24 horas"
     }
   },
-  "ctaText": "Listo para iniciar una nueva mision juntos? Envia una transmision directa a mi canal de comunicacion y respondere dentro de 24 horas.",
-  "ctaButton": "Enviar Transmision",
+  "ctaText": "¿Listo para iniciar una nueva misión juntos? Envía una transmisión directa a mi canal de comunicación y responderé dentro de 24 horas.",
+  "ctaButton": "Enviar Transmisión",
   "availability": "Disponible para nuevas misiones",
   "social": {
     "title": "O <1>conecta</1> conmigo"
