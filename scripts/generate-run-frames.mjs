@@ -33,32 +33,33 @@ const PALETTE = {
   B: '#0f71de',
 };
 
-// Shared profile head + torso (rows 0-29). Face on the right: forehead, eye
-// looking forward, nose bump, smile, beard; the long hair mass flows back.
+// Shared profile head (rows 0-20). Likeness cues from the frontal sprite:
+// large face, thick eyebrow, big white grin between mustache and beard, and
+// the long hair falling FLAT down the back (not a ball).
 const HEAD = [
   //0         1         2         3
   //0123456789012345678901234567890123 4
-  '..........KKKKKKKKK...............', // 0
-  '........KKKKKKKKKKKKK.............', // 1
-  '.......KKKKKKKKKKKKKKKK...........', // 2
-  '......KKKKKKKKKKKKKKKKKK..........', // 3
-  '.....KKKKKKKKKKKKKKKKKKKK.........', // 4
-  '....KKKKKKKKKKKKKSSSSSSKK.........', // 5
-  '....KKKKKKKKKKKKSSSSSSSSK.........', // 6
-  '...KKKKKKKKKKKKSSSSSSSSSK.........', // 7
-  '...KKKKKKKKKKKKSSSSSSSSSSK........', // 8
-  '...KKKKKKKKKKKSSSSSSSSSSSK........', // 9
-  '..KKKKKKKKKKKKSSSWWKKSSSSK........', // 10 eye
-  '..KKKKKKKKKKKKSSSWWKKSSSSK........', // 11
-  '..KKKKKKKKKKKKSSSSSSSSSSSSK.......', // 12 nose
-  '..KKKKKKKKKKKKKSSSSSSSSSSSK.......', // 13
-  '..KKKKKKKKKKKKKSSSSSSSSSSK........', // 14
-  '..KKKKKKKKKKKKKKSSKWWKKKSK........', // 15 smile
-  '..KKKKKKKKKKKKKKSSKKKKKKKK........', // 16
-  '...KKKKKKKKKKKKKKKKKKKKKK.........', // 17 beard/jaw
-  '...KKKKKKKKKKKKKKKKKKKK...........', // 18
-  '....KKKKKKKKKKKKKKKKK.............', // 19
-  '.....KKKKKKKKKKKKKK...............', // 20 hair tail / neck
+  '.........KKKKKKKKKK...............', // 0
+  '.......KKKKKKKKKKKKKK.............', // 1
+  '......KKKKKKKKKKKKKKKK............', // 2
+  '.....KKKKKKKKKKKKKKKKKK...........', // 3
+  '....KKKKKKKKKKKKKKKKKKKK..........', // 4
+  '....KKKKKKKKKSSSSSSSSSKK..........', // 5 forehead
+  '...KKKKKKKKKSSSSSSSSSSSSK.........', // 6
+  '...KKKKKKKKKSSSSSSSSSSSSSK........', // 7
+  '...KKKKKKKKSSSSSSSSSSSSSSK........', // 8
+  '..KKKKKKKKKSSSSSSSSSSSSSSK........', // 9 forehead
+  '..KKKKKKKKKSSSSSSSKKKKKSSK........', // 10 eyebrow
+  '..KKKKKKKKKSSSSSSSSSSSSSSSK.......', // 11 gap
+  '..KKKKKKKKKSSSSSSSWWKKSSSSSK......', // 12 eye, pupil forward
+  '..KKKKKKKKKSSSSSSSWWKKSSSSSK......', // 13 eye + nose edge
+  '..KKKKKKKKKSSSSSSSSSSSSSSSK.......', // 14 cheek
+  '..KKKKKKKKKSSSSKKKKKKKKKSK........', // 15 mustache
+  '..KKKKKKKKKSSKKKWWWWKKKKK.........', // 16 grin
+  '..KKKKKKKKKKKKKKWWWKKKKK..........', // 17 grin lower
+  '...KKKKKKKKKKKKKKKKKKKK...........', // 18 beard
+  '...KKKKKKKKKKKKKKKKKK.............', // 19 jaw
+  '....KKKKKKKKKKKKKK................', // 20
 ];
 
 // Torso leaning forward (shoulders ahead of hips), long hair tail flowing
@@ -66,26 +67,38 @@ const HEAD = [
 // A = front fist pumped up/forward, back fist trailing behind.
 // B = front fist trailing low (mid-swing).
 const TORSO_A = [
-  '....KKKKKCCCCCCCKK................', // 21
-  '...KKKKKCCCCCCCCCCK...............', // 22
-  '...KKKKCCCCCCCCCCCKBKK............', // 23 front arm reaching out
-  '....KKKCCCCCCCCCCCKKKKKK..........', // 24
-  '.....KKBCCCCCCCCCCKKKKKK..........', // 25 front fist x19-23
-  '.KKKBBKBBCCCCCCCCCKKKKKK..........', // 26 back fist x1-3 + sleeve bridge
+  '...KKKKKKKCCCCCCKK................', // 21 hair cascade x3-9
+  '...KKKKKKCCCCCCCCCK...............', // 22
+  '...KKKKKCCCCCCCCCCKBKK............', // 23 front arm reaching out
+  '....KKKKCCCCCCCCCCKKKKKK..........', // 24
+  '....KKKBCCCCCCCCCCKKKKKK..........', // 25 front fist x19-23
+  '.KKKKKKBBCCCCCCCCCKKKKKK..........', // 26 back fist + hair tips
   '.KKKK.KBBBCCCCCCCBK...............', // 27
   '.KKKK..KBBBBBBBBBBK...............', // 28
   '..KK...KBBBBBBBBBK................', // 29
 ];
 const TORSO_B = [
-  '....KKKKKCCCCCCCKK................', // 21
-  '...KKKKKCCCCCCCCCCK...............', // 22
-  '...KKKKCCCCCCCCCCCK...............', // 23
-  '....KKKCCCCCCCCCCCK...............', // 24
-  '.....KKBCCCCCCCCCCK...............', // 25
-  '......KBBCCCCCCCCCKBKK............', // 26 front arm angled down
-  '......KBBBCCCCCCCBKKKKK...........', // 27 front fist low x19-22
-  '.......KBBBBBBBBBBKKKKK...........', // 28
-  '.......KBBBBBBBBBKKKKK............', // 29
+  '...KKKKKKKCCCCCCKK................', // 21 hair cascade x3-9
+  '...KKKKKKCCCCCCCCCK...............', // 22
+  '...KKKKKCCCCCCCCCCK...............', // 23
+  '....KKKKCCCCCCCCCCK...............', // 24
+  '....KKKBCCCCCCCCCCK...............', // 25
+  '.KKKKKKBBCCCCCCCCCKBKK............', // 26 front arm angled down + hair tips
+  '.KKKK.KBBBCCCCCCCBKKKKK...........', // 27 front fist low x19-22
+  '.KKKK..KBBBBBBBBBBKKKKK...........', // 28
+  '..KK...KBBBBBBBBBKKKKK............', // 29
+];
+// Neutral arms for the airborne pass frame (mid-swing, no extended fist)
+const TORSO_MID = [
+  '...KKKKKKKCCCCCCKK................', // 21
+  '...KKKKKKCCCCCCCCCK...............', // 22
+  '...KKKKKCCCCCCCCCCK...............', // 23
+  '....KKKKCCCCCCCCCCK...............', // 24
+  '....KKKBCCCCCCCCCCKK..............', // 25
+  '.KKKKKKBBCCCCCCCCCKKK.............', // 26
+  '.KKKK.KBBBCCCCCCCBKKK.............', // 27
+  '.KKKK..KBBBBBBBBBBKK..............', // 28
+  '..KK...KBBBBBBBBBK................', // 29
 ];
 
 // Legs, profile stride. Ground line is rows 41-42. Boots get the cyan trim.
@@ -119,21 +132,6 @@ const LEGS_PASS = [
   '...........KKKKKKKKKK.............', // 41
   '...........KKKKKKKKKK.............', // 42
 ];
-const LEGS_STRIDE_2 = [
-  '......KBBBBBBBBBK.................', // 30
-  '.....KBBBBBKBBBBK.................', // 31
-  '....KBBBBBK.KBBBBK................', // 32
-  '....KBBBBK...KBBBBK...............', // 33
-  '...KBBBBK.....KBBBK...............', // 34
-  '...KBBBK.......KBBBK..............', // 35
-  '..KBBBBK.......KBBBBK.............', // 36
-  '..KBBBK.........KBBBK.............', // 37
-  '.KBBBBK.........KBBBBKK...........', // 38
-  '.KCBBBK.........KCBBBBBK..........', // 39
-  '.KKBBBK.........KBBBBBBBK.........', // 40
-  '..KKKK..........KKKKKKKKKK........', // 41
-  '................KKKKKKKKKKK.......', // 42
-];
 
 function frameToPixels(rows, name) {
   if (rows.length !== GRID_H) {
@@ -162,6 +160,9 @@ function emit(name, rows, globalDy = 0) {
   console.log(`wrote ${name} (${pixels.length} px)`);
 }
 
+// Both strides share the SAME legs (left/right are indistinguishable in
+// profile); only the arms alternate. This keeps the gait symmetric — using
+// two different leg poses for the strides makes the cycle look like limping.
 emit('character-run-1.svg', [...HEAD, ...TORSO_A, ...LEGS_STRIDE_1]);
-emit('character-run-2.svg', [...HEAD, ...TORSO_B, ...LEGS_PASS], -1);
-emit('character-run-3.svg', [...HEAD, ...TORSO_B, ...LEGS_STRIDE_2]);
+emit('character-run-2.svg', [...HEAD, ...TORSO_MID, ...LEGS_PASS], -1);
+emit('character-run-3.svg', [...HEAD, ...TORSO_B, ...LEGS_STRIDE_1]);
