@@ -116,7 +116,6 @@ const HintText = styled.p`
   font-family: ${theme.typography.fonts.pixel};
   font-size: 12px;
   color: ${theme.colors.neutral.lightGray};
-  opacity: 0.4;
   margin-top: ${theme.spacing['2xl']};
   text-align: center;
   max-width: 300px;
