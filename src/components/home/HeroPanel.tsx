@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { css, keyframes } from '@emotion/react';
@@ -6,9 +6,14 @@ import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { pixelFrame, pixelFrameShadow, pixelOutline, segmentCell } from '../../styles/pixel';
+import { visuallyHidden } from '../../styles/a11y';
+import { skills } from '../../data/skills';
 import { PixelMorphPhoto } from './PixelMorphPhoto';
 
 const BAR_CELLS = 16;
+
+// Four highest-level skills, shown as the "equipped" loadout
+const TOP_SKILLS = [...skills].sort((a, b) => b.level - a.level).slice(0, 4);
 
 const cursorBlink = keyframes`
   0%, 49% { opacity: 1; }
@@ -23,24 +28,44 @@ const Panel = styled.div`
   padding: ${theme.spacing.lg};
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.md};
+  justify-content: space-between;
+  gap: 12px;
   min-width: 0;
+  container-type: inline-size;
 
   @media (max-width: ${theme.breakpoints.mobile}) {
     padding: ${theme.spacing.md};
   }
 `;
 
+// Narrow panel (two-column grid near 1025px, small phones): portrait above the name
 const Header = styled.div`
   display: flex;
   align-items: flex-start;
   gap: ${theme.spacing.md};
+
+  @container (max-width: 400px) {
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  }
 `;
 
-// Leaves room for the portrait's 2px outline
+// Leaves room for the portrait's 2px outline and sizes it (beats its own media queries)
 const PortraitCell = styled.div`
   flex-shrink: 0;
   padding: 2px;
+
+  & > div {
+    width: 128px;
+    height: 128px;
+  }
+
+  @container (max-width: 400px) {
+    & > div {
+      width: 96px;
+      height: 96px;
+    }
+  }
 `;
 
 const Identity = styled.div`
@@ -57,7 +82,7 @@ const SpeakerName = styled.h1`
   color: ${theme.colors.neutral.white};
   margin: 0 0 ${theme.spacing.xs};
   text-shadow: 2px 2px 0 ${theme.colors.primary.deep};
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 
   @media (max-width: ${theme.breakpoints.mobile}) {
     font-size: ${theme.typography.sizes.lg};
@@ -81,6 +106,10 @@ const RoleText = styled.span`
   line-height: ${theme.typography.lineHeights.snug};
   color: ${theme.colors.primary.main};
   min-height: calc(2 * 1.25em);
+`;
+
+const SrOnly = styled.span`
+  ${visuallyHidden}
 `;
 
 const TypeCursor = styled.span`
@@ -153,12 +182,81 @@ const StatBar: React.FC<{ label: string; filled: number; tone: string }> = ({
   </StatRow>
 );
 
+// Loadout row: the whole row links to the skills page
+const Equipped = styled(Link)`
+  display: flex;
+  align-items: flex-start;
+  gap: ${theme.spacing.md};
+  padding: 6px ${theme.spacing.sm};
+  margin: 0 2px;
+  text-decoration: none;
+
+  &:hover,
+  &:focus-visible {
+    background: ${theme.colors.background.secondary};
+    box-shadow: ${pixelOutline(theme.colors.primary.main)};
+  }
+
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+
+  @container (max-width: 400px) {
+    flex-direction: column;
+    gap: ${theme.spacing.sm};
+  }
+`;
+
+const EquippedLabel = styled.span`
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: ${theme.colors.accent.gold};
+  padding-top: 2px;
+  white-space: nowrap;
+
+  &::after {
+    content: ' ▶';
+    content: ' ▶' / '';
+  }
+`;
+
+const Tags = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${theme.spacing.sm} 12px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
+`;
+
+const Tag = styled.li`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: ${theme.colors.neutral.white};
+  background: ${theme.colors.neutral.black};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
+
+  svg {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: ${theme.colors.primary.main};
+  }
+`;
+
 const Menu = styled.nav`
-  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.sm};
-  padding-top: ${theme.spacing.md};
+  gap: ${theme.spacing.xs};
+  padding-top: 12px;
   border-top: 2px solid ${theme.colors.secondary.medium};
 `;
 
@@ -173,7 +271,7 @@ const optionStyles = css`
   letter-spacing: 0.05em;
   color: ${theme.colors.neutral.white};
   text-decoration: none;
-  padding: 8px 12px 8px 36px;
+  padding: 6px 12px 6px 36px;
   margin: 0 2px;
 
   &::before {
@@ -225,15 +323,15 @@ const OptionAnchor = styled.a`
   ${optionStyles}
 `;
 
-export const HeroPanel: React.FC = () => {
+// Rotating class typewriter; keyed by language so it restarts on a language change
+const RoleTicker: React.FC = () => {
   const [currentRole, setCurrentRole] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const reduced = useReducedMotion();
   const { t } = useTranslation('home');
-  const { t: tc } = useTranslation('common');
 
-  const roles = t('hero.roles', { returnObjects: true }) as string[];
+  const roles = useMemo(() => t('hero.roles', { returnObjects: true }) as string[], [t]);
 
   useEffect(() => {
     const targetText = roles[currentRole];
@@ -250,27 +348,42 @@ export const HeroPanel: React.FC = () => {
       return () => clearTimeout(timeout);
     }
 
+    // Fully typed: hold, then start deleting
+    if (!isDeleting && displayedText === targetText) {
+      const hold = setTimeout(() => setIsDeleting(true), 2000);
+      return () => clearTimeout(hold);
+    }
+
     const typeSpeed = isDeleting ? 50 : 100;
 
     const timeout = setTimeout(() => {
       if (!isDeleting) {
-        if (displayedText.length < targetText.length) {
-          setDisplayedText(targetText.slice(0, displayedText.length + 1));
-        } else {
-          setTimeout(() => setIsDeleting(true), 2000);
-        }
+        setDisplayedText(targetText.slice(0, displayedText.length + 1));
+      } else if (displayedText.length > 0) {
+        setDisplayedText(displayedText.slice(0, -1));
       } else {
-        if (displayedText.length > 0) {
-          setDisplayedText(displayedText.slice(0, -1));
-        } else {
-          setIsDeleting(false);
-          setCurrentRole((prev) => (prev + 1) % roles.length);
-        }
+        setIsDeleting(false);
+        setCurrentRole((prev) => (prev + 1) % roles.length);
       }
     }, typeSpeed);
 
     return () => clearTimeout(timeout);
   }, [displayedText, isDeleting, currentRole, roles, reduced]);
+
+  return (
+    <RoleText>
+      <SrOnly>{roles[currentRole]}</SrOnly>
+      <span aria-hidden="true">
+        {displayedText}
+        <TypeCursor />
+      </span>
+    </RoleText>
+  );
+};
+
+export const HeroPanel: React.FC = () => {
+  const { t, i18n } = useTranslation('home');
+  const { t: tc } = useTranslation('common');
 
   return (
     <Panel>
@@ -280,7 +393,6 @@ export const HeroPanel: React.FC = () => {
             photoSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
             pixelSrc={`${import.meta.env.BASE_URL}images/profile/pixel-portrait.svg`}
             alt={t('hero.photoAlt')}
-            size={128}
             showHint={false}
           />
         </PortraitCell>
@@ -288,19 +400,26 @@ export const HeroPanel: React.FC = () => {
         <Identity>
           <SpeakerName>{t('hero.name')}</SpeakerName>
           <RoleLabel>{t('hero.classLabel')}</RoleLabel>
-          <RoleText aria-label={roles[currentRole]}>
-            <span aria-hidden="true">
-              {displayedText}
-              <TypeCursor />
-            </span>
-          </RoleText>
+          <RoleTicker key={i18n.resolvedLanguage} />
         </Identity>
       </Header>
 
-      <Stats>
+      <Stats aria-hidden="true">
         <StatBar label={t('hero.hud.energy')} filled={16} tone={theme.colors.primary.main} />
         <StatBar label={t('hero.hud.exp')} filled={14} tone={theme.colors.accent.green} />
       </Stats>
+
+      <Equipped to="/skills">
+        <EquippedLabel>{t('hero.equipped')}</EquippedLabel>
+        <Tags>
+          {TOP_SKILLS.map(({ name, icon: Icon }) => (
+            <Tag key={name}>
+              <Icon aria-hidden="true" />
+              {name}
+            </Tag>
+          ))}
+        </Tags>
+      </Equipped>
 
       <Menu aria-label={t('hero.playerData')}>
         <OptionLink to="/projects">{tc('buttons.viewProjects')}</OptionLink>

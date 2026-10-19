@@ -52,7 +52,17 @@ const HeroGrid = styled.div`
     'dialog dialog';
   gap: ${theme.spacing.lg};
 
+  /* Narrower desktops: the panel gets tall, so it spans both rows and the
+     dialog sits under the scene instead of leaving a gap there */
+  @media (max-width: 1199px) {
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'scene panel'
+      'dialog panel';
+  }
+
   @media (max-width: ${theme.breakpoints.laptop}) {
+    grid-template-rows: none;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       'scene'

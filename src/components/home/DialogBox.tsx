@@ -5,6 +5,7 @@ import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
+import { visuallyHidden } from '../../styles/a11y';
 
 const advanceBlink = keyframes`
   0%, 49% { opacity: 1; }
@@ -14,6 +15,7 @@ const advanceBlink = keyframes`
 // RPG dialog window: speaker tag on the left, typed line on the right
 const Box = styled.section`
   grid-area: dialog;
+  align-self: start;
   ${pixelFrame('sunset')}
   box-shadow: ${pixelFrameShadow(theme.colors.accent.gold)}, 6px 6px 0 0 ${theme.colors.neutral.black};
   padding: ${theme.spacing.md} ${theme.spacing.lg};
@@ -48,9 +50,13 @@ const Description = styled.p`
   display: grid;
 
   /* Typed text sits over an invisible full copy, so the box never grows while typing */
-  & > span {
+  & > span[aria-hidden] {
     grid-area: 1 / 1;
   }
+`;
+
+const SrOnly = styled.span`
+  ${visuallyHidden}
 `;
 
 const Ghost = styled.span`
@@ -84,7 +90,8 @@ const Typewriter: React.FC<{ text: string; skip: boolean }> = ({ text, skip }) =
   const done = shown.length >= text.length;
 
   return (
-    <Description aria-label={text}>
+    <Description>
+      <SrOnly>{text}</SrOnly>
       <Ghost aria-hidden="true">
         {text}
         <Advance visible={false}>▼</Advance>

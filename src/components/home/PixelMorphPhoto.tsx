@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { dither, pixelFrameShadow } from '../../styles/pixel';
@@ -23,7 +23,7 @@ const REVERSE_STEP_MS = 60;
 const FLASH_MS = 80;
 const CANVAS_SIZE = 320;
 
-const PhotoContainer = styled(motion.div)`
+const PhotoContainer = styled.div`
   position: relative;
   width: 320px;
   height: 320px;

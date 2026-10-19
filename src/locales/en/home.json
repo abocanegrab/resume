@@ -1,7 +1,6 @@
 {
   "hero": {
     "playerData": "Hunter Data",
-    "ready": "READY",
     "name": "Aarón Bocanegra",
     "classLabel": "Class:",
     "roles": ["Senior Combat Engineer", "Fullstack Maverick", "Systems Architect", "Tech Commander"],
@@ -10,7 +9,7 @@
     "player": "PLAYER 1",
     "stage": "STAGE: BASE",
     "sceneAlt": "Hero standing on a rooftop, looking at a sunrise over a futuristic city",
-    "characterLabel": "[ Maverick Hunter ]",
+    "equipped": "EQUIPPED",
     "hintPhoto": "[ HOVER: 8-BIT MODE ]",
     "photoAlt": "Photo of Aarón Bocanegra; on hover it turns into his 8-bit character",
     "hud": {
