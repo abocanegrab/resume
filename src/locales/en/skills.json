@@ -1,6 +1,7 @@
 {
   "title": "Equipped Powers",
   "subtitle": "Weapon systems and battle tools in the arsenal",
+  "filterLabel": "Filter powers by category",
   "allCategory": "All",
   "categories": {
     "backend": "Backend",

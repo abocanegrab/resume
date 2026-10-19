@@ -20,46 +20,40 @@ const SpriteContainer = styled(motion.div)<{ padded: boolean }>`
   padding: ${props => (props.padded ? theme.spacing.xl : 0)};
 `;
 
-const SpriteWrapper = styled(motion.div)<{ glowColor: string }>`
+const SpriteWrapper = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, ${props => props.glowColor}25 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: -1;
-    transition: all 0.3s ease;
-  }
 `;
 
-const SkillNameDisplay = styled(motion.div)<{ textColor: string }>`
+// Pixel labels: white text with a hard 2px shadow in the current armor color
+const SkillNameDisplay = styled('div', { shouldForwardProp: prop => prop !== 'shadowColor' && prop !== 'idle' })<{
+  shadowColor: string;
+  idle: boolean;
+}>`
   margin-top: ${theme.spacing.lg};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: ${theme.typography.sizes.xs};
-  color: ${props => props.textColor};
+  font-size: 16px;
+  line-height: 1.4;
+  color: ${props => (props.idle ? theme.colors.neutral.silver : theme.colors.neutral.white)};
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-shadow: 0 0 10px ${props => props.textColor}80;
-  min-height: 24px;
+  letter-spacing: 0.05em;
+  text-shadow: ${props => (props.idle ? 'none' : `2px 2px 0 ${props.shadowColor}`)};
+  min-height: 1.4em;
   text-align: center;
+  overflow-wrap: anywhere;
 `;
 
 const StatusText = styled.div`
-  font-family: ${theme.typography.fonts.mono};
-  font-size: ${theme.typography.sizes.xs};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.4;
   color: ${theme.colors.neutral.silver};
   margin-top: ${theme.spacing.sm};
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  text-align: center;
+  text-wrap: balance;
 `;
 
 // Original armor colors in the SVG
@@ -378,7 +372,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
   if (!svgContent) {
     return (
       <SpriteContainer padded={showLabels}>
-        <SpriteWrapper glowColor={armorColor}>
+        <SpriteWrapper>
           <div style={{ width: 180, height: 220 }} />
         </SpriteWrapper>
       </SpriteContainer>
@@ -387,7 +381,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
 
   return (
     <SpriteContainer padded={showLabels}>
-      <SpriteWrapper glowColor={armorColor}>
+      <SpriteWrapper>
         <AnimatedSprite
           svgContent={svgContent}
           armorColor={armorColor}
@@ -399,15 +393,7 @@ export const CharacterSprite: React.FC<CharacterSpriteProps> = ({
 
       {showLabels && (
         <>
-          <SkillNameDisplay
-            textColor={armorColor}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{
-              opacity: skillName ? 1 : 0.5,
-              y: 0,
-            }}
-            transition={{ duration: 0.2 }}
-          >
+          <SkillNameDisplay shadowColor={armorColor} idle={!skillName}>
             {skillName || t('sprite.ready')}
           </SkillNameDisplay>
 

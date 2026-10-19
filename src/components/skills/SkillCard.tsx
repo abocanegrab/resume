@@ -1,57 +1,42 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { theme } from '../../styles/theme';
-import { skillIconBounce, scaleIn } from '../../styles/animations';
+import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { SegmentBar } from '../common/SegmentBar';
 import type { Skill } from '../../data/skills';
+
+const LEVEL_CELLS = 5;
+const CARD_STAGGER_MS = 60;
 
 interface SkillCardProps {
   skill: Skill;
   index?: number;
 }
 
-const CardContainer = styled(motion.div)`
-  background: ${theme.colors.background.card};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.lg};
+const HARD_SHADOW = `6px 6px 0 0 ${theme.colors.neutral.black}`;
+
+const CardContainer = styled.div`
+  ${pixelFrame('muted')}
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${HARD_SHADOW};
   padding: ${theme.spacing.lg};
   text-align: center;
-  transition: all ${theme.transitions.fast};
-  position: relative;
-  overflow: hidden;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: ${theme.colors.gradients.primary};
-    transform: scaleX(0);
-    transition: transform ${theme.transitions.normal};
-  }
-
+  /* Discrete hover: the frame switches to the armor blue */
   &:hover {
-    border-color: ${theme.colors.primary.main};
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(92, 189, 245, 0.2);
-
-    &::before {
-      transform: scaleX(1);
-    }
+    box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${HARD_SHADOW};
   }
 `;
 
-const IconWrapper = styled(motion.div)<{ iconColor: string }>`
+const IconWrapper = styled('div', { shouldForwardProp: prop => prop !== 'iconColor' })<{
+  iconColor: string;
+}>`
   width: 60px;
   height: 60px;
   margin: 0 auto ${theme.spacing.md};
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(92, 189, 245, 0.1);
-  border-radius: ${theme.borderRadius.md};
-  border: 1px solid ${props => props.iconColor}40;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${props => pixelOutline(props.iconColor)};
 
   svg {
     font-size: 2rem;
@@ -67,58 +52,35 @@ const SkillName = styled.h4`
 `;
 
 const LevelIndicator = styled.div`
-  display: flex;
-  gap: 4px;
-  justify-content: center;
-  margin-top: ${theme.spacing.md};
-`;
-
-const LevelDot = styled.div<{ filled: boolean; color: string }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: ${props => props.filled ? props.color : theme.colors.neutral.darkGray};
-  border: 1px solid ${props => props.filled ? props.color : theme.colors.secondary.main};
-  box-shadow: ${props => props.filled ? `0 0 5px ${props.color}50` : 'none'};
+  width: 96px;
+  margin: ${theme.spacing.md} auto 0;
 `;
 
 const PercentageLabel = styled.span`
-  font-family: ${theme.typography.fonts.mono};
-  font-size: ${theme.typography.sizes.xs};
-  color: ${theme.colors.neutral.lightGray};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  color: ${theme.colors.neutral.silver};
   margin-top: ${theme.spacing.xs};
   display: block;
 `;
 
 export const SkillCard: React.FC<SkillCardProps> = ({ skill, index = 0 }) => {
   const IconComponent = skill.icon;
-  const levelDots = 5;
-  const filledDots = Math.round((skill.level / 100) * levelDots);
 
   return (
-    <CardContainer
-      variants={scaleIn}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.05 }}
-    >
-      <IconWrapper
-        iconColor={skill.color}
-        variants={skillIconBounce}
-        whileHover="hover"
-      >
-        <IconComponent />
+    <CardContainer>
+      <IconWrapper iconColor={skill.color}>
+        <IconComponent aria-hidden="true" />
       </IconWrapper>
       <SkillName>{skill.name}</SkillName>
       <LevelIndicator>
-        {Array.from({ length: levelDots }).map((_, i) => (
-          <LevelDot
-            key={i}
-            filled={i < filledDots}
-            color={skill.color}
-          />
-        ))}
+        <SegmentBar
+          cells={LEVEL_CELLS}
+          filled={(skill.level / 100) * LEVEL_CELLS}
+          tone={skill.color}
+          animateOnView
+          startDelayMs={index * CARD_STAGGER_MS}
+        />
       </LevelIndicator>
       <PercentageLabel>{skill.level}%</PercentageLabel>
     </CardContainer>

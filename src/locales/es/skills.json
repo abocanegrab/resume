@@ -1,6 +1,7 @@
 {
   "title": "Poderes Equipados",
   "subtitle": "Sistemas de armas y herramientas de batalla en el arsenal",
+  "filterLabel": "Filtrar poderes por categoría",
   "allCategory": "Todos",
   "categories": {
     "backend": "Backend",
