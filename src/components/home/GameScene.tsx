@@ -1,136 +1,36 @@
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
+import { useEffect, useRef } from 'react';
 import { theme } from '../../styles/theme';
-import { CharacterSprite } from '../skills/CharacterSprite';
+import heroCitySvg from '../../assets/hero-city.svg?raw';
 
-const FLOOR_HEIGHT = 56;
-
-// Deterministic PRNG so the skyline is stable across renders (no Math.random in render)
-function makeRand(seed: number) {
-  let s = seed;
-  return () => {
-    s = (s * 1103515245 + 12345) % 2147483648;
-    return s / 2147483648;
-  };
-}
-
-// Snap to a 4px grid for a chunky pixel silhouette
-const snap = (v: number) => Math.round(v / 4) * 4;
-
-function buildSkyline(
-  seed: number,
-  width: number,
-  height: number,
-  color: string,
-  withLights: boolean
-): string {
-  const rand = makeRand(seed);
-  const rects: string[] = [];
-  let x = 0;
-  while (x < width) {
-    const w = snap(40 + rand() * 80);
-    const h = snap(height * (0.25 + rand() * 0.7));
-    rects.push(`<rect x="${x}" y="${height - h}" width="${w}" height="${h}" fill="${color}"/>`);
-    // Occasional antenna
-    if (rand() > 0.7) {
-      const ax = snap(x + w / 2);
-      rects.push(`<rect x="${ax}" y="${height - h - 20}" width="4" height="20" fill="${color}"/>`);
-    }
-    // Sparse lit windows
-    if (withLights) {
-      const windows = Math.floor(rand() * 4);
-      for (let i = 0; i < windows; i++) {
-        const wx = snap(x + 8 + rand() * (w - 16));
-        const wy = snap(height - h + 12 + rand() * (h - 24));
-        rects.push(`<rect x="${wx}" y="${wy}" width="4" height="4" fill="#00D4FF" opacity="0.35"/>`);
-      }
-    }
-    x += w + snap(8 + rand() * 40);
-  }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">${rects.join('')}</svg>`;
-  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
-}
-
-const FAR_SKYLINE = buildSkyline(20260901, 1200, 260, '#16283F', true);
-const NEAR_SKYLINE = buildSkyline(19930117, 1400, 180, '#0B1622', false);
+// Handoff asset is pixel-perfect; only the root sizing attributes are swapped so it
+// covers the container (character sits on the left, so anchor the crop there).
+const HERO_SVG = heroCitySvg.replace(
+  'width="1200" height="680"',
+  'preserveAspectRatio="xMinYMax slice" role="img" aria-label="Hero standing on a rooftop, looking at a sunrise over a futuristic city"'
+);
 
 const SceneWrapper = styled.div`
   position: relative;
   width: 100%;
-  height: clamp(420px, 62vh, 680px);
+  aspect-ratio: 240 / 136;
+  min-height: 340px;
+  max-height: 100svh;
   overflow: hidden;
-  background: ${theme.colors.gradients.heroBackground};
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    height: clamp(340px, 46vh, 480px);
-  }
+  background: #0a0d1f;
+  line-height: 0;
 `;
 
-const GridPattern = styled.div`
+const SceneArt = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(${theme.colors.secondary.main}20 1px, transparent 1px),
-    linear-gradient(90deg, ${theme.colors.secondary.main}20 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.3;
-`;
+  inset: 0;
 
-const SkylineLayer = styled.div<{ image: string; height: number; duration: number }>`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: ${FLOOR_HEIGHT - 4}px;
-  height: ${props => props.height}px;
-  background-image: ${props => props.image};
-  background-repeat: repeat-x;
-  background-position: 0 bottom;
-  animation: skylineScroll ${props => props.duration}s linear infinite;
-
-  @keyframes skylineScroll {
-    from { background-position-x: 0; }
-    to { background-position-x: -1200px; }
-  }
-`;
-
-const Floor = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: ${FLOOR_HEIGHT}px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 44px,
-      rgba(0, 0, 0, 0.35) 44px,
-      rgba(0, 0, 0, 0.35) 48px
-    ),
-    linear-gradient(180deg, ${theme.colors.secondary.medium} 0%, ${theme.colors.secondary.dark} 30%, #0A1420 100%);
-  border-top: 2px solid ${theme.colors.primary.dark};
-  box-shadow: 0 -4px 16px rgba(0, 212, 255, 0.15);
-  animation: floorScroll 0.4s linear infinite;
-
-  @keyframes floorScroll {
-    from { background-position-x: 0; }
-    to { background-position-x: -48px; }
-  }
-`;
-
-const SpriteAnchor = styled.div`
-  position: absolute;
-  bottom: ${FLOOR_HEIGHT - 6}px;
-  left: 60%;
-  transform: translateX(-50%);
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
-    transform-origin: bottom center;
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
   }
 `;
 
@@ -145,6 +45,11 @@ const Hud = styled.div`
   @media (max-width: ${theme.breakpoints.tablet}) {
     left: ${theme.spacing.md};
     top: calc(${theme.spacing['3xl']} + ${theme.spacing.md});
+  }
+
+  // On narrow screens the scene is short and the bars would cover the hero's head
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    display: none;
   }
 `;
 
@@ -232,11 +137,22 @@ const HudBar: React.FC<{ label: string; filled: number; total: number; tone: str
 export const GameScene: React.FC = () => {
   const { t } = useTranslation('home');
 
+  const artRef = useRef<HTMLDivElement>(null);
+
+  // Freeze the SMIL animations for users who prefer reduced motion
+  useEffect(() => {
+    const svg = artRef.current?.querySelector('svg');
+    if (!svg) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => (mq.matches ? svg.pauseAnimations() : svg.unpauseAnimations());
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
+
   return (
     <SceneWrapper>
-      <GridPattern aria-hidden="true" />
-      <SkylineLayer aria-hidden="true" image={FAR_SKYLINE} height={260} duration={45} />
-      <SkylineLayer aria-hidden="true" image={NEAR_SKYLINE} height={180} duration={16} />
+      <SceneArt ref={artRef} dangerouslySetInnerHTML={{ __html: HERO_SVG }} />
 
       <Hud aria-hidden="true">
         <HudBar label={t('hero.hud.energy')} filled={16} total={16} tone={theme.colors.primary.main} />
@@ -244,12 +160,6 @@ export const GameScene: React.FC = () => {
       </Hud>
 
       <StatusTag aria-hidden="true">{t('hero.online')}</StatusTag>
-
-      <SpriteAnchor>
-        <CharacterSprite showLabels={false} mode="run" />
-      </SpriteAnchor>
-
-      <Floor aria-hidden="true" />
     </SceneWrapper>
   );
 };
