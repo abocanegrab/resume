@@ -19,6 +19,16 @@
   "ctaButton": "Enviar Transmisión",
   "availability": "Disponible para nuevas misiones",
   "social": {
-    "title": "O <1>conecta</1> conmigo"
+    "title": "O <1>conecta</1> conmigo",
+    "links": {
+      "github": "Perfil de GitHub (se abre en una pestaña nueva)",
+      "linkedin": "Perfil de LinkedIn (se abre en una pestaña nueva)",
+      "email": "Enviar un correo",
+      "phone": "Llamar por teléfono"
+    }
+  },
+  "terminal": {
+    "label": "Terminal de transmisión",
+    "status": "Canal abierto"
   }
 }

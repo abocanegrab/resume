@@ -1,37 +1,75 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { fadeInUp } from '../../styles/animations';
+import { HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
 import { FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaHeart } from 'react-icons/fa';
 
-const BioContainer = styled(motion.div)`
+// 4-frame stepped ease: windows snap in instead of gliding
+const stepEase = (t: number) => Math.floor(t * 4) / 4;
+
+const windowEntry: Variants = {
+  initial: { opacity: 0, y: 12 },
+  animate: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.24, ease: stepEase, delay: i * 0.08 },
+  }),
+};
+
+const hardShadow = `${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black}`;
+
+const pixelLabel = `
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
+
+const BioContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${theme.spacing['2xl']};
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: ${theme.spacing.xl};
+  align-items: start;
+  padding: 0 ${HARD_SHADOW}px ${HARD_SHADOW}px 0;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 `;
 
-const BioContent = styled.div`
+// Main dossier window
+const BioContent = styled(motion.article)`
+  ${pixelFrame('blue')}
+  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${hardShadow};
+  margin: 2px;
+  padding: ${theme.spacing.xl};
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.lg} ${theme.spacing.md};
+  }
+
   h3 {
     font-family: ${theme.typography.fonts.heading};
     font-size: ${theme.typography.sizes['2xl']};
+    line-height: 1.2;
     color: ${theme.colors.neutral.white};
-    margin-bottom: ${theme.spacing.lg};
+    margin: 0 0 ${theme.spacing.xl};
     position: relative;
     display: inline-block;
 
+    /* Solid pixel bar instead of the old gradient underline */
     &::after {
       content: '';
       position: absolute;
-      bottom: -8px;
+      bottom: -12px;
       left: 0;
-      width: 50px;
-      height: 3px;
-      background: ${theme.colors.gradients.primary};
+      width: 48px;
+      height: 4px;
+      background: ${theme.colors.primary.main};
+      box-shadow: 8px 0 0 0 ${theme.colors.primary.main}, 56px 0 0 0 ${theme.colors.accent.gold};
     }
   }
 
@@ -39,44 +77,50 @@ const BioContent = styled.div`
     font-size: ${theme.typography.sizes.md};
     line-height: ${theme.typography.lineHeights.relaxed};
     color: ${theme.colors.neutral.silver};
-    margin-bottom: ${theme.spacing.md};
+    margin: 0 0 ${theme.spacing.md};
   }
 `;
 
-const BioInfo = styled.div`
+const BioInfo = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: ${theme.spacing.md};
+  gap: ${theme.spacing.lg};
+  margin: 0;
+  padding: 0;
+  list-style: none;
 `;
 
-const InfoItem = styled(motion.div)`
+const InfoItem = styled(motion.li)`
+  ${pixelFrame('muted')}
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${hardShadow};
+  margin: 2px;
   display: flex;
   align-items: center;
   gap: ${theme.spacing.md};
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  background: ${theme.colors.background.card};
-  border-radius: ${theme.borderRadius.md};
-  border: 1px solid ${theme.colors.secondary.main};
-  transition: all ${theme.transitions.fast};
+  padding: ${theme.spacing.md};
+  min-width: 0;
+`;
 
-  &:hover {
-    border-color: ${theme.colors.primary.main};
-    transform: translateX(5px);
-  }
-
-  svg {
-    color: ${theme.colors.primary.main};
-    font-size: ${theme.typography.sizes.xl};
-    flex-shrink: 0;
-  }
+const IconBox = styled.span`
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  background: ${theme.colors.neutral.black};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
+  color: ${theme.colors.primary.main};
+  font-size: 18px;
 `;
 
 const InfoContent = styled.div`
+  min-width: 0;
+
   .label {
-    font-size: ${theme.typography.sizes.xs};
+    ${pixelLabel}
     color: ${theme.colors.neutral.silver};
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
     margin-bottom: ${theme.spacing.xs};
   }
 
@@ -84,116 +128,78 @@ const InfoContent = styled.div`
     font-size: ${theme.typography.sizes.md};
     color: ${theme.colors.neutral.white};
     font-weight: ${theme.typography.weights.medium};
+    overflow-wrap: anywhere;
   }
 `;
 
-const InterestsList = styled.div`
+const InterestsList = styled.ul`
   display: flex;
   flex-wrap: wrap;
-  gap: ${theme.spacing.sm};
-  margin-top: ${theme.spacing.lg};
+  gap: 12px;
+  margin: ${theme.spacing.lg} 0 0;
+  padding: 2px;
+  list-style: none;
 `;
 
-const InterestTag = styled(motion.span)`
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: rgba(92, 189, 245, 0.1);
-  border: 1px solid ${theme.colors.primary.dark};
-  border-radius: ${theme.borderRadius.full};
-  font-size: ${theme.typography.sizes.sm};
+// Square pixel chip (light blue on near-black: ~9:1)
+const InterestTag = styled.li`
+  ${pixelLabel}
+  padding: 4px 8px;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.primary.dark)};
   color: ${theme.colors.primary.light};
-  transition: all ${theme.transitions.fast};
-
-  &:hover {
-    background: rgba(92, 189, 245, 0.2);
-    border-color: ${theme.colors.primary.main};
-  }
 `;
 
 export const BioCard: React.FC = () => {
   const { t } = useTranslation('about');
+  const reduced = useReducedMotion();
   const interests = t('interests', { returnObjects: true }) as string[];
 
+  const infoItems = [
+    { key: 'location', icon: FaMapMarkerAlt },
+    { key: 'email', icon: FaEnvelope },
+    { key: 'experience', icon: FaCalendarAlt },
+    { key: 'passion', icon: FaHeart },
+  ];
+
   return (
-    <BioContainer
-      variants={fadeInUp}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-    >
-      <BioContent>
+    <BioContainer>
+      <BioContent
+        custom={0}
+        variants={windowEntry}
+        initial={reduced ? false : 'initial'}
+        animate="animate"
+      >
         <h3>{t('bioTitle')}</h3>
         <p>{t('bio.p1')}</p>
         <p>{t('bio.p2')}</p>
         <p>{t('bio.p3')}</p>
 
         <InterestsList>
-          {interests.map((interest, index) => (
-            <InterestTag
-              key={interest}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.05 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              {interest}
-            </InterestTag>
+          {interests.map((interest) => (
+            <InterestTag key={interest}>{interest}</InterestTag>
           ))}
         </InterestsList>
       </BioContent>
 
       <BioInfo>
-        <InfoItem
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-        >
-          <FaMapMarkerAlt />
-          <InfoContent>
-            <div className="label">{t('info.location.label')}</div>
-            <div className="value">{t('info.location.value')}</div>
-          </InfoContent>
-        </InfoItem>
-
-        <InfoItem
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <FaEnvelope />
-          <InfoContent>
-            <div className="label">{t('info.email.label')}</div>
-            <div className="value">{t('info.email.value')}</div>
-          </InfoContent>
-        </InfoItem>
-
-        <InfoItem
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-        >
-          <FaCalendarAlt />
-          <InfoContent>
-            <div className="label">{t('info.experience.label')}</div>
-            <div className="value">{t('info.experience.value')}</div>
-          </InfoContent>
-        </InfoItem>
-
-        <InfoItem
-          initial={{ opacity: 0, x: 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-        >
-          <FaHeart />
-          <InfoContent>
-            <div className="label">{t('info.passion.label')}</div>
-            <div className="value">{t('info.passion.value')}</div>
-          </InfoContent>
-        </InfoItem>
+        {infoItems.map(({ key, icon: Icon }, i) => (
+          <InfoItem
+            key={key}
+            custom={i + 1}
+            variants={windowEntry}
+            initial={reduced ? false : 'initial'}
+            animate="animate"
+          >
+            <IconBox aria-hidden="true">
+              <Icon />
+            </IconBox>
+            <InfoContent>
+              <div className="label">{t(`info.${key}.label`)}</div>
+              <div className="value">{t(`info.${key}.value`)}</div>
+            </InfoContent>
+          </InfoItem>
+        ))}
       </BioInfo>
     </BioContainer>
   );

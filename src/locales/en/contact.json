@@ -19,6 +19,16 @@
   "ctaButton": "Send Transmission",
   "availability": "Available for new missions",
   "social": {
-    "title": "Or <1>connect</1> with me"
+    "title": "Or <1>connect</1> with me",
+    "links": {
+      "github": "GitHub profile (opens in a new tab)",
+      "linkedin": "LinkedIn profile (opens in a new tab)",
+      "email": "Send an email",
+      "phone": "Call by phone"
+    }
+  },
+  "terminal": {
+    "label": "Transmission terminal",
+    "status": "Channel open"
   }
 }

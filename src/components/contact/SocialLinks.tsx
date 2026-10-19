@@ -1,8 +1,7 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { staggerContainer, staggerItem } from '../../styles/animations';
+import { pixelOutline } from '../../styles/pixel';
 import {
   FaGithub,
   FaLinkedin,
@@ -10,81 +9,83 @@ import {
   FaPhone,
 } from 'react-icons/fa';
 
-const SocialContainer = styled(motion.div)`
+const SocialContainer = styled.div`
   text-align: center;
-  margin-top: ${theme.spacing['3xl']};
+  margin-top: ${theme.spacing['2xl']};
+  padding-top: ${theme.spacing.xl};
+  border-top: 2px solid ${theme.colors.secondary.medium};
 `;
 
-const SocialTitle = styled.h4`
-  font-family: ${theme.typography.fonts.heading};
-  font-size: ${theme.typography.sizes.lg};
+const SocialTitle = styled.h3`
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 1.2;
   color: ${theme.colors.neutral.white};
-  margin-bottom: ${theme.spacing.lg};
+  margin: 0 0 ${theme.spacing.lg};
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
 
   span {
     color: ${theme.colors.primary.main};
   }
 `;
 
-const SocialGrid = styled(motion.div)`
+const SocialGrid = styled.ul`
   display: flex;
   justify-content: center;
   gap: ${theme.spacing.md};
   flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 `;
 
-const SocialLink = styled(motion.a)<{ hoverColor: string }>`
-  width: 60px;
-  height: 60px;
+// Square pixel button; hover/focus swaps the outline color and lifts 4px (no easing)
+const SocialLink = styled.a`
+  width: 44px;
+  height: 44px;
+  margin: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${theme.colors.background.card};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.lg};
+  background: ${theme.colors.neutral.black};
+  border-radius: 0;
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   color: ${theme.colors.neutral.silver};
-  font-size: 1.5rem;
-  transition: all ${theme.transitions.fast};
+  font-size: 20px;
+  /* Overrides the global link color fade: state changes are discrete */
+  transition: none;
 
-  &:hover {
-    color: ${props => props.hoverColor};
-    border-color: ${props => props.hoverColor};
-    box-shadow: 0 0 20px ${props => props.hoverColor}40;
-    transform: translateY(-5px);
+  &:hover,
+  &:focus-visible {
+    color: ${theme.colors.primary.main};
+    box-shadow: ${pixelOutline(theme.colors.primary.main)}, 4px 4px 0 0 ${theme.colors.neutral.black};
+    transform: translateY(-4px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${theme.colors.primary.main};
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:focus-visible {
+      transform: none;
+    }
   }
 `;
 
 const socialLinks = [
-  {
-    name: 'GitHub',
-    icon: FaGithub,
-    url: 'https://github.com/abocanegra',
-    color: '#FFFFFF',
-  },
-  {
-    name: 'LinkedIn',
-    icon: FaLinkedin,
-    url: 'https://www.linkedin.com/in/aaronbocanegra/',
-    color: '#0A66C2',
-  },
-  {
-    name: 'Email',
-    icon: FaEnvelope,
-    url: 'mailto:abocanegrab@gmail.com',
-    color: theme.colors.primary.main,
-  },
-  {
-    name: 'Phone',
-    icon: FaPhone,
-    url: 'tel:+51915063391',
-    color: theme.colors.accent.green,
-  },
+  { id: 'github', icon: FaGithub, url: 'https://github.com/abocanegra', external: true },
+  { id: 'linkedin', icon: FaLinkedin, url: 'https://www.linkedin.com/in/aaronbocanegra/', external: true },
+  { id: 'email', icon: FaEnvelope, url: 'mailto:abocanegrab@gmail.com', external: false },
+  { id: 'phone', icon: FaPhone, url: 'tel:+51915063391', external: false },
 ];
 
 export const SocialLinks: React.FC = () => {
-  useTranslation('contact');
+  const { t } = useTranslation('contact');
 
   return (
     <SocialContainer>
@@ -93,28 +94,19 @@ export const SocialLinks: React.FC = () => {
           Or <span>connect</span> with me
         </Trans>
       </SocialTitle>
-      <SocialGrid
-        variants={staggerContainer}
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true }}
-      >
+      <SocialGrid>
         {socialLinks.map((social) => {
           const IconComponent = social.icon;
           return (
-            <SocialLink
-              key={social.name}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              hoverColor={social.color}
-              variants={staggerItem}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label={social.name}
-            >
-              <IconComponent />
-            </SocialLink>
+            <li key={social.id}>
+              <SocialLink
+                href={social.url}
+                {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                aria-label={t(`social.links.${social.id}`)}
+              >
+                <IconComponent aria-hidden="true" />
+              </SocialLink>
+            </li>
           );
         })}
       </SocialGrid>

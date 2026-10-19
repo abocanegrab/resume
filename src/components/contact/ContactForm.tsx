@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
+import { pixelOutline } from '../../styles/pixel';
 import { fadeInUp } from '../../styles/animations';
 import { Button } from '../common/Button';
 import { FaPaperPlane } from 'react-icons/fa';
@@ -18,66 +19,51 @@ const FormGroup = styled(motion.div)`
 
 const Label = styled.label`
   display: block;
-  font-family: ${theme.typography.fonts.body};
-  font-size: ${theme.typography.sizes.sm};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
   color: ${theme.colors.neutral.silver};
   margin-bottom: ${theme.spacing.sm};
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+`;
+
+// Square terminal field: black fill, 2px pixel outline, discrete focus swap
+const fieldStyles = `
+  width: 100%;
+  margin: 2px 0;
+  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  background: ${theme.colors.neutral.black};
+  border: none;
+  border-radius: 0;
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
+  color: ${theme.colors.neutral.white};
+  font-family: ${theme.typography.fonts.body};
+  font-size: ${theme.typography.sizes.md};
+
+  &::placeholder {
+    color: ${theme.colors.neutral.lightGray};
+  }
+
+  &:hover:not(:focus) {
+    box-shadow: ${pixelOutline(theme.colors.primary.dark)};
+  }
+
+  &:focus {
+    outline: 2px solid ${theme.colors.primary.main};
+    outline-offset: 4px;
+    box-shadow: ${pixelOutline(theme.colors.primary.main)};
+  }
 `;
 
 const Input = styled.input`
-  width: 100%;
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  background: ${theme.colors.background.card};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.md};
-  color: ${theme.colors.neutral.white};
-  font-family: ${theme.typography.fonts.body};
-  font-size: ${theme.typography.sizes.md};
-  transition: all ${theme.transitions.fast};
-
-  &::placeholder {
-    color: ${theme.colors.neutral.lightGray};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${theme.colors.primary.main};
-    box-shadow: 0 0 0 3px ${theme.colors.primary.glow};
-  }
-
-  &:hover:not(:focus) {
-    border-color: ${theme.colors.primary.dark};
-  }
+  ${fieldStyles}
 `;
 
 const TextArea = styled.textarea`
-  width: 100%;
+  ${fieldStyles}
   min-height: 150px;
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  background: ${theme.colors.background.card};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.md};
-  color: ${theme.colors.neutral.white};
-  font-family: ${theme.typography.fonts.body};
-  font-size: ${theme.typography.sizes.md};
   resize: vertical;
-  transition: all ${theme.transitions.fast};
-
-  &::placeholder {
-    color: ${theme.colors.neutral.lightGray};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${theme.colors.primary.main};
-    box-shadow: 0 0 0 3px ${theme.colors.primary.glow};
-  }
-
-  &:hover:not(:focus) {
-    border-color: ${theme.colors.primary.dark};
-  }
 `;
 
 const SubmitButton = styled(Button)`
@@ -85,21 +71,20 @@ const SubmitButton = styled(Button)`
   margin-top: ${theme.spacing.md};
 `;
 
-const StatusMessage = styled(motion.div)<{ type: 'success' | 'error' }>`
+const StatusMessage = styled(motion.div, {
+  shouldForwardProp: prop => prop !== 'type',
+})<{ type: 'success' | 'error' }>`
   padding: ${theme.spacing.md};
-  border-radius: ${theme.borderRadius.md};
   margin-top: ${theme.spacing.md};
   text-align: center;
   font-size: ${theme.typography.sizes.sm};
-  background: ${props => props.type === 'success'
-    ? `${theme.colors.accent.green}20`
-    : `${theme.colors.accent.red}20`};
+  background: ${theme.colors.neutral.black};
   color: ${props => props.type === 'success'
     ? theme.colors.accent.green
     : theme.colors.accent.red};
-  border: 1px solid ${props => props.type === 'success'
+  box-shadow: ${props => pixelOutline(props.type === 'success'
     ? theme.colors.accent.green
-    : theme.colors.accent.red};
+    : theme.colors.accent.red)};
 `;
 
 interface FormData {
