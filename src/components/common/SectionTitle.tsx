@@ -19,18 +19,20 @@ const Title = styled(motion.h2)`
   position: relative;
   display: inline-block;
   color: ${theme.colors.neutral.white};
-  margin-bottom: ${theme.spacing.sm};
+  margin-bottom: ${theme.spacing.md};
 
-  /* Underline decoration */
+  /* Underline decoration: three square pixel blocks */
   &::after {
     content: '';
     position: absolute;
-    bottom: -8px;
+    bottom: -12px;
     left: 0;
-    width: 60px;
-    height: 3px;
-    background: ${theme.colors.gradients.primary};
-    border-radius: ${theme.borderRadius.full};
+    width: 8px;
+    height: 8px;
+    background: ${theme.colors.primary.main};
+    box-shadow:
+      12px 0 0 ${theme.colors.accent.gold},
+      24px 0 0 ${theme.colors.accent.pink};
   }
 `;
 
@@ -43,11 +45,15 @@ const Subtitle = styled(motion.p)`
 `;
 
 const Decorator = styled.span`
-  color: ${theme.colors.primary.main};
+  color: ${theme.colors.accent.gold};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: 16px;
   margin-right: ${theme.spacing.sm};
-  vertical-align: middle;
+  vertical-align: 0.15em;
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: 12px;
+  }
 `;
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({
@@ -68,7 +74,7 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       viewport={{ once: true, margin: '-50px' }}
     >
       <Title variants={flicker ? readyFlicker : undefined}>
-        <Decorator aria-hidden="true">{'//'}</Decorator>
+        <Decorator aria-hidden="true">{'▶'}</Decorator>
         {title}
       </Title>
       {subtitle && (

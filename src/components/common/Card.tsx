@@ -1,7 +1,6 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { theme } from '../../styles/theme';
-import { cardHover } from '../../styles/animations';
+import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
 
 interface CardProps {
   children: React.ReactNode;
@@ -12,38 +11,12 @@ interface CardProps {
   onClick?: () => void;
 }
 
-const getVariantStyles = (variant: string) => {
-  switch (variant) {
-    case 'default':
-      return `
-        background: ${theme.colors.background.card};
-        border: 1px solid ${theme.colors.secondary.main};
-      `;
-    case 'glass':
-      return `
-        background: rgba(30, 58, 95, 0.3);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(92, 189, 245, 0.2);
-      `;
-    case 'bordered':
-      return `
-        background: ${theme.colors.background.secondary};
-        border: 2px solid ${theme.colors.primary.dark};
+// Hard pixel drop shadow appended after the frame lines (no filter: cards hold
+// animated Framer Motion children and a filter would force repaints).
+const hardShadow = `6px 6px 0 0 ${theme.colors.neutral.black}`;
 
-        &::before {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: 20%;
-          right: 20%;
-          height: 2px;
-          background: ${theme.colors.gradients.primary};
-        }
-      `;
-    default:
-      return '';
-  }
-};
+const frameColor = (variant: string) =>
+  variant === 'bordered' ? theme.colors.primary.main : theme.colors.secondary.medium;
 
 const getPaddingStyles = (padding: string) => {
   switch (padding) {
@@ -58,57 +31,44 @@ const getPaddingStyles = (padding: string) => {
   }
 };
 
-const StyledCard = styled(motion.div)<{
+const cardOnlyProps = new Set(['variant', 'padding', 'isClickable', 'hoverable']);
+
+const StyledCard = styled('div', {
+  shouldForwardProp: prop => !cardOnlyProps.has(prop),
+})<{
   variant: string;
   padding: string;
   isClickable: boolean;
+  hoverable: boolean;
 }>`
+  ${props => pixelFrame(props.variant === 'bordered' ? 'blue' : 'muted')}
   position: relative;
   padding: ${props => getPaddingStyles(props.padding)};
-  border-radius: ${theme.borderRadius.lg};
   overflow: hidden;
   cursor: ${props => props.isClickable ? 'pointer' : 'default'};
+  box-shadow: ${props => pixelFrameShadow(frameColor(props.variant))}, ${hardShadow};
 
-  ${props => getVariantStyles(props.variant)}
-
-  /* Corner accents */
+  /* Corner accent: small square pixel block */
   &::after {
     content: '';
     position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    border-right: 2px solid ${theme.colors.primary.main};
-    border-bottom: 2px solid ${theme.colors.primary.main};
-    opacity: 0.5;
-    transition: opacity ${theme.transitions.fast};
+    bottom: 6px;
+    right: 6px;
+    width: 4px;
+    height: 4px;
+    background: ${props => frameColor(props.variant)};
   }
 
-  &:hover::after {
-    opacity: 1;
-  }
+  ${props => props.hoverable ? `
+    &:hover {
+      box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${hardShadow};
+      transform: translate(-2px, -2px);
+    }
 
-  /* Energy line on top */
-  & > .card-energy-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      ${theme.colors.primary.main} 50%,
-      transparent 100%
-    );
-    opacity: 0;
-    transition: opacity ${theme.transitions.normal};
-  }
-
-  &:hover > .card-energy-line {
-    opacity: 1;
-  }
+    &:hover::after {
+      background: ${theme.colors.accent.gold};
+    }
+  ` : ''}
 `;
 
 const CardContent = styled.div`
@@ -129,13 +89,10 @@ export const Card: React.FC<CardProps> = ({
       variant={variant}
       padding={padding}
       isClickable={!!onClick}
+      hoverable={hoverable}
       className={className}
       onClick={onClick}
-      variants={hoverable ? cardHover : undefined}
-      initial="initial"
-      whileHover={hoverable ? "hover" : undefined}
     >
-      <div className="card-energy-line" />
       <CardContent>{children}</CardContent>
     </StyledCard>
   );

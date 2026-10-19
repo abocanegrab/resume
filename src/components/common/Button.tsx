@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { keyframes } from '@emotion/react';
 import { theme } from '../../styles/theme';
-import { buttonVariants } from '../../styles/animations';
+import { pixelOutline } from '../../styles/pixel';
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
@@ -11,80 +11,61 @@ interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
+  className?: string;
 }
+
+const cursorBlink = keyframes`
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+`;
 
 const getVariantStyles = (variant: string) => {
   switch (variant) {
     case 'primary':
       return `
-        background: ${theme.colors.gradients.primary};
-        color: ${theme.colors.neutral.black};
-        border: none;
-
-        &:hover:not(:disabled) {
-          background: ${theme.colors.primary.light};
-        }
+        background: ${theme.colors.primary.deep};
+        color: ${theme.colors.neutral.white};
+        box-shadow: ${pixelOutline(theme.colors.primary.main)};
       `;
     case 'secondary':
       return `
-        background: ${theme.colors.secondary.main};
-        color: ${theme.colors.neutral.white};
-        border: 2px solid ${theme.colors.primary.dark};
-
-        &:hover:not(:disabled) {
-          background: ${theme.colors.secondary.medium};
-          border-color: ${theme.colors.primary.main};
-        }
+        background: ${theme.colors.secondary.dark};
+        color: ${theme.colors.primary.main};
+        box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
       `;
     case 'outline':
-      return `
-        background: transparent;
-        color: ${theme.colors.primary.main};
-        border: 2px solid ${theme.colors.primary.main};
-
-        &:hover:not(:disabled) {
-          background: rgba(92, 189, 245, 0.1);
-          box-shadow: ${theme.shadows.glow.cyan};
-        }
-      `;
     case 'ghost':
       return `
         background: transparent;
         color: ${theme.colors.primary.main};
-        border: none;
-
-        &:hover:not(:disabled) {
-          background: rgba(92, 189, 245, 0.1);
-        }
+        box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
       `;
     default:
       return '';
   }
+};
+
+// Horizontal padding leaves room for the absolutely positioned ▶ cursor,
+// so showing it on hover never shifts the layout.
+const sizeStyles: Record<string, { padding: string; fontSize: string; cursorLeft: string }> = {
+  sm: { padding: '8px 24px', fontSize: '12px', cursorLeft: '7px' },
+  md: { padding: '12px 32px', fontSize: '12px', cursorLeft: '11px' },
+  lg: { padding: '16px 40px', fontSize: '14px', cursorLeft: '14px' },
 };
 
 const getSizeStyles = (size: string) => {
-  switch (size) {
-    case 'sm':
-      return `
-        padding: ${theme.spacing.sm} ${theme.spacing.md};
-        font-size: ${theme.typography.sizes.sm};
-      `;
-    case 'md':
-      return `
-        padding: ${theme.spacing.md} ${theme.spacing.xl};
-        font-size: ${theme.typography.sizes.base};
-      `;
-    case 'lg':
-      return `
-        padding: ${theme.spacing.lg} ${theme.spacing['2xl']};
-        font-size: ${theme.typography.sizes.lg};
-      `;
-    default:
-      return '';
-  }
+  const s = sizeStyles[size] ?? sizeStyles.md;
+  return `
+    padding: ${s.padding};
+    font-size: ${s.fontSize};
+
+    &::before {
+      left: ${s.cursorLeft};
+    }
+  `;
 };
 
-const StyledButton = styled(motion.button)<{
+const StyledButton = styled.button<{
   variant: string;
   size: string;
   fullWidth: boolean;
@@ -93,45 +74,60 @@ const StyledButton = styled(motion.button)<{
   align-items: center;
   justify-content: center;
   gap: ${theme.spacing.sm};
-  font-family: ${theme.typography.fonts.heading};
-  font-weight: ${theme.typography.weights.semibold};
+  font-family: ${theme.typography.fonts.pixel};
+  font-weight: ${theme.typography.weights.normal};
+  line-height: 1.4;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   white-space: nowrap;
-  border-radius: ${theme.borderRadius.md};
+  border: none;
+  border-radius: 0;
   cursor: pointer;
-  transition: all ${theme.transitions.fast};
   position: relative;
-  overflow: hidden;
   width: ${props => props.fullWidth ? '100%' : 'auto'};
 
   ${props => getVariantStyles(props.variant)}
   ${props => getSizeStyles(props.size)}
+
+  /* Menu cursor, shown on hover/focus */
+  &::before {
+    content: '▶';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    line-height: 1;
+    display: none;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    background: ${theme.colors.primary.main};
+    color: ${theme.colors.neutral.black};
+    box-shadow: ${pixelOutline(theme.colors.primary.light)};
+    outline: none;
+  }
+
+  &:hover:not(:disabled)::before,
+  &:focus-visible:not(:disabled)::before {
+    display: block;
+    animation: ${cursorBlink} 0.8s step-end infinite;
+  }
+
+  &:active:not(:disabled) {
+    transform: translate(2px, 2px);
+  }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
 
-  /* Energy line effect */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      ${theme.colors.primary.light},
-      transparent
-    );
-    transition: left 0.5s ease;
-  }
-
-  &:hover::before {
-    left: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    &:hover:not(:disabled)::before,
+    &:focus-visible:not(:disabled)::before {
+      animation: none;
+    }
   }
 `;
 
@@ -143,6 +139,7 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   disabled = false,
   type = 'button',
+  className,
 }) => {
   return (
     <StyledButton
@@ -152,10 +149,7 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
-      variants={buttonVariants}
-      initial="initial"
-      whileHover={!disabled ? "hover" : undefined}
-      whileTap={!disabled ? "tap" : undefined}
+      className={className}
     >
       {children}
     </StyledButton>
