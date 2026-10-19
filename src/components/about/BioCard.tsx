@@ -2,6 +2,7 @@ import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
+import { EMAIL } from '../../data/social';
 import { windowEntry } from '../../styles/animations';
 import { HARD_SHADOW, pixelCard, pixelLabel, pixelOutline } from '../../styles/pixel';
 import { InfoTile } from '../common/InfoTile';
@@ -132,7 +133,7 @@ export const BioCard: React.FC = () => {
             key={key}
             icon={icon}
             label={t(`info.${key}.label`)}
-            value={t(`info.${key}.value`)}
+            value={key === 'email' ? EMAIL : t(`info.${key}.value`)}
             custom={i + 1}
             variants={windowEntry}
             initial={reduced ? false : 'initial'}

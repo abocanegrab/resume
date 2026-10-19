@@ -2,12 +2,7 @@ import styled from '@emotion/styled';
 import { useTranslation, Trans } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { pixelOutline } from '../../styles/pixel';
-import {
-  FaGithub,
-  FaLinkedin,
-  FaEnvelope,
-  FaPhone,
-} from 'react-icons/fa';
+import { externalLinkProps, socialLinks } from '../../data/social';
 
 const SocialContainer = styled.div`
   text-align: center;
@@ -54,8 +49,6 @@ const SocialLink = styled.a`
   box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   color: ${theme.colors.neutral.silver};
   font-size: 20px;
-  /* Overrides the global link color fade: state changes are discrete */
-  transition: none;
 
   &:hover,
   &:focus-visible {
@@ -77,13 +70,6 @@ const SocialLink = styled.a`
   }
 `;
 
-const socialLinks = [
-  { id: 'github', icon: FaGithub, url: 'https://github.com/abocanegra', external: true },
-  { id: 'linkedin', icon: FaLinkedin, url: 'https://www.linkedin.com/in/aaronbocanegra/', external: true },
-  { id: 'email', icon: FaEnvelope, url: 'mailto:abocanegrab@gmail.com', external: false },
-  { id: 'phone', icon: FaPhone, url: 'tel:+51915063391', external: false },
-];
-
 export const SocialLinks: React.FC = () => {
   const { t } = useTranslation('contact');
 
@@ -101,7 +87,7 @@ export const SocialLinks: React.FC = () => {
             <li key={social.id}>
               <SocialLink
                 href={social.url}
-                {...(social.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                {...externalLinkProps(social)}
                 aria-label={t(`social.links.${social.id}`)}
               >
                 <IconComponent aria-hidden="true" />

@@ -103,7 +103,7 @@ const DeniedText = styled.p<{ visible: boolean }>`
   color: ${theme.colors.accent.red};
   margin-top: ${theme.spacing.lg};
   opacity: ${({ visible }) => (visible ? 1 : 0)};
-  text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+  text-shadow: 0 0 10px rgba(255, 74, 94, 0.5);
   animation: ${({ visible }) => (visible ? flash : 'none')} 0.3s ease;
   min-height: 1.5em;
 

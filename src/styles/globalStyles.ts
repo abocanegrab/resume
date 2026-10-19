@@ -138,7 +138,6 @@ export const globalStyles = css`
   a {
     color: ${theme.colors.primary.main};
     text-decoration: none;
-    transition: color ${theme.transitions.fast};
 
     &:hover {
       color: ${theme.colors.accent.gold};

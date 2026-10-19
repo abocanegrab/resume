@@ -7,6 +7,7 @@ import { SectionTitle } from '../components/common/SectionTitle';
 import { SocialLinks } from '../components/contact/SocialLinks';
 import { Button } from '../components/common/Button';
 import { theme } from '../styles/theme';
+import { EMAIL, EMAIL_URL } from '../data/social';
 import { windowEntry } from '../styles/animations';
 import { HARD_SHADOW, pixelCard, pixelLabel, pixelOutline } from '../styles/pixel';
 import { InfoTile } from '../components/common/InfoTile';
@@ -20,7 +21,7 @@ const blink = keyframes`
 // LED flips between lit and dim (never vanishes, so the badge keeps its shape)
 const ledBlink = keyframes`
   0%, 49% { background: ${theme.colors.accent.green}; }
-  50%, 100% { background: #1c5e14; }
+  50%, 100% { background: ${theme.colors.accent.greenDim}; }
 `;
 
 const ContactContainer = styled.div`
@@ -172,7 +173,7 @@ export const ContactPage: React.FC = () => {
                   key={key}
                   icon={icon}
                   label={t(`info.${key}.label`)}
-                  value={t(`info.${key}.value`)}
+                  value={key === 'email' ? EMAIL : t(`info.${key}.value`)}
                   custom={i + 1}
                   variants={windowEntry}
                   initial={reduced ? false : 'initial'}
@@ -184,7 +185,7 @@ export const ContactPage: React.FC = () => {
             <CTASection>
               <CTAText>{t('ctaText')}</CTAText>
 
-              <Button variant="primary" size="lg" href="mailto:abocanegrab@gmail.com">
+              <Button variant="primary" size="lg" href={EMAIL_URL}>
                 <FaPaperPlane aria-hidden="true" /> {t('ctaButton')}
               </Button>
 

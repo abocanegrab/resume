@@ -17,6 +17,7 @@ import {
   SiAngular,
 } from 'react-icons/si';
 import { TbDatabase } from 'react-icons/tb';
+import { theme } from '../styles/theme';
 
 export interface Skill {
   name: string;
@@ -50,7 +51,7 @@ export const skillCategories: SkillCategory[] = [
     id: 'database',
     name: 'Database',
     description: 'SQL Server, Oracle, PostgreSQL and data management',
-    color: '#FF1493',
+    color: theme.colors.accent.pink,
   },
   {
     id: 'devops',

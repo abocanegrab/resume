@@ -19,6 +19,7 @@ export const theme = {
     // Accent Colors
     accent: {
       green: '#39FF14',      // Energy/Success
+      greenDim: '#1c5e14',   // Unlit LED (blink off-frame)
       pink: '#bb526b',       // Highlights
       gold: '#f8a862',       // Sol / atardecer
       orange: '#e9785f',     // Warnings

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { pixelOutline } from '../../styles/pixel';
 import { buildSkyline } from '../../styles/skyline';
-import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { externalLinkProps, socialLinks } from '../../data/social';
 
 const SKYLINE_HEIGHT = 64;
 const WINDOW_COLORS = [theme.colors.primary.main, '#f8b06a'];
@@ -147,6 +147,12 @@ const FooterLink = styled.li`
     &:hover::before {
       color: ${theme.colors.accent.gold};
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      &:hover {
+        transform: none;
+      }
+    }
   }
 `;
 
@@ -183,6 +189,14 @@ const SocialLink = styled.a`
 
   &:active {
     transform: translate(1px, 1px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover,
+    &:focus-visible,
+    &:active {
+      transform: none;
+    }
   }
 
   svg {
@@ -245,6 +259,9 @@ const StatusIndicator = styled.div`
   }
 `;
 
+// Footer shows the online channels only (the phone stays on the contact page)
+const footerLinks = socialLinks.filter((link) => link.id !== 'phone');
+
 const linkKeys = ['home', 'about', 'skills', 'projects', 'contact'] as const;
 const linkPaths = ['/', '/about', '/skills', '/projects', '/contact'];
 
@@ -285,28 +302,16 @@ export const Footer: React.FC = () => {
           <FooterSection>
             <h4>{t('footer.connect')}</h4>
             <SocialLinksContainer>
-              <SocialLink
-                href="https://github.com/abocanegra"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-              >
-                <FaGithub />
-              </SocialLink>
-              <SocialLink
-                href="https://www.linkedin.com/in/aaronbocanegra/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedin />
-              </SocialLink>
-              <SocialLink
-                href="mailto:abocanegrab@gmail.com"
-                aria-label="Email"
-              >
-                <FaEnvelope />
-              </SocialLink>
+              {footerLinks.map((link) => (
+                <SocialLink
+                  key={link.id}
+                  href={link.url}
+                  {...externalLinkProps(link)}
+                  aria-label={t(`contact:social.links.${link.id}`)}
+                >
+                  <link.icon aria-hidden="true" />
+                </SocialLink>
+              ))}
             </SocialLinksContainer>
           </FooterSection>
         </FooterContent>

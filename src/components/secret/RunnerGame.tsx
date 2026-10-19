@@ -2,6 +2,13 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
+import { parseHex } from '../../styles/color';
+
+// "r, g, b" channels of palette tokens, for canvas rgba() fills
+const rgbOf = (hex: string) => (parseHex(hex) ?? [0, 0, 0]).join(', ');
+const BUILDING_RGB = rgbOf(theme.colors.secondary.medium);
+const WINDOW_RGB = rgbOf(theme.colors.primary.main);
+const BACKDROP_RGB = rgbOf(theme.colors.background.primary);
 
 const CANVAS_W = 800;
 const CANVAS_H = 400;
@@ -133,7 +140,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, p: Player, onGround: boolean)
 
 function drawMettaur(ctx: CanvasRenderingContext2D, x: number, y: number) {
   // Helmet (dome)
-  ctx.fillStyle = '#FFD700';
+  ctx.fillStyle = theme.colors.accent.gold;
   ctx.beginPath();
   ctx.arc(x + 10, y + 6, 10, Math.PI, 0);
   ctx.fill();
@@ -271,13 +278,13 @@ export const RunnerGame: React.FC = () => {
       const speed = gameSpeedRef.current;
 
       // Clear
-      ctx.fillStyle = '#0A0A1A';
+      ctx.fillStyle = theme.colors.background.primary;
       ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
       // Parallax backgrounds
       bgLayersRef.current.forEach((layer, li) => {
         const alpha = li === 0 ? 0.15 : 0.25;
-        ctx.fillStyle = `rgba(30, 58, 95, ${alpha})`;
+        ctx.fillStyle = `rgba(${BUILDING_RGB}, ${alpha})`;
         if (state === 'playing') {
           layer.offset += speed * layer.speed * dt * 60;
         }
@@ -288,13 +295,13 @@ export const RunnerGame: React.FC = () => {
           if (bx < CANVAS_W + b.w) {
             ctx.fillRect(bx, GROUND_Y - b.h, b.w, b.h);
             // Window dots
-            ctx.fillStyle = `rgba(92, 189, 245, ${alpha * 0.5})`;
+            ctx.fillStyle = `rgba(${WINDOW_RGB}, ${alpha * 0.5})`;
             for (let wy = GROUND_Y - b.h + 8; wy < GROUND_Y - 4; wy += 12) {
               for (let wx = bx + 6; wx < bx + b.w - 4; wx += 10) {
                 ctx.fillRect(wx, wy, 4, 4);
               }
             }
-            ctx.fillStyle = `rgba(30, 58, 95, ${alpha})`;
+            ctx.fillStyle = `rgba(${BUILDING_RGB}, ${alpha})`;
           }
         });
       });
@@ -308,7 +315,7 @@ export const RunnerGame: React.FC = () => {
       if (state === 'playing') {
         groundOffsetRef.current = (groundOffsetRef.current + speed * dt * 60) % 20;
       }
-      ctx.fillStyle = 'rgba(30, 58, 95, 0.5)';
+      ctx.fillStyle = `rgba(${BUILDING_RGB}, 0.5)`;
       for (let gx = -groundOffsetRef.current; gx < CANVAS_W; gx += 20) {
         ctx.fillRect(gx, GROUND_Y + 6, 10, 2);
         ctx.fillRect(gx + 10, GROUND_Y + 14, 10, 2);
@@ -411,20 +418,20 @@ export const RunnerGame: React.FC = () => {
 
       // State overlays
       if (state === 'idle') {
-        ctx.fillStyle = 'rgba(10, 10, 26, 0.6)';
+        ctx.fillStyle = `rgba(${BACKDROP_RGB}, 0.6)`;
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.textAlign = 'center';
         ctx.font = `20px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.primary.main;
         ctx.fillText(t('secret.game.title'), CANVAS_W / 2, CANVAS_H / 2 - 30);
-        ctx.font = `10px ${theme.typography.fonts.pixel}`;
+        ctx.font = `14px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.neutral.silver;
         const startText = isMobile ? t('secret.game.startMobile') : t('secret.game.start');
         ctx.fillText(startText, CANVAS_W / 2, CANVAS_H / 2 + 20);
       }
 
       if (state === 'gameOver') {
-        ctx.fillStyle = 'rgba(10, 10, 26, 0.7)';
+        ctx.fillStyle = `rgba(${BACKDROP_RGB}, 0.7)`;
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.textAlign = 'center';
         ctx.font = `20px ${theme.typography.fonts.pixel}`;
@@ -437,7 +444,7 @@ export const RunnerGame: React.FC = () => {
           CANVAS_W / 2,
           CANVAS_H / 2 + 10
         );
-        ctx.font = `10px ${theme.typography.fonts.pixel}`;
+        ctx.font = `14px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.neutral.silver;
         const retryText = isMobile ? t('secret.game.startMobile') : t('secret.game.retry');
         ctx.fillText(retryText, CANVAS_W / 2, CANVAS_H / 2 + 50);
