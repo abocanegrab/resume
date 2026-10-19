@@ -270,26 +270,24 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
               <ActionButtons>
                 {project.githubUrl && (
-                  <a
+                  <Button
+                    variant="outline"
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="outline">
-                      <FaGithub /> {tc('buttons.viewCode')}
-                    </Button>
-                  </a>
+                    <FaGithub /> {tc('buttons.viewCode')}
+                  </Button>
                 )}
                 {project.liveUrl && (
-                  <a
+                  <Button
+                    variant="primary"
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="primary">
-                      <FaExternalLinkAlt /> {tc('buttons.liveDemo')}
-                    </Button>
-                  </a>
+                    <FaExternalLinkAlt /> {tc('buttons.liveDemo')}
+                  </Button>
                 )}
               </ActionButtons>
             </ModalContent>

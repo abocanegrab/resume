@@ -84,11 +84,6 @@ const CTAText = styled.p`
   margin-right: auto;
 `;
 
-const MailtoLink = styled.a`
-  text-decoration: none;
-  display: inline-block;
-`;
-
 const AvailabilityBadge = styled(motion.div)`
   display: inline-flex;
   align-items: center;
@@ -181,11 +176,9 @@ export const ContactPage: React.FC = () => {
           >
             <CTAText>{t('ctaText')}</CTAText>
 
-            <MailtoLink href="mailto:abocanegrab@gmail.com">
-              <Button variant="primary" size="lg">
-                <FaPaperPlane /> {t('ctaButton')}
-              </Button>
-            </MailtoLink>
+            <Button variant="primary" size="lg" href="mailto:abocanegrab@gmail.com">
+              <FaPaperPlane /> {t('ctaButton')}
+            </Button>
 
             <div>
               <AvailabilityBadge>

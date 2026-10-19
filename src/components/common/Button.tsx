@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
+import { css, keyframes } from '@emotion/react';
 import { theme } from '../../styles/theme';
 import { pixelOutline } from '../../styles/pixel';
 
@@ -12,6 +12,11 @@ interface ButtonProps {
   disabled?: boolean;
   type?: 'button' | 'submit' | 'reset';
   className?: string;
+  /** When set, renders an <a> with the same styles instead of a <button>. */
+  href?: string;
+  target?: string;
+  rel?: string;
+  download?: boolean | string;
 }
 
 const cursorBlink = keyframes`
@@ -65,11 +70,16 @@ const getSizeStyles = (size: string) => {
   `;
 };
 
-const StyledButton = styled.button<{
+const buttonOnlyProps = new Set(['variant', 'size', 'fullWidth']);
+
+interface StyleProps {
   variant: string;
   size: string;
   fullWidth: boolean;
-}>`
+}
+
+// Shared by the <button> and the <a> renderings.
+const buttonStyles = ({ variant, size, fullWidth }: StyleProps) => css`
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -82,16 +92,18 @@ const StyledButton = styled.button<{
   white-space: nowrap;
   border: none;
   border-radius: 0;
+  text-decoration: none;
   cursor: pointer;
   position: relative;
-  width: ${props => props.fullWidth ? '100%' : 'auto'};
+  width: ${fullWidth ? '100%' : 'auto'};
 
-  ${props => getVariantStyles(props.variant)}
-  ${props => getSizeStyles(props.size)}
+  ${getVariantStyles(variant)}
+  ${getSizeStyles(size)}
 
   /* Menu cursor, shown on hover/focus */
   &::before {
     content: '▶';
+    content: '▶' / '';
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -105,7 +117,11 @@ const StyledButton = styled.button<{
     background: ${theme.colors.primary.main};
     color: ${theme.colors.neutral.black};
     box-shadow: ${pixelOutline(theme.colors.primary.light)};
-    outline: none;
+  }
+
+  /* Global focus ring, pushed past the 2px pixel outline */
+  &:focus-visible {
+    outline-offset: 4px;
   }
 
   &:hover:not(:disabled)::before,
@@ -118,7 +134,8 @@ const StyledButton = styled.button<{
     transform: translate(2px, 2px);
   }
 
-  &:disabled {
+  &:disabled,
+  &[aria-disabled='true'] {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -131,6 +148,11 @@ const StyledButton = styled.button<{
   }
 `;
 
+const forwardOpts = { shouldForwardProp: (prop: string) => !buttonOnlyProps.has(prop) };
+
+const StyledButton = styled('button', forwardOpts)<StyleProps>(buttonStyles);
+const StyledLink = styled('a', forwardOpts)<StyleProps>(buttonStyles);
+
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
@@ -140,7 +162,30 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   type = 'button',
   className,
+  href,
+  target,
+  rel,
+  download,
 }) => {
+  if (href !== undefined) {
+    return (
+      <StyledLink
+        variant={variant}
+        size={size}
+        fullWidth={fullWidth}
+        className={className}
+        href={disabled ? undefined : href}
+        target={target}
+        rel={rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined)}
+        download={download}
+        aria-disabled={disabled || undefined}
+        onClick={disabled ? undefined : onClick}
+      >
+        {children}
+      </StyledLink>
+    );
+  }
+
   return (
     <StyledButton
       variant={variant}

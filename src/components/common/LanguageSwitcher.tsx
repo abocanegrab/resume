@@ -22,7 +22,11 @@ const SwitcherButton = styled.button`
   &:hover,
   &:focus-visible {
     box-shadow: ${pixelOutline(theme.colors.primary.main)};
-    outline: none;
+  }
+
+  /* Global focus ring, pushed past the 2px pixel outline */
+  &:focus-visible {
+    outline-offset: 4px;
   }
 
   &:active {
