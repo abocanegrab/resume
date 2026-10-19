@@ -78,6 +78,9 @@ interface StyleProps {
   fullWidth: boolean;
 }
 
+// Interactive states skip disabled buttons and disabled (aria-disabled) links.
+const ENABLED = ":not(:disabled):not([aria-disabled='true'])";
+
 // Shared by the <button> and the <a> renderings.
 const buttonStyles = ({ variant, size, fullWidth }: StyleProps) => css`
   display: inline-flex;
@@ -112,8 +115,8 @@ const buttonStyles = ({ variant, size, fullWidth }: StyleProps) => css`
     display: none;
   }
 
-  &:hover:not(:disabled),
-  &:focus-visible:not(:disabled) {
+  &:hover${ENABLED},
+  &:focus-visible${ENABLED} {
     background: ${theme.colors.primary.main};
     color: ${theme.colors.neutral.black};
     box-shadow: ${pixelOutline(theme.colors.primary.light)};
@@ -124,13 +127,13 @@ const buttonStyles = ({ variant, size, fullWidth }: StyleProps) => css`
     outline-offset: 4px;
   }
 
-  &:hover:not(:disabled)::before,
-  &:focus-visible:not(:disabled)::before {
+  &:hover${ENABLED}::before,
+  &:focus-visible${ENABLED}::before {
     display: block;
     animation: ${cursorBlink} 0.8s step-end infinite;
   }
 
-  &:active:not(:disabled) {
+  &:active${ENABLED} {
     transform: translate(2px, 2px);
   }
 
@@ -141,8 +144,8 @@ const buttonStyles = ({ variant, size, fullWidth }: StyleProps) => css`
   }
 
   @media (prefers-reduced-motion: reduce) {
-    &:hover:not(:disabled)::before,
-    &:focus-visible:not(:disabled)::before {
+    &:hover${ENABLED}::before,
+    &:focus-visible${ENABLED}::before {
       animation: none;
     }
   }
@@ -174,7 +177,9 @@ export const Button: React.FC<ButtonProps> = ({
         size={size}
         fullWidth={fullWidth}
         className={className}
+        // Disabled: no href (not focusable or followable); role keeps it announced as a link
         href={disabled ? undefined : href}
+        role={disabled ? 'link' : undefined}
         target={target}
         rel={rel ?? (target === '_blank' ? 'noopener noreferrer' : undefined)}
         download={download}

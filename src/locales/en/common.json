@@ -1,4 +1,13 @@
 {
+  "loading": {
+    "label": "Loading",
+    "messages": [
+      "INITIALIZING SYSTEMS...",
+      "LOADING ASSETS...",
+      "CALIBRATING INTERFACE...",
+      "READY FOR DEPLOYMENT..."
+    ]
+  },
   "nav": {
     "home": "HQ",
     "about": "Hunter Profile",

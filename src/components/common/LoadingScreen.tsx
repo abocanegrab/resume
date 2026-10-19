@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { stepEase } from '../../styles/animations';
 import { dither, pixelOutline, segmentCell } from '../../styles/pixel';
@@ -156,19 +157,13 @@ const Cursor = styled.span`
   }
 `;
 
-const loadingMessages = [
-  'INITIALIZING SYSTEMS...',
-  'LOADING ASSETS...',
-  'CALIBRATING INTERFACE...',
-  'READY FOR DEPLOYMENT...',
-];
-
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   minDuration = 2000,
   onComplete,
 }) => {
+  const { t } = useTranslation('common');
+  const loadingMessages = t('loading.messages', { returnObjects: true }) as string[];
   const [progress, setProgress] = useState(0);
-  const [messageIndex, setMessageIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const reduceMotion = useReducedMotion();
 
@@ -178,13 +173,6 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       const elapsed = Date.now() - startTime;
       const newProgress = Math.min((elapsed / minDuration) * 100, 100);
       setProgress(newProgress);
-
-      // Update message based on progress
-      const newMessageIndex = Math.min(
-        Math.floor((newProgress / 100) * loadingMessages.length),
-        loadingMessages.length - 1
-      );
-      setMessageIndex(newMessageIndex);
 
       if (newProgress >= 100) {
         clearInterval(interval);
@@ -197,6 +185,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   }, [minDuration]);
 
   const filledCells = Math.floor((progress / 100) * SEGMENTS);
+  // Message follows progress (one per quarter with the 4 default messages)
+  const messageIndex = Math.min(
+    Math.floor((progress / 100) * loadingMessages.length),
+    loadingMessages.length - 1,
+  );
 
   return (
     <AnimatePresence onExitComplete={onComplete}>
@@ -233,7 +226,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
             <EnergyContainer
               role="progressbar"
-              aria-label="Loading"
+              aria-label={t('loading.label')}
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={Math.round(progress)}

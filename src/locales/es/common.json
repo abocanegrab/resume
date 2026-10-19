@@ -1,4 +1,13 @@
 {
+  "loading": {
+    "label": "Cargando",
+    "messages": [
+      "INICIANDO SISTEMAS...",
+      "CARGANDO RECURSOS...",
+      "CALIBRANDO INTERFAZ...",
+      "LISTO PARA DESPLIEGUE..."
+    ]
+  },
   "nav": {
     "home": "Base",
     "about": "Perfil",

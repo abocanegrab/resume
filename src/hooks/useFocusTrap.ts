@@ -10,6 +10,13 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(', ');
 
+// Active traps, innermost last. Only the topmost trap handles Tab and Escape, so a
+// dialog opened over another trapped region closes alone on Escape.
+const trapStack: symbol[] = [];
+
+// Skips elements that render no boxes (display: none, or inside a hidden subtree)
+const isVisible = (el: HTMLElement) => el.getClientRects().length > 0;
+
 interface FocusTrapOptions {
   // Focused on activation (falls back to the first focusable element)
   initialFocusRef?: RefObject<HTMLElement | null>;
@@ -18,8 +25,9 @@ interface FocusTrapOptions {
   onEscape?: () => void;
 }
 
-// While `active`: moves focus inside `containerRef`, cycles Tab/Shift+Tab within it,
-// calls onEscape on Escape, and returns focus when it deactivates or unmounts.
+// While `active`: moves focus inside `containerRef`, cycles Tab/Shift+Tab within its
+// visible focusables, calls onEscape on Escape (topmost trap only), and returns focus
+// when it deactivates or unmounts.
 export const useFocusTrap = (
   containerRef: RefObject<HTMLElement | null>,
   active: boolean,
@@ -34,16 +42,19 @@ export const useFocusTrap = (
   useEffect(() => {
     if (!active) return;
 
+    const id = Symbol('focus-trap');
+    trapStack.push(id);
     const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const getItems = () =>
       containerRef.current
-        ? Array.from(containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE))
+        ? Array.from(containerRef.current.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(isVisible)
         : [];
 
     const initial = optionsRef.current.initialFocusRef?.current ?? getItems()[0];
     initial?.focus();
 
     const onKeyDown = (e: KeyboardEvent) => {
+      if (trapStack[trapStack.length - 1] !== id) return;
       if (e.key === 'Escape') {
         if (optionsRef.current.onEscape) {
           e.preventDefault();
@@ -73,6 +84,7 @@ export const useFocusTrap = (
 
     return () => {
       document.removeEventListener('keydown', onKeyDown);
+      trapStack.splice(trapStack.indexOf(id), 1);
       const target = optionsRef.current.returnFocusRef?.current ?? opener;
       // Elements that are hidden or detached simply ignore focus()
       if (target?.isConnected) target.focus();
