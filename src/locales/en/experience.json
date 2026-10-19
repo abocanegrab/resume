@@ -1,7 +1,15 @@
 {
   "title": "Mission Log",
   "subtitle": "Completed missions and battle record",
-  "stageLabel": "STAGE",
+  "stageLabel": "MISSION",
+  "currentLabel": "CURRENT",
+  "types": {
+    "full-time": "FULL-TIME",
+    "part-time": "PART-TIME",
+    "contract": "CONTRACT",
+    "freelance": "FREELANCE",
+    "founder": "FOUNDER"
+  },
   "entries": [
     {
       "id": "1",

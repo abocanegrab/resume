@@ -7,19 +7,7 @@ import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
 import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
-
-interface ExperienceEntry {
-  id: string;
-  company: string;
-  position: string;
-  location: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  description: string;
-  achievements: string[];
-  technologies: string[];
-}
+import type { Experience, ExperienceEntry } from '../../data/experience';
 
 interface ExperienceCardProps {
   experience: ExperienceEntry;
@@ -29,10 +17,12 @@ interface ExperienceCardProps {
 
 // Stage-map rail column (node + dotted route line); narrower on phones
 const RAIL_WIDTH = 32;
-const RAIL_WIDTH_MOBILE = 20;
+const RAIL_WIDTH_MOBILE = 24;
 const NODE_SIZE = 16;
 const HEADER_ROW = 24; // first grid row (node + STAGE label); node center = HEADER_ROW / 2
 const ROW_GAP = 48;
+// Hard drop shadow offset of the card; the last row reserves the same space below
+const HARD_SHADOW = 6;
 
 // 4-frame stepped ease: the card snaps in instead of gliding
 const stepEase = (t: number) => Math.floor(t * 4) / 4;
@@ -47,18 +37,17 @@ const nodeBlink = keyframes`
   50%, 100% { background: ${theme.colors.neutral.white}; }
 `;
 
-const typeColors: Record<string, string> = {
+const typeColors: Record<Experience['type'], string> = {
   'full-time': theme.colors.accent.green,
   freelance: theme.colors.accent.gold,
   contract: theme.colors.accent.pink,
   founder: theme.colors.primary.main,
+  'part-time': theme.colors.primary.light,
 };
-
-const typeColor = (type: string) => typeColors[type] ?? theme.colors.primary.main;
 
 // Each row draws the route segment from its node down to the next node, so every
 // segment starts its 4px on / 4px off pattern under a node and the joins stay hidden.
-const StageRow = styled(motion.div)`
+const StageRow = styled(motion.li)`
   --rail: ${RAIL_WIDTH}px;
   display: grid;
   grid-template-columns: var(--rail) minmax(0, 1fr);
@@ -83,7 +72,7 @@ const StageRow = styled(motion.div)`
   }
 
   &:last-of-type {
-    margin-bottom: 0;
+    margin-bottom: ${HARD_SHADOW}px;
 
     &::before {
       display: none;
@@ -120,15 +109,36 @@ const StageNode = styled('span', { shouldForwardProp: prop => prop !== 'isCurren
   }
 `;
 
-const StageLabel = styled('span', { shouldForwardProp: prop => prop !== 'isCurrent' })<{
-  isCurrent: boolean;
-}>`
+const StageHeader = styled.div`
   align-self: center;
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.md};
+  min-width: 0;
+`;
+
+const pixelLabel = `
   font-family: ${theme.typography.fonts.pixel};
   font-size: 14px;
   line-height: 1.2;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+`;
+
+// Visible text (not only the gold node) so the current status survives color blindness and screen readers
+const CurrentTag = styled.span`
+  ${pixelLabel}
+  padding: 1px 6px;
+  margin: 2px;
+  background: ${theme.colors.neutral.black};
+  box-shadow: ${pixelOutline(theme.colors.accent.gold)};
+  color: ${theme.colors.accent.gold};
+`;
+
+const StageLabel = styled('span', { shouldForwardProp: prop => prop !== 'isCurrent' })<{
+  isCurrent: boolean;
+}>`
+  ${pixelLabel}
   color: ${props => (props.isCurrent ? theme.colors.accent.gold : theme.colors.primary.light)};
 `;
 
@@ -136,15 +146,16 @@ const CardContent = styled.article`
   grid-column: 2;
   min-width: 0;
   ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)},
+    ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
   padding: ${theme.spacing.xl};
-
-  &:hover {
-    box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
-  }
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     padding: ${theme.spacing.lg};
+  }
+
+  @media (max-width: 359px) {
+    padding: ${theme.spacing.md};
   }
 `;
 
@@ -167,7 +178,12 @@ const CompanyInfo = styled.div`
     margin-bottom: ${theme.spacing.xs};
   }
 
-  h4 {
+  /* Keeps the former h4 look (global heading rules no longer apply) */
+  p {
+    margin: 0;
+    line-height: ${theme.typography.lineHeights.tight};
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     font-family: ${theme.typography.fonts.body};
     font-size: ${theme.typography.sizes.md};
     color: ${theme.colors.primary.main};
@@ -187,7 +203,8 @@ const TypeBadge = styled('span', { shouldForwardProp: prop => prop !== 'tone' })
   line-height: 1.2;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  white-space: nowrap;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 `;
 
 const MetaInfo = styled.div`
@@ -280,17 +297,22 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
       <NodeCell aria-hidden="true">
         <StageNode isCurrent={isCurrent} />
       </NodeCell>
-      <StageLabel isCurrent={isCurrent}>
-        {t('stageLabel')} {stage}
-      </StageLabel>
+      <StageHeader>
+        <StageLabel isCurrent={isCurrent}>
+          {t('stageLabel')} {stage}
+        </StageLabel>
+        {isCurrent && <CurrentTag>{t('currentLabel')}</CurrentTag>}
+      </StageHeader>
 
       <CardContent>
         <CardHeader>
           <CompanyInfo>
             <h3>{experience.company}</h3>
-            <h4>{experience.position}</h4>
+            <p>{experience.position}</p>
           </CompanyInfo>
-          <TypeBadge tone={typeColor(experience.type)}>{experience.type}</TypeBadge>
+          <TypeBadge tone={typeColors[experience.type] ?? theme.colors.primary.main}>
+            {t(`types.${experience.type}`)}
+          </TypeBadge>
         </CardHeader>
 
         <MetaInfo>

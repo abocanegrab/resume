@@ -1,7 +1,15 @@
 {
   "title": "Registro de Misiones",
   "subtitle": "Misiones completadas y registro de combate",
-  "stageLabel": "STAGE",
+  "stageLabel": "MISIÓN",
+  "currentLabel": "ACTUAL",
+  "types": {
+    "full-time": "TIEMPO COMPLETO",
+    "part-time": "MEDIO TIEMPO",
+    "contract": "CONTRATO",
+    "freelance": "FREELANCE",
+    "founder": "FUNDADOR"
+  },
   "entries": [
     {
       "id": "1",

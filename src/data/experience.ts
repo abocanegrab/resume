@@ -10,7 +10,15 @@ export interface Experience {
   technologies: string[];
   companyLogo?: string;
   type: 'full-time' | 'part-time' | 'contract' | 'freelance' | 'founder';
+  // Ongoing job: highlighted as the current stage on the Mission Log
+  current?: boolean;
 }
+
+// Translatable shape served by the i18n `experience` namespace (entries[])
+export type ExperienceEntry = Pick<
+  Experience,
+  'id' | 'company' | 'position' | 'location' | 'startDate' | 'endDate' | 'type' | 'description' | 'achievements' | 'technologies'
+>;
 
 export const experiences: Experience[] = [
   {
@@ -20,6 +28,7 @@ export const experiences: Experience[] = [
     location: 'Remote',
     startDate: 'Jan 2021',
     endDate: 'Present',
+    current: true,
     description:
       'Member of the Reimagine team delivering JobStack 2.0 for TrueBlue with agile methodologies and AWS integrations. Leading developer community initiatives and mentoring through the Buddy Program.',
     achievements: [
@@ -56,6 +65,7 @@ export const experiences: Experience[] = [
     location: 'Remote',
     startDate: 'Aug 2024',
     endDate: 'Present',
+    current: true,
     description:
       'Co-founded Grodivo and led software development for TAP, a system to measure organizational culture. Designed microservices architecture and established coding standards.',
     achievements: [
