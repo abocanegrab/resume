@@ -1,6 +1,16 @@
 import { css } from '@emotion/react';
 import { theme } from './theme';
 
+// Fixed star positions [x%, y%] (literal, no Math.random)
+const STARS: ReadonlyArray<readonly [number, number]> = [
+  [7, 12], [19, 38], [28, 8], [36, 64], [47, 22], [55, 81],
+  [63, 44], [71, 6], [79, 57], [86, 27], [92, 74], [14, 88],
+];
+
+const star = `linear-gradient(${theme.colors.neutral.silver}, ${theme.colors.neutral.silver})`;
+const starImages = STARS.map(() => star).join(', ');
+const starPositions = STARS.map(([x, y]) => `${x}% ${y}%`).join(', ');
+
 export const globalStyles = css`
   /* Fonts are loaded from index.html via <link> (an @import here lands
      after other rules in Emotion's injected styles and is rejected) */
@@ -55,19 +65,11 @@ export const globalStyles = css`
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background-image:
-      radial-gradient(1px 1px at 7% 12%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 19% 38%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 28% 8%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 36% 64%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 47% 22%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 55% 81%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 63% 44%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 71% 6%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 79% 57%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 86% 27%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 92% 74%, ${theme.colors.neutral.silver} 99%, transparent),
-      radial-gradient(1px 1px at 14% 88%, ${theme.colors.neutral.silver} 99%, transparent);
+    /* Hard 2px square stars: one solid-color layer per star */
+    background-image: ${starImages};
+    background-size: 2px 2px;
+    background-position: ${starPositions};
+    background-repeat: no-repeat;
     /* jump-none: two discrete frames, 0.6 for 1.5s then 1 for 1.5s */
     animation: twinkle 3s steps(2, jump-none) infinite;
   }
@@ -107,9 +109,15 @@ export const globalStyles = css`
 
   h2 {
     font-family: ${theme.typography.fonts.pixel};
-    font-size: clamp(1.1rem, 2.4vw, 1.75rem);
+    /* Press Start 2P ships only weight 400; stepped sizes keep it crisp */
+    font-weight: ${theme.typography.weights.normal};
+    font-size: 24px;
     letter-spacing: 0.04em;
     line-height: 1.4;
+
+    @media (max-width: ${theme.breakpoints.tablet}) {
+      font-size: 16px;
+    }
   }
 
   h3 {

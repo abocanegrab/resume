@@ -25,31 +25,38 @@ const toneBorder: Record<FrameTone, string> = {
   muted: theme.colors.secondary.medium,
 };
 
+// Shadow list used by pixelFrame: light outer line (notched corners) + dark inner line.
+// Consumers that set their own box-shadow (hover/focus) must rebuild it with
+// pixelFrameShadow(...) or the frame lines disappear.
+export const pixelFrameShadow = (color: string) =>
+  `${pixelOutline(color)}, inset 0 0 0 2px ${theme.colors.neutral.black}`;
+
 // Window frame: light outer line (notched corners), dark inner line, flat fill.
 // The outline paints 2px outside the box; consumers need spacing around it.
 // Wrap in pixelShadowWrap for the hard shadow (drop-shadow follows the notched outline).
 export const pixelFrame = (tone: FrameTone = 'blue') => `
-  position: relative;
   background: ${theme.colors.background.card};
   border-radius: 0;
-  box-shadow: ${pixelOutline(toneBorder[tone])}, inset 0 0 0 2px ${theme.colors.neutral.black};
+  box-shadow: ${pixelFrameShadow(toneBorder[tone])};
 `;
 
+// Hard 4px shadow that follows the notched outline.
+// WARNING: a filter creates a containing block for position:fixed/absolute descendants
+// and a new stacking context. Never wrap subtrees containing position:fixed overlays
+// (navbar drawer, modals); wrap only small, mostly static boxes.
 export const pixelShadowWrap = `filter: drop-shadow(4px 4px 0 ${theme.colors.neutral.black});`;
 
-// 2px checkerboard dither between two colors (like the sky bands in the SVG)
+// Checkerboard dither between two colors (like the sky bands in the SVG).
+// `size` is the tile size (each square is size/2 px): use even sizes.
 export const dither = (a: string, b: string, size = 4) => `
   background-color: ${a};
-  background-image:
-    linear-gradient(45deg, ${b} 25%, transparent 25%, transparent 75%, ${b} 75%),
-    linear-gradient(45deg, ${b} 25%, transparent 25%, transparent 75%, ${b} 75%);
+  background-image: repeating-conic-gradient(${b} 0 25%, transparent 0 50%);
   background-size: ${size}px ${size}px;
-  background-position: 0 0, ${size / 2}px ${size / 2}px;
 `;
 
 // Horizontal segmented bar cells (HP style)
 export const segmentCell = (filled: boolean, tone: string) => `
   background: ${filled
-    ? `linear-gradient(180deg, #ffffff 0 25%, ${tone} 25% 100%)`
+    ? `linear-gradient(180deg, ${theme.colors.neutral.white} 0 25%, ${tone} 25% 100%)`
     : theme.colors.neutral.gray};
 `;
