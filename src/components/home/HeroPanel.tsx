@@ -5,7 +5,8 @@ import { css, keyframes } from '@emotion/react';
 import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow, pixelOutline, segmentCell } from '../../styles/pixel';
+import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { SegmentBar } from '../common/SegmentBar';
 import { visuallyHidden } from '../../styles/a11y';
 import { skills } from '../../data/skills';
 import { PixelMorphPhoto } from './PixelMorphPhoto';
@@ -151,19 +152,6 @@ const StatValue = styled.span`
   text-align: right;
 `;
 
-const Track = styled.div`
-  display: grid;
-  grid-template-columns: repeat(${BAR_CELLS}, minmax(0, 1fr));
-  gap: 2px;
-  padding: 2px;
-  background: ${theme.colors.neutral.black};
-`;
-
-const Cell = styled.span<{ filled: boolean; tone: string }>`
-  height: 10px;
-  ${props => segmentCell(props.filled, props.tone)}
-`;
-
 const StatBar: React.FC<{ label: string; filled: number; tone: string }> = ({
   label,
   filled,
@@ -171,11 +159,7 @@ const StatBar: React.FC<{ label: string; filled: number; tone: string }> = ({
 }) => (
   <StatRow>
     <StatLabel>{label}</StatLabel>
-    <Track aria-hidden="true">
-      {Array.from({ length: BAR_CELLS }, (_, i) => (
-        <Cell key={i} filled={i < filled} tone={tone} />
-      ))}
-    </Track>
+    <SegmentBar cells={BAR_CELLS} filled={filled} tone={tone} />
     <StatValue>
       {filled}/{BAR_CELLS}
     </StatValue>
