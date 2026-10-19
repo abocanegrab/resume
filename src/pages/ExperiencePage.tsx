@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
 import { SectionTitle } from '../components/common/SectionTitle';
 import { ExperienceCard } from '../components/experience/ExperienceCard';
+import { experiences } from '../data/experience';
 import { theme } from '../styles/theme';
 
 const ExperienceContainer = styled.div`
@@ -18,7 +19,11 @@ const ContentWrapper = styled.div`
 
 const TimelineContainer = styled.div`
   position: relative;
+  padding-bottom: 6px; /* room for the last card's hard shadow */
 `;
+
+// Language-independent "current job" check: the untranslated data marks it with 'Present'
+const currentIds = new Set(experiences.filter(e => e.endDate === 'Present').map(e => e.id));
 
 export interface ExperienceEntry {
   id: string;
@@ -53,6 +58,7 @@ export const ExperiencePage: React.FC = () => {
                 key={entry.id}
                 experience={entry}
                 index={index}
+                isCurrent={currentIds.size > 0 ? currentIds.has(entry.id) : index === 0}
               />
             ))}
           </TimelineContainer>

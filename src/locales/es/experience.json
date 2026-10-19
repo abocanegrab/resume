@@ -1,6 +1,7 @@
 {
   "title": "Registro de Misiones",
   "subtitle": "Misiones completadas y registro de combate",
+  "stageLabel": "STAGE",
   "entries": [
     {
       "id": "1",

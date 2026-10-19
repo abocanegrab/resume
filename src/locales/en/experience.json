@@ -1,6 +1,7 @@
 {
   "title": "Mission Log",
   "subtitle": "Completed missions and battle record",
+  "stageLabel": "STAGE",
   "entries": [
     {
       "id": "1",

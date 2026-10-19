@@ -1,8 +1,12 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
-import { theme } from '../../styles/theme';
-import { timelineEntry } from '../../styles/animations';
+import { css, keyframes } from '@emotion/react';
+import { motion, useReducedMotion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
+import { theme } from '../../styles/theme';
+import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { readableTone } from '../../styles/color';
 
 interface ExperienceEntry {
   id: string;
@@ -20,94 +24,127 @@ interface ExperienceEntry {
 interface ExperienceCardProps {
   experience: ExperienceEntry;
   index: number;
+  isCurrent: boolean;
 }
 
-const CardContainer = styled(motion.div)<{ isEven: boolean }>`
-  display: flex;
-  align-items: flex-start;
-  gap: ${theme.spacing.xl};
-  margin-bottom: ${theme.spacing['3xl']};
+// Stage-map rail column (node + dotted route line); narrower on phones
+const RAIL_WIDTH = 32;
+const RAIL_WIDTH_MOBILE = 20;
+const NODE_SIZE = 16;
+const HEADER_ROW = 24; // first grid row (node + STAGE label); node center = HEADER_ROW / 2
+const ROW_GAP = 48;
+
+// 4-frame stepped ease: the card snaps in instead of gliding
+const stepEase = (t: number) => Math.floor(t * 4) / 4;
+
+const stageEntry: Variants = {
+  initial: { opacity: 0, x: -16 },
+  animate: { opacity: 1, x: 0, transition: { duration: 0.32, ease: stepEase } },
+};
+
+const nodeBlink = keyframes`
+  0%, 49% { background: ${theme.colors.accent.gold}; }
+  50%, 100% { background: ${theme.colors.neutral.white}; }
+`;
+
+const typeColors: Record<string, string> = {
+  'full-time': theme.colors.accent.green,
+  freelance: theme.colors.accent.gold,
+  contract: theme.colors.accent.pink,
+  founder: theme.colors.primary.main,
+};
+
+const typeColor = (type: string) => typeColors[type] ?? theme.colors.primary.main;
+
+// Each row draws the route segment from its node down to the next node, so every
+// segment starts its 4px on / 4px off pattern under a node and the joins stay hidden.
+const StageRow = styled(motion.div)`
+  --rail: ${RAIL_WIDTH}px;
+  display: grid;
+  grid-template-columns: var(--rail) minmax(0, 1fr);
+  grid-template-rows: ${HEADER_ROW}px auto;
+  column-gap: ${theme.spacing.lg};
+  row-gap: ${theme.spacing.md};
+  margin-bottom: ${ROW_GAP}px;
   position: relative;
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    flex-direction: column;
-    padding-left: ${theme.spacing['2xl']};
-  }
-`;
-
-const TimelineMarker = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: 60px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 30px;
-  }
-`;
-
-const MarkerDot = styled(motion.div)`
-  width: 20px;
-  height: 20px;
-  background: ${theme.colors.primary.main};
-  border-radius: 50%;
-  border: 4px solid ${theme.colors.background.primary};
-  box-shadow: 0 0 15px ${theme.colors.primary.glow};
-  z-index: 2;
-`;
-
-const MarkerLine = styled.div`
-  width: 2px;
-  flex-grow: 1;
-  background: linear-gradient(
-    180deg,
-    ${theme.colors.primary.main},
-    ${theme.colors.secondary.main}
-  );
-  min-height: 100%;
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    left: 9px;
-  }
-`;
-
-const CardContent = styled.div`
-  flex: 1;
-  background: ${theme.colors.background.card};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.lg};
-  padding: ${theme.spacing.xl};
-  position: relative;
-  transition: all ${theme.transitions.fast};
-
-  &:hover {
-    border-color: ${theme.colors.primary.main};
-    box-shadow: 0 10px 30px rgba(92, 189, 245, 0.1);
-  }
 
   &::before {
     content: '';
     position: absolute;
-    top: 20px;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-right: 10px solid ${theme.colors.secondary.main};
+    left: calc(var(--rail) / 2 - 2px);
+    top: ${HEADER_ROW / 2}px;
+    bottom: -${ROW_GAP + HEADER_ROW / 2}px;
+    width: 4px;
+    background: repeating-linear-gradient(
+      180deg,
+      ${theme.colors.primary.dark} 0 4px,
+      transparent 4px 8px
+    );
+  }
 
-    @media (max-width: ${theme.breakpoints.tablet}) {
+  &:last-of-type {
+    margin-bottom: 0;
+
+    &::before {
       display: none;
     }
+  }
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    --rail: ${RAIL_WIDTH_MOBILE}px;
+    column-gap: ${theme.spacing.md};
+  }
+`;
+
+const NodeCell = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+// Square map node; the black outline separates it from the dotted route line
+const StageNode = styled('span', { shouldForwardProp: prop => prop !== 'isCurrent' })<{
+  isCurrent: boolean;
+}>`
+  display: block;
+  width: ${NODE_SIZE}px;
+  height: ${NODE_SIZE}px;
+  background: ${props => (props.isCurrent ? theme.colors.accent.gold : theme.colors.primary.main)};
+  box-shadow: ${pixelOutline(theme.colors.neutral.black, 4)};
+  position: relative;
+  z-index: 1;
+  ${props => props.isCurrent && css`animation: ${nodeBlink} 1s step-end infinite;`}
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+`;
+
+const StageLabel = styled('span', { shouldForwardProp: prop => prop !== 'isCurrent' })<{
+  isCurrent: boolean;
+}>`
+  align-self: center;
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: ${props => (props.isCurrent ? theme.colors.accent.gold : theme.colors.primary.light)};
+`;
+
+const CardContent = styled.article`
+  grid-column: 2;
+  min-width: 0;
+  ${pixelFrame('muted')}
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  padding: ${theme.spacing.xl};
+
+  &:hover {
+    box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  }
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    padding: ${theme.spacing.lg};
   }
 `;
 
@@ -121,6 +158,8 @@ const CardHeader = styled.div`
 `;
 
 const CompanyInfo = styled.div`
+  min-width: 0;
+
   h3 {
     font-family: ${theme.typography.fonts.heading};
     font-size: ${theme.typography.sizes.xl};
@@ -136,37 +175,19 @@ const CompanyInfo = styled.div`
   }
 `;
 
-const TypeBadge = styled.span<{ type: string }>`
-  padding: ${theme.spacing.xs} ${theme.spacing.md};
-  background: ${props => {
-    switch (props.type) {
-      case 'full-time':
-        return `${theme.colors.accent.green}20`;
-      case 'freelance':
-        return `${theme.colors.accent.gold}20`;
-      case 'contract':
-        return `${theme.colors.accent.pink}20`;
-      default:
-        return `${theme.colors.primary.main}20`;
-    }
-  }};
-  color: ${props => {
-    switch (props.type) {
-      case 'full-time':
-        return theme.colors.accent.green;
-      case 'freelance':
-        return theme.colors.accent.gold;
-      case 'contract':
-        return theme.colors.accent.pink;
-      default:
-        return theme.colors.primary.main;
-    }
-  }};
-  border-radius: ${theme.borderRadius.full};
-  font-size: ${theme.typography.sizes.xs};
-  text-transform: uppercase;
+// Dark pixel block; text tone lifted so it stays >= 4.5:1 on black (pink fails as-is)
+const TypeBadge = styled('span', { shouldForwardProp: prop => prop !== 'tone' })<{ tone: string }>`
+  margin: 2px;
+  padding: 4px 8px;
+  background: ${theme.colors.neutral.black};
+  box-shadow: ${props => pixelOutline(props.tone)};
+  color: ${props => readableTone(props.tone)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
   letter-spacing: 0.05em;
-  font-weight: ${theme.typography.weights.medium};
+  text-transform: uppercase;
+  white-space: nowrap;
 `;
 
 const MetaInfo = styled.div`
@@ -179,13 +200,14 @@ const MetaInfo = styled.div`
 const MetaItem = styled.span`
   display: flex;
   align-items: center;
-  gap: ${theme.spacing.xs};
-  font-size: ${theme.typography.sizes.sm};
+  gap: ${theme.spacing.sm};
+  font-size: ${theme.typography.sizes.base};
   color: ${theme.colors.neutral.silver};
 
   svg {
-    color: ${theme.colors.primary.dark};
+    color: ${theme.colors.primary.main};
     font-size: ${theme.typography.sizes.sm};
+    flex-shrink: 0;
   }
 `;
 
@@ -201,58 +223,66 @@ const AchievementsList = styled.ul`
   margin-bottom: ${theme.spacing.lg};
 `;
 
-const Achievement = styled(motion.li)`
+// Square pixel bullet, aligned with the first text line
+const Achievement = styled.li`
   display: flex;
   align-items: flex-start;
   gap: ${theme.spacing.sm};
-  font-size: ${theme.typography.sizes.sm};
+  font-size: ${theme.typography.sizes.base};
   color: ${theme.colors.neutral.silver};
   margin-bottom: ${theme.spacing.sm};
   line-height: ${theme.typography.lineHeights.normal};
 
   &::before {
-    content: '▹';
-    color: ${theme.colors.primary.main};
+    content: '';
     flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    margin-top: 0.55em;
+    background: ${theme.colors.primary.main};
   }
 `;
 
-const TechStack = styled.div`
+const TechStack = styled.ul`
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: ${theme.spacing.sm};
+  gap: 12px;
+  padding: 2px;
 `;
 
-const TechTag = styled.span`
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
-  background: ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: ${theme.typography.sizes.xs};
-  color: ${theme.colors.primary.light};
+const TechTag = styled.li`
+  padding: 4px 8px;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   font-family: ${theme.typography.fonts.mono};
+  font-size: 14px;
+  line-height: 1.2;
+  color: ${theme.colors.primary.light};
 `;
 
 export const ExperienceCard: React.FC<ExperienceCardProps> = ({
   experience,
   index,
+  isCurrent,
 }) => {
+  const { t } = useTranslation('experience');
+  const reduced = useReducedMotion();
+  const stage = String(index + 1).padStart(2, '0');
+
   return (
-    <CardContainer
-      isEven={index % 2 === 0}
-      variants={timelineEntry}
-      initial="initial"
+    <StageRow
+      variants={reduced ? undefined : stageEntry}
+      initial={reduced ? false : 'initial'}
       whileInView="animate"
       viewport={{ once: true, margin: '-50px' }}
     >
-      <TimelineMarker>
-        <MarkerDot
-          initial={{ scale: 0 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ type: 'spring', stiffness: 300, delay: 0.2 }}
-        />
-        <MarkerLine />
-      </TimelineMarker>
+      <NodeCell aria-hidden="true">
+        <StageNode isCurrent={isCurrent} />
+      </NodeCell>
+      <StageLabel isCurrent={isCurrent}>
+        {t('stageLabel')} {stage}
+      </StageLabel>
 
       <CardContent>
         <CardHeader>
@@ -260,16 +290,16 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
             <h3>{experience.company}</h3>
             <h4>{experience.position}</h4>
           </CompanyInfo>
-          <TypeBadge type={experience.type}>{experience.type}</TypeBadge>
+          <TypeBadge tone={typeColor(experience.type)}>{experience.type}</TypeBadge>
         </CardHeader>
 
         <MetaInfo>
           <MetaItem>
-            <FaCalendarAlt />
+            <FaCalendarAlt aria-hidden="true" />
             {experience.startDate} - {experience.endDate}
           </MetaItem>
           <MetaItem>
-            <FaMapMarkerAlt />
+            <FaMapMarkerAlt aria-hidden="true" />
             {experience.location}
           </MetaItem>
         </MetaInfo>
@@ -278,15 +308,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
 
         <AchievementsList>
           {experience.achievements.map((achievement, i) => (
-            <Achievement
-              key={i}
-              initial={{ opacity: 0, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-            >
-              {achievement}
-            </Achievement>
+            <Achievement key={i}>{achievement}</Achievement>
           ))}
         </AchievementsList>
 
@@ -296,7 +318,7 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({
           ))}
         </TechStack>
       </CardContent>
-    </CardContainer>
+    </StageRow>
   );
 };
 
