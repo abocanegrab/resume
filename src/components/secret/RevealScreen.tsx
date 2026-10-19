@@ -13,8 +13,8 @@ const TILE_H = SVG_HEIGHT / ROWS;
 const FLIP_DELAY = 250;
 
 const glowPulse = keyframes`
-  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.3); }
-  50% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.7), 0 0 60px rgba(0, 212, 255, 0.3); }
+  0%, 100% { box-shadow: 0 0 10px rgba(92, 189, 245, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(92, 189, 245, 0.7), 0 0 60px rgba(92, 189, 245, 0.3); }
 `;
 
 const fadeInText = keyframes`
@@ -89,7 +89,7 @@ const TileFront = styled(TileFace)`
 const TileBack = styled(TileFace)<{ col: number; row: number }>`
   transform: rotateY(180deg);
   background: ${theme.colors.secondary.dark};
-  border: 1px solid rgba(0, 212, 255, 0.3);
+  border: 1px solid rgba(92, 189, 245, 0.3);
 `;
 
 const SvgImage = styled.img<{ col: number; row: number }>`

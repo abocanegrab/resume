@@ -193,13 +193,13 @@ export const readyFlicker: Variants = {
 // Pulse Glow Effect
 export const pulseGlow: Variants = {
   initial: {
-    boxShadow: '0 0 5px rgba(0, 212, 255, 0.3)',
+    boxShadow: '0 0 5px rgba(92, 189, 245, 0.3)',
   },
   animate: {
     boxShadow: [
-      '0 0 5px rgba(0, 212, 255, 0.3)',
-      '0 0 20px rgba(0, 212, 255, 0.6)',
-      '0 0 5px rgba(0, 212, 255, 0.3)',
+      '0 0 5px rgba(92, 189, 245, 0.3)',
+      '0 0 20px rgba(92, 189, 245, 0.6)',
+      '0 0 5px rgba(92, 189, 245, 0.3)',
     ],
     transition: {
       duration: 2,
@@ -259,7 +259,7 @@ export const cardHover: Variants = {
   },
   hover: {
     y: -8,
-    boxShadow: '0 20px 40px rgba(0, 212, 255, 0.2)',
+    boxShadow: '0 20px 40px rgba(92, 189, 245, 0.2)',
     transition: {
       type: 'spring',
       stiffness: 300,
@@ -273,7 +273,7 @@ export const buttonVariants: Variants = {
   initial: { scale: 1 },
   hover: {
     scale: 1.05,
-    boxShadow: '0 0 30px rgba(0, 212, 255, 0.5)',
+    boxShadow: '0 0 30px rgba(92, 189, 245, 0.5)',
     transition: springTransition,
   },
   tap: {
@@ -411,11 +411,11 @@ export const powerUpGlow: Variants = {
 // Skill Bar Hover Highlight
 export const skillBarHighlight: Variants = {
   initial: {
-    boxShadow: '0 0 0 rgba(0, 212, 255, 0)',
+    boxShadow: '0 0 0 rgba(92, 189, 245, 0)',
     scale: 1,
   },
   hover: {
-    boxShadow: '0 0 15px rgba(0, 212, 255, 0.4)',
+    boxShadow: '0 0 15px rgba(92, 189, 245, 0.4)',
     scale: 1.02,
     transition: {
       duration: 0.2,

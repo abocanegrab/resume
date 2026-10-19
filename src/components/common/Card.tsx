@@ -23,7 +23,7 @@ const getVariantStyles = (variant: string) => {
       return `
         background: rgba(30, 58, 95, 0.3);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 212, 255, 0.2);
+        border: 1px solid rgba(92, 189, 245, 0.2);
       `;
     case 'bordered':
       return `

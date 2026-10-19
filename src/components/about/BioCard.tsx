@@ -96,7 +96,7 @@ const InterestsList = styled.div`
 
 const InterestTag = styled(motion.span)`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(92, 189, 245, 0.1);
   border: 1px solid ${theme.colors.primary.dark};
   border-radius: ${theme.borderRadius.full};
   font-size: ${theme.typography.sizes.sm};
@@ -104,7 +104,7 @@ const InterestTag = styled(motion.span)`
   transition: all ${theme.transitions.fast};
 
   &:hover {
-    background: rgba(0, 212, 255, 0.2);
+    background: rgba(92, 189, 245, 0.2);
     border-color: ${theme.colors.primary.main};
   }
 `;

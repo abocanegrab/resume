@@ -43,7 +43,7 @@ const getVariantStyles = (variant: string) => {
         border: 2px solid ${theme.colors.primary.main};
 
         &:hover:not(:disabled) {
-          background: rgba(0, 212, 255, 0.1);
+          background: rgba(92, 189, 245, 0.1);
           box-shadow: ${theme.shadows.glow.cyan};
         }
       `;
@@ -54,7 +54,7 @@ const getVariantStyles = (variant: string) => {
         border: none;
 
         &:hover:not(:disabled) {
-          background: rgba(0, 212, 255, 0.1);
+          background: rgba(92, 189, 245, 0.1);
         }
       `;
     default:

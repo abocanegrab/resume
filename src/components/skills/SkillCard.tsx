@@ -34,7 +34,7 @@ const CardContainer = styled(motion.div)`
   &:hover {
     border-color: ${theme.colors.primary.main};
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(92, 189, 245, 0.2);
 
     &::before {
       transform: scaleX(1);
@@ -49,7 +49,7 @@ const IconWrapper = styled(motion.div)<{ iconColor: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 212, 255, 0.1);
+  background: rgba(92, 189, 245, 0.1);
   border-radius: ${theme.borderRadius.md};
   border: 1px solid ${props => props.iconColor}40;
 

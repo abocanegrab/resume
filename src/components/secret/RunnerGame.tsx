@@ -288,7 +288,7 @@ export const RunnerGame: React.FC = () => {
           if (bx < CANVAS_W + b.w) {
             ctx.fillRect(bx, GROUND_Y - b.h, b.w, b.h);
             // Window dots
-            ctx.fillStyle = `rgba(0, 212, 255, ${alpha * 0.5})`;
+            ctx.fillStyle = `rgba(92, 189, 245, ${alpha * 0.5})`;
             for (let wy = GROUND_Y - b.h + 8; wy < GROUND_Y - 4; wy += 12) {
               for (let wx = bx + 6; wx < bx + b.w - 4; wx += 10) {
                 ctx.fillRect(wx, wy, 4, 4);

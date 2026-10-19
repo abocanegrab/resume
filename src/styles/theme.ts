@@ -1,50 +1,53 @@
 // Megaman X Theme - Design Tokens
 export const theme = {
   colors: {
-    // Primary - Cyan (X's Armor)
+    // Primary - Light Blue (X's Armor, sunrise art)
     primary: {
-      main: '#00D4FF',
-      dark: '#0099CC',
-      light: '#66E5FF',
-      glow: 'rgba(0, 212, 255, 0.5)',
+      main: '#5cbdf5',       // Armadura azul claro
+      dark: '#3480c4',
+      light: '#9ad8fa',
+      deep: '#0b4ad0',
+      glow: 'rgba(92, 189, 245, 0.45)',
     },
-    // Secondary - Deep Blues
+    // Secondary - Night City Blues
     secondary: {
-      main: '#1E3A5F',
-      dark: '#0D1B2A',
-      medium: '#2E5A8F',
-      light: '#3D6A9F',
+      main: '#2c2b66',       // Canto de edificio
+      dark: '#0a0d1f',       // Azotea
+      medium: '#3a3a7a',
+      light: '#55347a',
     },
     // Accent Colors
     accent: {
       green: '#39FF14',      // Energy/Success
-      pink: '#FF1493',       // Highlights
-      gold: '#FFD700',       // Achievements
-      orange: '#FF6B35',     // Warnings
-      red: '#FF3366',        // Danger/Zero
+      pink: '#bb526b',       // Highlights
+      gold: '#f8a862',       // Sol / atardecer
+      orange: '#e9785f',     // Warnings
+      red: '#ff4a5e',        // Balizas
     },
     // Neutral Colors
     neutral: {
-      black: '#0A0A0F',
-      darkGray: '#1A1A2E',
-      gray: '#2D2D44',
-      lightGray: '#7F86AD',
-      silver: '#A5A9C4',
-      white: '#E8E8F0',
+      black: '#0b0b10',
+      darkGray: '#151d44',
+      gray: '#222a5c',
+      lightGray: '#8f97c4',
+      silver: '#c8d4f0',
+      white: '#f2f5fb',
     },
     // Backgrounds
     background: {
-      primary: '#0D1B2A',
-      secondary: '#1A1A2E',
-      card: 'rgba(30, 58, 95, 0.6)',
-      overlay: 'rgba(13, 27, 42, 0.9)',
+      primary: '#0a0d1f',
+      secondary: '#151d44',
+      card: '#191a44',
+      overlay: 'rgba(10, 13, 31, 0.92)',
     },
+    // Sky - sunrise bands, top (night) to bottom (sun)
+    sky: ['#0d1430', '#151d44', '#222a5c', '#35306e', '#55347a', '#86406f', '#bb526b', '#e9785f', '#f8a862'],
     // Gradients
     gradients: {
-      primary: 'linear-gradient(135deg, #00D4FF 0%, #0099CC 100%)',
-      energyBar: 'linear-gradient(90deg, #00D4FF 0%, #39FF14 100%)',
-      heroBackground: 'linear-gradient(180deg, #0D1B2A 0%, #1E3A5F 50%, #0D1B2A 100%)',
-      cardHover: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(57, 255, 20, 0.05) 100%)',
+      primary: 'linear-gradient(90deg, #0b4ad0 0%, #5cbdf5 100%)',
+      energyBar: 'linear-gradient(90deg, #5cbdf5 0%, #39FF14 100%)',
+      heroBackground: 'linear-gradient(180deg, #0d1430 0%, #222a5c 55%, #55347a 100%)',
+      cardHover: 'linear-gradient(135deg, rgba(92, 189, 245, 0.12) 0%, rgba(248, 168, 98, 0.06) 100%)',
       scanline: 'repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)',
     },
   },
@@ -119,10 +122,11 @@ export const theme = {
     md: '0 4px 8px rgba(0, 0, 0, 0.4)',
     lg: '0 8px 16px rgba(0, 0, 0, 0.5)',
     glow: {
-      cyan: '0 0 20px rgba(0, 212, 255, 0.5), 0 0 40px rgba(0, 212, 255, 0.3)',
+      cyan: '0 0 0 2px rgba(92, 189, 245, 0.35)',
       green: '0 0 20px rgba(57, 255, 20, 0.5), 0 0 40px rgba(57, 255, 20, 0.3)',
-      pink: '0 0 20px rgba(255, 20, 147, 0.5), 0 0 40px rgba(255, 20, 147, 0.3)',
+      pink: '0 0 0 2px rgba(187, 82, 107, 0.4)',
     },
+    pixel: '4px 4px 0 #0b0b10',
     inner: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
   },
 

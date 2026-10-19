@@ -53,7 +53,7 @@ const Cell = styled.button<{ active: boolean }>`
   height: 72px;
   border: 2px solid ${({ active }) => (active ? theme.colors.primary.main : theme.colors.secondary.main)};
   background: ${({ active }) =>
-    active ? 'rgba(0, 212, 255, 0.2)' : theme.colors.secondary.dark};
+    active ? 'rgba(92, 189, 245, 0.2)' : theme.colors.secondary.dark};
   color: ${({ active }) => (active ? theme.colors.primary.main : theme.colors.neutral.lightGray)};
   font-family: ${theme.typography.fonts.pixel};
   font-size: ${theme.typography.sizes.xs};
@@ -64,7 +64,7 @@ const Cell = styled.button<{ active: boolean }>`
 
   &:hover {
     border-color: ${theme.colors.primary.light};
-    background: rgba(0, 212, 255, 0.1);
+    background: rgba(92, 189, 245, 0.1);
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {

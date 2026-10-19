@@ -91,7 +91,7 @@ const CardContent = styled.div`
 
   &:hover {
     border-color: ${theme.colors.primary.main};
-    box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(92, 189, 245, 0.1);
   }
 
   &::before {

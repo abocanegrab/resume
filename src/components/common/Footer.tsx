@@ -21,7 +21,7 @@ const CircuitPattern = styled.div`
   right: 0;
   bottom: 0;
   opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%2300D4FF' stroke-width='1'%3E%3Cpath d='M0 30h60M30 0v60M15 0v15h15M45 0v15h-15M15 60v-15h15M45 60v-15h-15M0 15h15v15M60 15h-15v15M0 45h15v-15M60 45h-15v-15'/%3E%3Ccircle cx='15' cy='15' r='3'/%3E%3Ccircle cx='45' cy='15' r='3'/%3E%3Ccircle cx='15' cy='45' r='3'/%3E%3Ccircle cx='45' cy='45' r='3'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%235cbdf5' stroke-width='1'%3E%3Cpath d='M0 30h60M30 0v60M15 0v15h15M45 0v15h-15M15 60v-15h15M45 60v-15h-15M0 15h15v15M60 15h-15v15M0 45h15v-15M60 45h-15v-15'/%3E%3Ccircle cx='15' cy='15' r='3'/%3E%3Ccircle cx='45' cy='15' r='3'/%3E%3Ccircle cx='15' cy='45' r='3'/%3E%3Ccircle cx='45' cy='45' r='3'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
 `;
 
