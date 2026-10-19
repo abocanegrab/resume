@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
+import { readableTone } from '../../styles/color';
 
 interface CharacterSpriteProps {
   armorColor?: string;
@@ -94,6 +95,10 @@ const SPRITE_VERSION = '4';
 
 // Skin tone used to cover the eyes while blinking
 const SKIN = '#f0b281';
+
+// Hard 2px pixel rim around the sprite silhouette while charging
+const pixelRim = (c: string) =>
+  `drop-shadow(2px 0 0 ${c}) drop-shadow(-2px 0 0 ${c}) drop-shadow(0 2px 0 ${c}) drop-shadow(0 -2px 0 ${c})`;
 
 // Helper function to adjust color brightness
 function adjustColor(color: string, amount: number): string {
@@ -257,7 +262,7 @@ const AnimatedSprite: React.FC<{
   const filter = isWhiteFlash
     ? 'brightness(0) invert(1)'
     : isCharging
-      ? `drop-shadow(0 0 15px ${armorColor})`
+      ? pixelRim(readableTone(armorColor))
       : 'none';
 
   // Real redrawn run poses (character-run-1..3.svg), cycled 1-2-3-2 like a

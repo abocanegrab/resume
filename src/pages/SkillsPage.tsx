@@ -100,9 +100,7 @@ const CategoryTab = styled('button', { shouldForwardProp: prop => prop !== 'isAc
   cursor: pointer;
 
   /* Gold on the deep-blue active tab would drop below 4.5:1, so only inactive tabs */
-  &:hover:not([aria-pressed='true']) {
-    color: ${theme.colors.accent.gold};
-  }
+  ${props => (props.isActive ? '' : `&:hover { color: ${theme.colors.accent.gold}; }`)}
 
   /* Global focus ring, pushed past the 2px pixel outline */
   &:focus-visible {

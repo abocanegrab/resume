@@ -1,42 +1,21 @@
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
 import { pixelOutline } from '../../styles/pixel';
+import { readableTone } from '../../styles/color';
 import { SegmentBar } from '../common/SegmentBar';
 import type { Skill } from '../../data/skills';
 
 const BAR_CELLS = 20;
 // Rows start filling one after another, like a stat screen powering up
 const ROW_STAGGER_MS = 80;
-// Minimum relative luminance for a lit cell: >= 3:1 against the empty cell color
-const MIN_TONE_LUMINANCE = 0.2;
+// Later rows wait at most this many steps, so long lists still fill promptly
+const MAX_STAGGER_ROWS = 8;
 
 interface SkillBarProps {
   skill: Skill;
   index?: number;
   onHover?: (skill: Skill | null) => void;
 }
-
-const channel = (v: number) => {
-  const c = v / 255;
-  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-};
-
-const luminance = (r: number, g: number, b: number) =>
-  0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-
-// Brand colors like .NET purple vanish on the dark track: mix them toward white
-// in 10% steps until the lit cells stand out from the empty ones.
-const readableTone = (hex: string) => {
-  const n = parseInt(hex.replace('#', ''), 16);
-  const base = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  for (let mix = 0; mix <= 1; mix += 0.1) {
-    const [r, g, b] = base.map(c => Math.round(c + (255 - c) * mix));
-    if (luminance(r, g, b) >= MIN_TONE_LUMINANCE) {
-      return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-    }
-  }
-  return theme.colors.neutral.white;
-};
 
 const Row = styled('div', { shouldForwardProp: prop => prop !== 'tone' })<{ tone: string }>`
   padding: ${theme.spacing.sm};
@@ -91,8 +70,13 @@ export const SkillBar: React.FC<SkillBarProps> = ({ skill, index = 0, onHover })
   return (
     <Row
       tone={tone}
-      onMouseEnter={() => onHover?.(skill)}
-      onMouseLeave={() => onHover?.(null)}
+      // Mouse only: a touch tap would otherwise leave the highlight stuck on
+      onPointerEnter={e => {
+        if (e.pointerType === 'mouse') onHover?.(skill);
+      }}
+      onPointerLeave={e => {
+        if (e.pointerType === 'mouse') onHover?.(null);
+      }}
     >
       <SkillHeader>
         <SkillName>
@@ -106,7 +90,7 @@ export const SkillBar: React.FC<SkillBarProps> = ({ skill, index = 0, onHover })
         filled={Math.round(skill.level / 5)}
         tone={tone}
         animateOnView
-        startDelayMs={index * ROW_STAGGER_MS}
+        startDelayMs={Math.min(index, MAX_STAGGER_ROWS) * ROW_STAGGER_MS}
       />
     </Row>
   );

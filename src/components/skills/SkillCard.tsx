@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
 import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { readableTone } from '../../styles/color';
 import { SegmentBar } from '../common/SegmentBar';
 import type { Skill } from '../../data/skills';
 
@@ -66,10 +67,11 @@ const PercentageLabel = styled.span`
 
 export const SkillCard: React.FC<SkillCardProps> = ({ skill, index = 0 }) => {
   const IconComponent = skill.icon;
+  const tone = readableTone(skill.color);
 
   return (
     <CardContainer>
-      <IconWrapper iconColor={skill.color}>
+      <IconWrapper iconColor={tone}>
         <IconComponent aria-hidden="true" />
       </IconWrapper>
       <SkillName>{skill.name}</SkillName>
@@ -77,7 +79,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({ skill, index = 0 }) => {
         <SegmentBar
           cells={LEVEL_CELLS}
           filled={(skill.level / 100) * LEVEL_CELLS}
-          tone={skill.color}
+          tone={tone}
           animateOnView
           startDelayMs={index * CARD_STAGGER_MS}
         />
