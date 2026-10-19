@@ -47,6 +47,36 @@ export const globalStyles = css`
     opacity: 0.03;
   }
 
+  /* Fixed starfield behind content (body has no own background box: its
+     background propagates to the canvas, so z-index -1 still paints above it) */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 7% 12%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 19% 38%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 28% 8%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 36% 64%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 47% 22%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 55% 81%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 63% 44%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 71% 6%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 79% 57%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 86% 27%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 92% 74%, ${theme.colors.neutral.silver} 99%, transparent),
+      radial-gradient(1px 1px at 14% 88%, ${theme.colors.neutral.silver} 99%, transparent);
+    /* jump-none: two discrete frames, 0.6 for 1.5s then 1 for 1.5s */
+    animation: twinkle 3s steps(2, jump-none) infinite;
+  }
+
+  @keyframes twinkle {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+  }
+
   /* Selection Styling */
   ::selection {
     background-color: ${theme.colors.primary.main};
@@ -76,11 +106,10 @@ export const globalStyles = css`
   }
 
   h2 {
-    font-size: ${theme.typography.sizes['4xl']};
-
-    @media (max-width: ${theme.breakpoints.tablet}) {
-      font-size: ${theme.typography.sizes['3xl']};
-    }
+    font-family: ${theme.typography.fonts.pixel};
+    font-size: clamp(1.1rem, 2.4vw, 1.75rem);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
   }
 
   h3 {
@@ -104,8 +133,7 @@ export const globalStyles = css`
     transition: color ${theme.transitions.fast};
 
     &:hover {
-      color: ${theme.colors.primary.light};
-      text-shadow: ${theme.shadows.glow.cyan};
+      color: ${theme.colors.accent.gold};
     }
   }
 
@@ -139,7 +167,7 @@ export const globalStyles = css`
   code, pre {
     font-family: ${theme.typography.fonts.mono};
     background-color: ${theme.colors.neutral.darkGray};
-    border-radius: ${theme.borderRadius.sm};
+    border-radius: 0;
   }
 
   code {
@@ -164,7 +192,7 @@ export const globalStyles = css`
 
   ::-webkit-scrollbar-thumb {
     background: ${theme.colors.primary.dark};
-    border-radius: ${theme.borderRadius.full};
+    border-radius: 0;
 
     &:hover {
       background: ${theme.colors.primary.main};
@@ -248,13 +276,12 @@ export const globalStyles = css`
 
   /* Energy Pulse Animation */
   @keyframes energyPulse {
+    /* Crisp rings: pair with steps() timing */
     0%, 100% {
-      box-shadow: 0 0 5px ${theme.colors.primary.glow},
-                  0 0 10px ${theme.colors.primary.glow};
+      box-shadow: 0 0 0 2px ${theme.colors.primary.glow};
     }
     50% {
-      box-shadow: 0 0 20px ${theme.colors.primary.glow},
-                  0 0 40px ${theme.colors.primary.glow};
+      box-shadow: 0 0 0 4px ${theme.colors.primary.glow};
     }
   }
 
