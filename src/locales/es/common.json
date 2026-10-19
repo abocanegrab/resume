@@ -59,5 +59,8 @@
     "open": "Abrir menú",
     "close": "Cerrar menú",
     "label": "Menú"
+  },
+  "language": {
+    "toggle": "Cambiar idioma"
   }
 }

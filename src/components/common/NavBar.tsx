@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
@@ -337,12 +337,16 @@ const navPaths = ['/', '/about', '/skills', '/experience', '/projects', '/contac
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export const NavBar: React.FC = () => {
-  // The drawer is "open" only for the route it was opened on, so any
-  // navigation (link click, back button) closes it without an effect.
+  // The drawer remembers the route it was opened on. Any navigation away
+  // (link click, back/forward) resets it during render, so returning to that
+  // route later never reopens it.
   const [openPath, setOpenPath] = useState<string | null>(null);
   const location = useLocation();
   const { t } = useTranslation('common');
-  const isMobileMenuOpen = openPath === location.pathname;
+  if (openPath !== null && openPath !== location.pathname) {
+    setOpenPath(null);
+  }
+  const isMobileMenuOpen = openPath !== null && openPath === location.pathname;
 
   const toggleRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -354,13 +358,14 @@ export const NavBar: React.FC = () => {
   }));
 
   const openMenu = () => setOpenPath(location.pathname);
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setOpenPath(null);
     toggleRef.current?.focus();
-  };
+  }, []);
 
   // While open: focus the close button, lock body scroll, Escape closes,
-  // Tab/Shift+Tab cycle inside the drawer.
+  // Tab/Shift+Tab cycle inside the drawer, and widening past NAV_COLLAPSE
+  // closes it (the toggle is hidden there, so focus is not returned).
   useEffect(() => {
     if (!isMobileMenuOpen) return;
     closeRef.current?.focus();
@@ -370,8 +375,7 @@ export const NavBar: React.FC = () => {
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setOpenPath(null);
-        toggleRef.current?.focus();
+        closeMenu();
         return;
       }
       if (e.key !== 'Tab' || !menuRef.current) return;
@@ -389,11 +393,19 @@ export const NavBar: React.FC = () => {
       }
     };
     window.addEventListener('keydown', onKey);
+
+    const desktopMq = window.matchMedia(`(min-width: ${parseInt(NAV_COLLAPSE, 10) + 1}px)`);
+    const onViewport = (e: MediaQueryListEvent) => {
+      if (e.matches) setOpenPath(null);
+    };
+    desktopMq.addEventListener('change', onViewport);
+
     return () => {
       window.removeEventListener('keydown', onKey);
+      desktopMq.removeEventListener('change', onViewport);
       document.body.style.overflow = prevOverflow;
     };
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, closeMenu]);
 
   return (
     <>

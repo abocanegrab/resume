@@ -47,7 +47,7 @@ const Divider = styled.span`
 `;
 
 export const LanguageSwitcher: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
 
   const toggleLanguage = () => {
     const newLang = i18n.language.startsWith('es') ? 'en' : 'es';
@@ -59,7 +59,7 @@ export const LanguageSwitcher: React.FC = () => {
   return (
     <SwitcherButton
       onClick={toggleLanguage}
-      aria-label="Toggle language"
+      aria-label={t('language.toggle')}
     >
       <LangOption isActive={isEnglish}>EN</LangOption>
       <Divider aria-hidden="true">/</Divider>
