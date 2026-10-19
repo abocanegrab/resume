@@ -19,7 +19,7 @@ interface SkillBarProps {
 
 const Row = styled('div', { shouldForwardProp: prop => prop !== 'tone' })<{ tone: string }>`
   padding: ${theme.spacing.sm};
-  cursor: pointer;
+  cursor: default;
 
   /* Discrete highlight: the row lights up in the skill's color, no fades */
   &:hover {

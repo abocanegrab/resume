@@ -36,7 +36,8 @@
       "title": "ENTER PASSWORD",
       "submit": "SUBMIT",
       "denied": "ACCESS DENIED",
-      "hint": "Only true Maverick Hunters know the code"
+      "hint": "Only true Maverick Hunters know the code",
+      "cellLabel": "Cell {{n}}"
     },
     "reveal": {
       "loading": "DECRYPTING HUNTER DATA...",

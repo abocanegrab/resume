@@ -36,7 +36,8 @@
       "title": "INGRESE CONTRASEÑA",
       "submit": "ENVIAR",
       "denied": "ACCESO DENEGADO",
-      "hint": "Solo los verdaderos Maverick Hunters conocen el código"
+      "hint": "Solo los verdaderos Maverick Hunters conocen el código",
+      "cellLabel": "Celda {{n}}"
     },
     "reveal": {
       "loading": "DESENCRIPTANDO DATOS DEL CAZADOR...",

@@ -75,3 +75,20 @@ de layout.
 `tsc -b`, `eslint`, y capturas con Playwright a 1440×900 y 390×844 de cada ruta
 (`#/`, `#/about`, `#/skills`, `#/experience`, `#/projects`, `#/contact`), revisando
 la consola sin errores.
+
+## As-built (2026-10-19)
+Diferencias entre este diseño y lo implementado:
+- **Fuente pixel**: Silkscreen (Press Start 2P no tenía mayúsculas acentuadas). Toda
+  etiqueta en fuente pixel mide ≥14px.
+- **Marcos**: no hay componente `PixelFrame`; son helpers de `src/styles/pixel.ts`
+  (`pixelCard`, `pixelCardShadow`, contornos con `box-shadow`), sin `clip-path`.
+- **Eliminados**: `Card`, `SkillCard` y `ContactForm`.
+- **Contacto**: la "terminal" son tiles de información + CTA `mailto:` (sin formulario).
+- **Compartidos**: `SegmentBar` e `InfoTile`; hooks `useFocusTrap` y `useScrollLock`;
+  enlaces sociales en `data/social.ts`.
+- **Hero**: incluye una fila EQUIPPED (enlaza a habilidades).
+- **Experiencia**: etiquetas "MISIÓN 0N".
+- **Animaciones**: solo escalonadas (`stepEase`, `windowEntry`), respetando
+  `prefers-reduced-motion`.
+- **Foto**: `developer-photo.png` aún no existe; `HeroPanel` no la pasa
+  (`PROFILE_PHOTO = undefined`) y solo se muestra el retrato pixel, sin morph.

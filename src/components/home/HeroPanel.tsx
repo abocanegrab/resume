@@ -364,6 +364,9 @@ const RoleTicker: React.FC = () => {
   );
 };
 
+// Set to `${import.meta.env.BASE_URL}images/profile/developer-photo.png` once the photo is added
+const PROFILE_PHOTO: string | undefined = undefined;
+
 export const HeroPanel: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const { t: tc } = useTranslation('common');
@@ -373,7 +376,7 @@ export const HeroPanel: React.FC = () => {
       <Header>
         <PortraitCell>
           <PixelMorphPhoto
-            photoSrc={`${import.meta.env.BASE_URL}images/profile/developer-photo.png`}
+            photoSrc={PROFILE_PHOTO}
             pixelSrc={`${import.meta.env.BASE_URL}images/profile/pixel-portrait.svg`}
             alt={t('hero.photoAlt')}
             showHint={false}

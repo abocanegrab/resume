@@ -149,6 +149,7 @@ export const ContactPage: React.FC = () => {
       <ContactContainer>
         <ContentWrapper>
           <SectionTitle
+            level={1}
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"

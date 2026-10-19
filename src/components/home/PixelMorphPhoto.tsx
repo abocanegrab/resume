@@ -6,7 +6,8 @@ import { theme } from '../../styles/theme';
 import { dither, pixelFrameShadow } from '../../styles/pixel';
 
 interface PixelMorphPhotoProps {
-  photoSrc: string;
+  /** Real photo; when omitted only the pixel portrait is shown (no morph) */
+  photoSrc?: string;
   pixelSrc: string;
   alt: string;
   /** Fixed square size in px; overrides the responsive default */
@@ -23,11 +24,13 @@ const REVERSE_STEP_MS = 60;
 const FLASH_MS = 80;
 const CANVAS_SIZE = 320;
 
-const PhotoContainer = styled.div`
+const PhotoContainer = styled('div', { shouldForwardProp: prop => prop !== 'interactive' })<{
+  interactive: boolean;
+}>`
   position: relative;
   width: 320px;
   height: 320px;
-  cursor: pointer;
+  cursor: ${props => (props.interactive ? 'pointer' : 'default')};
 
   &:focus-visible {
     outline-offset: 4px;
@@ -116,7 +119,6 @@ const HintText = styled.span<{ visible: boolean }>`
   color: ${theme.colors.neutral.silver};
   white-space: nowrap;
   opacity: ${props => (props.visible ? 0.85 : 0)};
-  transition: opacity 0.3s ease;
 `;
 
 export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
@@ -131,6 +133,8 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
   const [photoFailed, setPhotoFailed] = useState(false);
   const reduced = useReducedMotion();
   const { t } = useTranslation('home');
+  // No photo (or it failed to load): static pixel portrait only
+  const staticOnly = !photoSrc || photoFailed;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const photoImgRef = useRef<HTMLImageElement | null>(null);
@@ -175,7 +179,7 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
   }, []);
 
   const activate = useCallback(() => {
-    if (photoFailed) return;
+    if (staticOnly) return;
     clearTimers();
     if (reduced || !photoReady()) {
       setPhase('pixel');
@@ -193,10 +197,10 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
         setPhase('pixel');
       }, total + FLASH_MS)
     );
-  }, [photoFailed, reduced, clearTimers, drawPixelated, photoReady]);
+  }, [staticOnly, reduced, clearTimers, drawPixelated, photoReady]);
 
   const deactivate = useCallback(() => {
-    if (photoFailed) return;
+    if (staticOnly) return;
     clearTimers();
     setFlashOn(false);
     if (reduced || !photoReady()) {
@@ -213,7 +217,7 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
     timersRef.current.push(
       window.setTimeout(() => setPhase('photo'), reversed.length * REVERSE_STEP_MS)
     );
-  }, [photoFailed, reduced, clearTimers, drawPixelated, photoReady]);
+  }, [staticOnly, reduced, clearTimers, drawPixelated, photoReady]);
 
   const handleClick = useCallback(() => {
     // Touch devices have no hover: tap toggles the effect
@@ -225,25 +229,26 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
     }
   }, [phase, activate, deactivate]);
 
-  const showPixel = photoFailed || phase === 'pixel';
-  const showCanvas = phase === 'toPixel' || phase === 'toPhoto';
-  const showPhoto = !photoFailed && (phase === 'photo' || showCanvas);
+  const showPixel = staticOnly || phase === 'pixel';
+  const showCanvas = !staticOnly && (phase === 'toPixel' || phase === 'toPhoto');
+  const showPhoto = !staticOnly && (phase === 'photo' || showCanvas);
 
   return (
     <PhotoContainer
       role="img"
       aria-label={alt}
-      tabIndex={0}
+      interactive={!staticOnly}
+      tabIndex={staticOnly ? undefined : 0}
       style={size ? { width: size, height: size } : undefined}
-      onMouseEnter={activate}
-      onMouseLeave={deactivate}
-      onFocus={activate}
-      onBlur={deactivate}
-      onClick={handleClick}
+      onMouseEnter={staticOnly ? undefined : activate}
+      onMouseLeave={staticOnly ? undefined : deactivate}
+      onFocus={staticOnly ? undefined : activate}
+      onBlur={staticOnly ? undefined : deactivate}
+      onClick={staticOnly ? undefined : handleClick}
     >
       <PhotoFrame>
         <Layer visible={showPhoto} aria-hidden="true">
-          {!photoFailed && (
+          {!staticOnly && (
             <PhotoImage
               ref={photoImgRef}
               src={photoSrc}
@@ -270,8 +275,8 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
 
       <StatusBadge aria-hidden="true" />
 
-      {showHint && (
-        <HintText visible={!photoFailed && phase === 'photo'} aria-hidden="true">
+      {showHint && !staticOnly && (
+        <HintText visible={phase === 'photo'} aria-hidden="true">
           {t('hero.hintPhoto')}
         </HintText>
       )}

@@ -37,6 +37,7 @@ export const ExperiencePage: React.FC = () => {
       <ExperienceContainer>
         <ContentWrapper>
           <SectionTitle
+            level={1}
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"

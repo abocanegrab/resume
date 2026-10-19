@@ -24,6 +24,7 @@ export const AboutPage: React.FC = () => {
       <AboutContainer>
         <ContentWrapper>
           <SectionTitle
+            level={1}
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"

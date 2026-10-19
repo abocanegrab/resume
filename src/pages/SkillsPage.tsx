@@ -150,6 +150,7 @@ export const SkillsPage: React.FC = () => {
       <SkillsContainer>
         <ContentWrapper>
           <SectionTitle
+            level={1}
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"

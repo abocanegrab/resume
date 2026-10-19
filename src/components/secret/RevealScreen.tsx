@@ -33,7 +33,7 @@ const Wrapper = styled.div`
 
 const LoadingText = styled.p`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: ${theme.typography.sizes.sm};
   color: ${theme.colors.primary.main};
   margin-bottom: ${theme.spacing.xl};
   text-shadow: 0 0 10px ${theme.colors.primary.glow};
@@ -108,10 +108,6 @@ const CompleteText = styled.h2<{ visible: boolean }>`
   text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
   opacity: ${({ visible }) => (visible ? 1 : 0)};
   animation: ${({ visible }) => (visible ? fadeInText : 'none')} 0.6s ease;
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: ${theme.typography.sizes.xs};
-  }
 `;
 
 const StartButton = styled.button<{ visible: boolean }>`
@@ -136,7 +132,6 @@ const StartButton = styled.button<{ visible: boolean }>`
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: ${theme.typography.sizes.xs};
     padding: ${theme.spacing.sm} ${theme.spacing.xl};
   }
 `;

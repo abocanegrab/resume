@@ -1,10 +1,13 @@
 import styled from '@emotion/styled';
+import { css } from '@emotion/react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { theme } from '../../styles/theme';
-import { fadeInUp, readyFlicker } from '../../styles/animations';
+import { fadeInUp, readyFlicker, stepEase } from '../../styles/animations';
 
 interface SectionTitleProps {
   title: string;
+  /** Heading level; use 1 for the page's main title */
+  level?: 1 | 2;
   subtitle?: string;
   align?: 'left' | 'center' | 'right';
   glitchEffect?: boolean;
@@ -15,7 +18,13 @@ const TitleWrapper = styled(motion.div)<{ align: string }>`
   margin-bottom: ${theme.spacing['2xl']};
 `;
 
-const Title = styled(motion.h2)`
+// Pinned type metrics so the h1 variant looks identical to the global h2 style
+const titleStyles = css`
+  font-family: ${theme.typography.fonts.pixel};
+  font-weight: ${theme.typography.weights.bold};
+  font-size: 32px;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
   position: relative;
   display: inline-block;
   color: ${theme.colors.neutral.white};
@@ -34,7 +43,14 @@ const Title = styled(motion.h2)`
       12px 0 0 ${theme.colors.accent.gold},
       24px 0 0 ${theme.colors.accent.pink};
   }
+
+  @media (max-width: ${theme.breakpoints.tablet}) {
+    font-size: 20px;
+  }
 `;
+
+const TitleH1 = styled(motion.h1)(titleStyles);
+const TitleH2 = styled(motion.h2)(titleStyles);
 
 const Subtitle = styled(motion.p)`
   font-family: ${theme.typography.fonts.body};
@@ -58,18 +74,20 @@ const Decorator = styled.span`
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({
   title,
+  level = 2,
   subtitle,
   align = 'center',
   glitchEffect = true,
 }) => {
   const reduced = useReducedMotion();
   const flicker = glitchEffect && !reduced;
+  const Title = level === 1 ? TitleH1 : TitleH2;
 
   return (
     <TitleWrapper
       align={align}
-      variants={fadeInUp}
-      initial="initial"
+      variants={reduced ? undefined : fadeInUp}
+      initial={reduced ? false : 'initial'}
       whileInView="animate"
       viewport={{ once: true, margin: '-50px' }}
     >
@@ -79,10 +97,10 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       </Title>
       {subtitle && (
         <Subtitle
-          initial={{ opacity: 0, y: 10 }}
+          initial={reduced ? false : { opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.2, duration: 0.24, ease: stepEase }}
         >
           {subtitle}
         </Subtitle>

@@ -56,7 +56,7 @@ const Cell = styled.button<{ active: boolean }>`
     active ? 'rgba(92, 189, 245, 0.2)' : theme.colors.secondary.dark};
   color: ${({ active }) => (active ? theme.colors.primary.main : theme.colors.neutral.lightGray)};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: ${theme.typography.sizes.sm};
   cursor: pointer;
   transition: all ${theme.transitions.fast};
   box-shadow: ${({ active }) => (active ? theme.shadows.glow.cyan : 'none')};
@@ -70,7 +70,6 @@ const Cell = styled.button<{ active: boolean }>`
   @media (max-width: ${theme.breakpoints.mobile}) {
     width: 60px;
     height: 60px;
-    font-size: 12px;
   }
 `;
 
@@ -92,7 +91,6 @@ const SubmitButton = styled.button`
   }
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: ${theme.typography.sizes.xs};
     padding: ${theme.spacing.sm} ${theme.spacing.xl};
   }
 `;
@@ -106,15 +104,11 @@ const DeniedText = styled.p<{ visible: boolean }>`
   text-shadow: 0 0 10px rgba(255, 74, 94, 0.5);
   animation: ${({ visible }) => (visible ? flash : 'none')} 0.3s ease;
   min-height: 1.5em;
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    font-size: ${theme.typography.sizes.xs};
-  }
 `;
 
 const HintText = styled.p`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
+  font-size: ${theme.typography.sizes.sm};
   color: ${theme.colors.neutral.lightGray};
   margin-top: ${theme.spacing['2xl']};
   text-align: center;
@@ -184,7 +178,7 @@ export const PasswordScreen: React.FC<PasswordScreenProps> = ({ onSuccess }) => 
               key={n}
               active={toggled.has(n)}
               onClick={() => toggleCell(n)}
-              aria-label={`Cell ${n}`}
+              aria-label={t('secret.password.cellLabel', { n })}
             >
               {n}
             </Cell>

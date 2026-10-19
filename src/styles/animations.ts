@@ -13,7 +13,7 @@ export const windowEntry: Variants = {
   }),
 };
 
-// Section titles: rise and fade in
+// Section titles: snap up and in (stepped, no glide)
 export const fadeInUp: Variants = {
   initial: {
     opacity: 0,
@@ -24,7 +24,7 @@ export const fadeInUp: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: stepEase,
     },
   },
   exit: {

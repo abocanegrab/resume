@@ -104,6 +104,7 @@ export const ProjectsPage: React.FC = () => {
       <ProjectsContainer>
         <ContentWrapper>
           <SectionTitle
+            level={1}
             title={t('title')}
             subtitle={t('subtitle')}
             align="center"
