@@ -111,12 +111,12 @@ export const globalStyles = css`
     font-family: ${theme.typography.fonts.pixel};
     /* Silkscreen ships a real 700; stepped sizes keep it crisp */
     font-weight: ${theme.typography.weights.bold};
-    font-size: 24px;
-    letter-spacing: 0.04em;
+    font-size: 32px;
+    letter-spacing: 0.02em;
     line-height: 1.4;
 
     @media (max-width: ${theme.breakpoints.tablet}) {
-      font-size: 16px;
+      font-size: 20px;
     }
   }
 

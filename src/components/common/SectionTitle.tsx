@@ -47,7 +47,7 @@ const Subtitle = styled(motion.p)`
 const Decorator = styled.span`
   color: ${theme.colors.accent.gold};
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 16px;
+  font-size: 20px;
   margin-right: ${theme.spacing.sm};
   vertical-align: 0.15em;
 
