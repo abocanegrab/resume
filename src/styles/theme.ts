@@ -105,15 +105,6 @@ export const theme = {
     wide: '1536px',
   },
 
-  borderRadius: {
-    none: '0',
-    sm: '0.25rem',    // 4px
-    md: '0.5rem',     // 8px
-    lg: '1rem',       // 16px
-    xl: '1.5rem',     // 24px
-    full: '9999px',
-  },
-
   shadows: {
     sm: '0 2px 4px rgba(0, 0, 0, 0.3)',
     md: '0 4px 8px rgba(0, 0, 0, 0.4)',
