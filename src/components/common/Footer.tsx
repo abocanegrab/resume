@@ -204,10 +204,11 @@ const FooterBottom = styled.div`
   }
 `;
 
-// Low-key secret link (lightGray keeps AA on the footer fill); lights up gold on hover/focus
+// Easter egg: intentionally barely visible (decorative, low contrast by design);
+// reveals itself in gold on hover/focus.
 const SecretCabinLink = styled(Link)`
   font-size: 14px;
-  color: ${theme.colors.neutral.lightGray};
+  color: ${theme.colors.secondary.medium};
   font-family: ${theme.typography.fonts.pixel};
   text-decoration: none;
   line-height: 1.6;

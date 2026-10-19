@@ -54,5 +54,10 @@
     "liveDemo": "Live Demo",
     "sending": "Transmitting...",
     "featured": "Featured"
+  },
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "label": "Menu"
   }
 }

@@ -54,5 +54,10 @@
     "liveDemo": "Demo en Vivo",
     "sending": "Transmitiendo...",
     "featured": "Destacado"
+  },
+  "menu": {
+    "open": "Abrir menú",
+    "close": "Cerrar menú",
+    "label": "Menú"
   }
 }

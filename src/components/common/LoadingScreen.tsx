@@ -190,20 +190,18 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
       if (newProgress >= 100) {
         clearInterval(interval);
-        setTimeout(() => {
-          setIsComplete(true);
-          onComplete?.();
-        }, 300);
+        // onComplete fires from AnimatePresence once the exit fade has played
+        setTimeout(() => setIsComplete(true), 300);
       }
     }, 50);
 
     return () => clearInterval(interval);
-  }, [minDuration, onComplete]);
+  }, [minDuration]);
 
   const filledCells = Math.floor((progress / 100) * SEGMENTS);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={onComplete}>
       {!isComplete && (
         <LoadingWrapper
           initial={{ opacity: 1 }}

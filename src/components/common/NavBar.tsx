@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,12 @@ import { theme } from '../../styles/theme';
 import { dither, pixelOutline } from '../../styles/pixel';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { LanguageSwitcher } from './LanguageSwitcher';
+
+// Links collapse into the drawer at the laptop breakpoint: below ~1024px the
+// six labels (EN/ES) collide with the logo.
+const NAV_COLLAPSE = theme.breakpoints.laptop;
+// Collapsed bar height (padding + 40px toggle), excluding its 2px border
+const NAV_BAR_HEIGHT = `calc(2 * ${theme.spacing.md} + 40px)`;
 
 // Solid bar: no blur/translucency, no filter (it is position:fixed).
 const Nav = styled.nav`
@@ -30,7 +36,7 @@ const Nav = styled.nav`
     pointer-events: none;
   }
 
-  @media (max-width: ${theme.breakpoints.tablet}) {
+  @media (max-width: ${NAV_COLLAPSE}) {
     padding: ${theme.spacing.md};
   }
 `;
@@ -110,7 +116,11 @@ const NavLinks = styled.ul`
   gap: ${theme.spacing.xl};
   list-style: none;
 
-  @media (max-width: ${theme.breakpoints.tablet}) {
+  @media (max-width: ${theme.breakpoints.desktop}) {
+    gap: ${theme.spacing.lg};
+  }
+
+  @media (max-width: ${NAV_COLLAPSE}) {
     display: none;
   }
 `;
@@ -189,7 +199,7 @@ const NavLink = styled('li', {
 `;
 
 const DesktopSwitcher = styled.div`
-  @media (max-width: ${theme.breakpoints.tablet}) {
+  @media (max-width: ${NAV_COLLAPSE}) {
     display: none;
   }
 `;
@@ -230,9 +240,8 @@ const squareIconButton = `
 
 const MobileMenuButton = styled.button`
   ${squareIconButton}
-  margin: 2px;
 
-  @media (min-width: calc(${theme.breakpoints.tablet} + 1px)) {
+  @media (min-width: calc(${NAV_COLLAPSE} + 1px)) {
     display: none;
   }
 `;
@@ -245,10 +254,11 @@ const MobileMenu = styled.div`
   z-index: ${theme.zIndex.modal};
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: ${theme.spacing.lg};
+  /* Room for the header bar + dither strip; the list centers with auto
+     margins so it never gets clipped on short screens (scrolls instead). */
+  padding: calc(${NAV_BAR_HEIGHT} + 6px + ${theme.spacing.lg}) ${theme.spacing.md} ${theme.spacing.lg};
   overflow-y: auto;
+  overscroll-behavior: contain;
 
   &::before {
     content: '';
@@ -256,7 +266,7 @@ const MobileMenu = styled.div`
     top: 0;
     left: 0;
     right: 0;
-    height: 72px;
+    height: ${NAV_BAR_HEIGHT};
     border-bottom: 2px solid ${theme.colors.secondary.medium};
     pointer-events: none;
   }
@@ -264,13 +274,21 @@ const MobileMenu = styled.div`
   &::after {
     content: '';
     position: absolute;
-    top: 74px;
+    top: calc(${NAV_BAR_HEIGHT} + 2px);
     left: 0;
     right: 0;
     height: 4px;
     ${dither(theme.colors.primary.deep, theme.colors.secondary.dark, 4)}
     pointer-events: none;
   }
+`;
+
+const MobileMenuList = styled.div`
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${theme.spacing.lg};
 `;
 
 const MobileNavLink = styled('div', {
@@ -306,33 +324,75 @@ const MobileNavLink = styled('div', {
 
 const CloseButton = styled.button`
   ${squareIconButton}
+  /* Same spot as the toggle (collapsed nav padding) */
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: ${theme.spacing.md};
+  right: ${theme.spacing.md};
   z-index: 1;
 `;
 
 const navKeys = ['home', 'about', 'skills', 'experience', 'projects', 'contact'] as const;
 const navPaths = ['/', '/about', '/skills', '/experience', '/projects', '/contact'];
 
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export const NavBar: React.FC = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // The drawer is "open" only for the route it was opened on, so any
+  // navigation (link click, back button) closes it without an effect.
+  const [openPath, setOpenPath] = useState<string | null>(null);
   const location = useLocation();
   const { t } = useTranslation('common');
+  const isMobileMenuOpen = openPath === location.pathname;
+
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const navItems = navKeys.map((key, i) => ({
     path: navPaths[i],
     label: t(`nav.${key}`),
   }));
 
-  // Close the drawer with Escape
+  const openMenu = () => setOpenPath(location.pathname);
+  const closeMenu = () => {
+    setOpenPath(null);
+    toggleRef.current?.focus();
+  };
+
+  // While open: focus the close button, lock body scroll, Escape closes,
+  // Tab/Shift+Tab cycle inside the drawer.
   useEffect(() => {
     if (!isMobileMenuOpen) return;
+    closeRef.current?.focus();
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+      if (e.key === 'Escape') {
+        setOpenPath(null);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (e.key !== 'Tab' || !menuRef.current) return;
+      const items = Array.from(menuRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !menuRef.current.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !menuRef.current.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [isMobileMenuOpen]);
 
   return (
@@ -365,9 +425,11 @@ export const NavBar: React.FC = () => {
             </DesktopSwitcher>
 
             <MobileMenuButton
-              onClick={() => setIsMobileMenuOpen(true)}
-              aria-label="Open menu"
+              ref={toggleRef}
+              onClick={openMenu}
+              aria-label={t('menu.open')}
               aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav-drawer"
             >
               <HiMenu />
             </MobileMenuButton>
@@ -376,29 +438,38 @@ export const NavBar: React.FC = () => {
       </Nav>
 
       {isMobileMenuOpen && (
-        <MobileMenu role="dialog" aria-modal="true" aria-label="Menu">
+        <MobileMenu
+          ref={menuRef}
+          id="mobile-nav-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('menu.label')}
+        >
           <CloseButton
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label="Close menu"
+            ref={closeRef}
+            onClick={closeMenu}
+            aria-label={t('menu.close')}
           >
             <HiX />
           </CloseButton>
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <MobileNavLink key={item.path} isActive={isActive}>
-                <Link
-                  to={item.path}
-                  aria-current={isActive ? 'page' : undefined}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <StageCursor className="stage-cursor" aria-hidden="true">▶</StageCursor>
-                  {item.label}
-                </Link>
-              </MobileNavLink>
-            );
-          })}
-          <LanguageSwitcher />
+          <MobileMenuList>
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <MobileNavLink key={item.path} isActive={isActive}>
+                  <Link
+                    to={item.path}
+                    aria-current={isActive ? 'page' : undefined}
+                    onClick={closeMenu}
+                  >
+                    <StageCursor className="stage-cursor" aria-hidden="true">▶</StageCursor>
+                    {item.label}
+                  </Link>
+                </MobileNavLink>
+              );
+            })}
+            <LanguageSwitcher />
+          </MobileMenuList>
         </MobileMenu>
       )}
     </>
