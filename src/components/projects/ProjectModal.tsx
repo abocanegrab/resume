@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from 'react';
+import { useId, useRef } from 'react';
 import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,8 @@ import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles
 import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 import { Button } from '../common/Button';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 interface ProjectModalProps {
   project: Project | null;
@@ -16,9 +18,6 @@ interface ProjectModalProps {
 
 // 4-frame stepped ease: the window pops in like a game menu
 const stepEase = (t: number) => Math.floor(t * 4) / 4;
-
-const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 // Solid dark overlay (no blur). Never put a filter on this or its ancestors.
 const Overlay = styled(motion.div)`
@@ -264,56 +263,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const onCloseRef = useRef(onClose);
   const isOpen = project !== null;
 
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  }, [onClose]);
-
-  // Focus management, Escape, focus trap and body scroll lock while open
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    const { body, documentElement } = document;
-    const prevOverflow = body.style.overflow;
-    const prevPadding = body.style.paddingRight;
-    const scrollbar = window.innerWidth - documentElement.clientWidth;
-    body.style.overflow = 'hidden';
-    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
-
-    closeRef.current?.focus();
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onCloseRef.current();
-        return;
-      }
-      if (e.key !== 'Tab' || !panelRef.current) return;
-      const items = Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
-      if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && (active === first || !panelRef.current.contains(active))) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (active === last || !panelRef.current.contains(active))) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', onKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      body.style.overflow = prevOverflow;
-      body.style.paddingRight = prevPadding;
-      opener?.focus();
-    };
-  }, [isOpen]);
+  // Focus [X] on open, trap Tab, Escape closes, return focus on close; lock page scroll
+  useFocusTrap(panelRef, isOpen, { initialFocusRef: closeRef, onEscape: onClose });
+  useScrollLock(isOpen);
 
   if (!project) return null;
 

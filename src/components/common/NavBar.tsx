@@ -6,6 +6,8 @@ import { theme } from '../../styles/theme';
 import { dither, pixelOutline } from '../../styles/pixel';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 // Links collapse into the drawer at the laptop breakpoint: below ~1024px the
 // six labels (EN/ES) collide with the logo.
@@ -334,8 +336,6 @@ const CloseButton = styled.button`
 const navKeys = ['home', 'about', 'skills', 'experience', 'projects', 'contact'] as const;
 const navPaths = ['/', '/about', '/skills', '/experience', '/projects', '/contact'];
 
-const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
 export const NavBar: React.FC = () => {
   // The drawer remembers the route it was opened on. Any navigation away
   // (link click, back/forward) resets it during render, so returning to that
@@ -358,54 +358,29 @@ export const NavBar: React.FC = () => {
   }));
 
   const openMenu = () => setOpenPath(location.pathname);
-  const closeMenu = useCallback(() => {
-    setOpenPath(null);
-    toggleRef.current?.focus();
-  }, []);
+  // Closing returns focus to the toggle through the focus trap below
+  const closeMenu = useCallback(() => setOpenPath(null), []);
 
-  // While open: focus the close button, lock body scroll, Escape closes,
-  // Tab/Shift+Tab cycle inside the drawer, and widening past NAV_COLLAPSE
-  // closes it (the toggle is hidden there, so focus is not returned).
+  // While open: focus the close button, Tab/Shift+Tab cycle inside the drawer,
+  // Escape closes, body scroll is locked; on close focus returns to the toggle
+  // (hidden above NAV_COLLAPSE, where focus() is simply ignored).
+  useFocusTrap(menuRef, isMobileMenuOpen, {
+    initialFocusRef: closeRef,
+    returnFocusRef: toggleRef,
+    onEscape: closeMenu,
+  });
+  useScrollLock(isMobileMenuOpen);
+
+  // Widening past NAV_COLLAPSE closes the drawer
   useEffect(() => {
     if (!isMobileMenuOpen) return;
-    closeRef.current?.focus();
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        closeMenu();
-        return;
-      }
-      if (e.key !== 'Tab' || !menuRef.current) return;
-      const items = Array.from(menuRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
-      if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
-      const active = document.activeElement;
-      if (e.shiftKey && (active === first || !menuRef.current.contains(active))) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && (active === last || !menuRef.current.contains(active))) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-
     const desktopMq = window.matchMedia(`(min-width: ${parseInt(NAV_COLLAPSE, 10) + 1}px)`);
     const onViewport = (e: MediaQueryListEvent) => {
       if (e.matches) setOpenPath(null);
     };
     desktopMq.addEventListener('change', onViewport);
-
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      desktopMq.removeEventListener('change', onViewport);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isMobileMenuOpen, closeMenu]);
+    return () => desktopMq.removeEventListener('change', onViewport);
+  }, [isMobileMenuOpen]);
 
   return (
     <>
