@@ -60,3 +60,8 @@ export const segmentCell = (filled: boolean, tone: string) => `
     ? `linear-gradient(180deg, ${theme.colors.neutral.white} 0 25%, ${tone} 25% 100%)`
     : theme.colors.neutral.gray};
 `;
+
+// Width of the outer pixel frame line (pixelOutline default) and offset of the hard
+// drop shadow used on windows/cards; layouts reserve this space around framed boxes.
+export const FRAME_WIDTH = 2;
+export const HARD_SHADOW = 6;

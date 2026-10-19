@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -5,7 +6,7 @@ import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { dither, HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 
@@ -14,11 +15,9 @@ interface ProjectCardProps {
   index?: number;
   // Fixed stage number (position in the full list, not the filtered one)
   stage: number;
-  onOpen: (project: Project) => void;
+  // Receives the trigger so focus can return to it (Safari does not focus buttons on click)
+  onOpen: (project: Project, trigger: HTMLButtonElement) => void;
 }
-
-// Hard drop shadow offset of the stage window
-const HARD_SHADOW = 6;
 
 // 4-frame stepped ease: the window snaps in instead of gliding
 const stepEase = (t: number) => Math.floor(t * 4) / 4;
@@ -298,7 +297,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   }>;
   const entry = entries.find(e => e.id === project.id);
   const title = entry?.title || project.title;
-  const descId = `stage-desc-${project.id}`;
+  const descId = useId();
   const stageLabel = `${t('stage')} ${String(stage).padStart(2, '0')}`;
 
   return (
@@ -331,7 +330,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             className={TRIGGER}
             aria-haspopup="dialog"
             aria-describedby={descId}
-            onClick={() => onOpen(project)}
+            onClick={(e) => onOpen(project, e.currentTarget)}
           >
             {title}
           </StageTrigger>

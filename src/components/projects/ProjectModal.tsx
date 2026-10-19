@@ -1,10 +1,11 @@
 import { useId, useRef } from 'react';
+import type { RefObject } from 'react';
 import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { dither, FRAME_WIDTH, HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 import { Button } from '../common/Button';
@@ -14,7 +15,15 @@ import { useScrollLock } from '../../hooks/useScrollLock';
 interface ProjectModalProps {
   project: Project | null;
   onClose: () => void;
+  // Element to focus on close (the card trigger); falls back to the focused element at open
+  returnFocusRef?: RefObject<HTMLElement | null>;
 }
+
+// Overlay padding per viewport; the panel's max-height subtracts it (plus frame and shadow)
+const OVERLAY_PAD = theme.spacing.lg;
+const OVERLAY_PAD_MOBILE = theme.spacing.md;
+const panelMaxHeight = (pad: string, vh: 'vh' | 'dvh') =>
+  `calc(100${vh} - 2 * ${pad} - ${2 * FRAME_WIDTH + HARD_SHADOW}px)`;
 
 // 4-frame stepped ease: the window pops in like a game menu
 const stepEase = (t: number) => Math.floor(t * 4) / 4;
@@ -24,14 +33,15 @@ const Overlay = styled(motion.div)`
   position: fixed;
   inset: 0;
   background: ${theme.colors.background.overlay};
-  z-index: ${theme.zIndex.modal};
+  /* Above the NavBar (sticky) and its drawer (modal) */
+  z-index: ${theme.zIndex.overlay};
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${theme.spacing.lg};
+  padding: ${OVERLAY_PAD};
 
   @media (max-width: ${theme.breakpoints.mobile}) {
-    padding: ${theme.spacing.md};
+    padding: ${OVERLAY_PAD_MOBILE};
   }
 `;
 
@@ -40,15 +50,20 @@ const ModalPanel = styled(motion.div)`
   position: relative;
   width: 100%;
   max-width: 800px;
-  max-height: calc(100vh - 48px);
-  max-height: calc(100dvh - 48px);
+  max-height: ${panelMaxHeight(OVERLAY_PAD, 'vh')};
+  max-height: ${panelMaxHeight(OVERLAY_PAD, 'dvh')};
   overflow-y: auto;
   overscroll-behavior: contain;
   ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
 
   &:focus {
     outline: none;
+  }
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    max-height: ${panelMaxHeight(OVERLAY_PAD_MOBILE, 'vh')};
+    max-height: ${panelMaxHeight(OVERLAY_PAD_MOBILE, 'dvh')};
   }
 `;
 
@@ -256,17 +271,20 @@ const ActionButtons = styled.div`
   border-top: 2px solid ${theme.colors.secondary.medium};
 `;
 
-export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose, returnFocusRef }) => {
   const { t } = useTranslation('projects');
   const { t: tc } = useTranslation('common');
   const reduced = useReducedMotion();
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const pressedOnOverlay = useRef(false);
   const isOpen = project !== null;
 
   // Focus [X] on open, trap Tab, Escape closes, return focus on close; lock page scroll
-  useFocusTrap(panelRef, isOpen, { initialFocusRef: closeRef, onEscape: onClose });
+  // The trap only re-runs when isOpen flips (its options are read through a ref),
+  // so switching projects or re-rendering never steals focus back to [X].
+  useFocusTrap(panelRef, isOpen, { initialFocusRef: closeRef, returnFocusRef, onEscape: onClose });
   useScrollLock(isOpen);
 
   if (!project) return null;
@@ -287,7 +305,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
     <Overlay
       initial={reduced ? false : { opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.12, ease: stepEase } }}
-      onClick={onClose}
+      onMouseDown={(e) => {
+        pressedOnOverlay.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        // Close only when both press and release happen on the overlay itself, so a
+        // text selection dragged out of the panel does not dismiss the window
+        if (pressedOnOverlay.current && e.target === e.currentTarget) onClose();
+        pressedOnOverlay.current = false;
+      }}
     >
       <ModalPanel
         ref={panelRef}
@@ -297,7 +323,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         tabIndex={-1}
         initial={reduced ? false : { opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0, transition: { duration: 0.2, ease: stepEase } }}
-        onClick={(e) => e.stopPropagation()}
       >
         <TitleBar>
           <TitleBarLabel aria-hidden="true">{t('title')}</TitleBarLabel>

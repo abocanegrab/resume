@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
@@ -8,7 +8,7 @@ import { ProjectModal } from '../components/projects/ProjectModal';
 import { projects } from '../data/projects';
 import type { Project } from '../data/projects';
 import { theme } from '../styles/theme';
-import { pixelOutline } from '../styles/pixel';
+import { FRAME_WIDTH, HARD_SHADOW, pixelOutline } from '../styles/pixel';
 
 const ProjectsContainer = styled.div`
   min-height: 100vh;
@@ -64,13 +64,13 @@ const FilterTab = styled('button', { shouldForwardProp: prop => prop !== 'isActi
   }
 `;
 
-// Stage-select grid; the gap leaves room for the 2px frame + 6px hard shadow
+// Stage-select grid; gap and padding leave room for the outer frame line + hard shadow
 const ProjectsGrid = styled.ul`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: ${theme.spacing.xl};
   margin: 0;
-  padding: 2px 8px 8px 2px;
+  padding: ${FRAME_WIDTH}px ${FRAME_WIDTH + HARD_SHADOW}px ${FRAME_WIDTH + HARD_SHADOW}px ${FRAME_WIDTH}px;
   list-style: none;
 `;
 
@@ -86,7 +86,14 @@ const categoryIds = ['all', 'enterprise', 'startup', 'government', 'industrial',
 export const ProjectsPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
   const { t } = useTranslation('projects');
+
+  const openProject = useCallback((project: Project, trigger: HTMLButtonElement) => {
+    triggerRef.current = trigger;
+    setSelectedProject(project);
+  }, []);
+  const closeProject = useCallback(() => setSelectedProject(null), []);
 
   const filteredProjects = activeFilter === 'all'
     ? projects
@@ -125,7 +132,7 @@ export const ProjectsPage: React.FC = () => {
                   project={project}
                   index={index}
                   stage={projects.indexOf(project) + 1}
-                  onOpen={setSelectedProject}
+                  onOpen={openProject}
                 />
               ))}
             </ProjectsGrid>
@@ -137,7 +144,8 @@ export const ProjectsPage: React.FC = () => {
 
       <ProjectModal
         project={selectedProject}
-        onClose={() => setSelectedProject(null)}
+        onClose={closeProject}
+        returnFocusRef={triggerRef}
       />
     </PageTransition>
   );
