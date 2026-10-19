@@ -44,10 +44,6 @@ export const theme = {
     sky: ['#0d1430', '#151d44', '#222a5c', '#35306e', '#55347a', '#86406f', '#bb526b', '#e9785f', '#f8a862'],
     // Gradients
     gradients: {
-      primary: 'linear-gradient(90deg, #0b4ad0 0%, #5cbdf5 100%)',
-      energyBar: 'linear-gradient(90deg, #5cbdf5 0%, #39FF14 100%)',
-      heroBackground: 'linear-gradient(180deg, #0d1430 0%, #222a5c 55%, #55347a 100%)',
-      cardHover: 'linear-gradient(135deg, rgba(92, 189, 245, 0.12) 0%, rgba(248, 168, 98, 0.06) 100%)',
       scanline: 'repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)',
     },
   },
