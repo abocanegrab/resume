@@ -1,37 +1,30 @@
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeroSection } from '../components/home/HeroSection';
 import { PageTransition } from '../components/common/PageTransition';
 import { theme } from '../styles/theme';
+import { dither, pixelFrame, pixelFrameShadow, segmentCell } from '../styles/pixel';
+
+const BAR_CELLS = 10;
+const FILL_STEP_MS = 90;
+
+// Discrete easing for Framer: jumps in 4 frames, no smooth interpolation
+const steps4 = (t: number) => Math.floor(t * 4) / 4;
 
 const HomeContainer = styled.div`
   width: 100%;
 `;
 
-// Stats section styled like Megaman HUD
-const StatsHUD = styled(motion.section)`
+// Stats section styled like a Megaman HUD: dithered night band
+const StatsHUD = styled.section`
   padding: ${theme.spacing['3xl']} ${theme.spacing.lg};
-  background: linear-gradient(
-    180deg,
-    ${theme.colors.background.secondary} 0%,
-    ${theme.colors.secondary.dark} 100%
-  );
-  border-top: 3px solid ${theme.colors.primary.main};
-  position: relative;
-  overflow: hidden;
+  ${dither(theme.colors.sky[0], theme.colors.background.primary, 4)}
+  border-top: 2px solid ${theme.colors.primary.main};
 
-  /* Scanline effect */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: ${theme.colors.gradients.scanline};
-    pointer-events: none;
-    opacity: 0.5;
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing['2xl']} ${theme.spacing.md};
   }
 `;
 
@@ -46,35 +39,32 @@ const HUDHeader = styled.div`
 
 const HUDTitle = styled.h2`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
+  font-size: 16px;
+  line-height: 1.4;
   color: ${theme.colors.primary.main};
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  text-shadow: 0 0 10px ${theme.colors.primary.main}60;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-shadow: 2px 2px 0 ${theme.colors.primary.deep};
+  margin: 0;
 `;
 
+// Dotted block line
 const HUDLine = styled.div`
   flex: 1;
-  max-width: 100px;
-  height: 2px;
-  background: linear-gradient(
+  max-width: 120px;
+  height: 4px;
+  background: repeating-linear-gradient(
     90deg,
-    ${theme.colors.primary.main} 0%,
-    transparent 100%
+    ${theme.colors.primary.main} 0 4px,
+    transparent 4px 8px
   );
-
-  &:last-child {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      ${theme.colors.primary.main} 100%
-    );
-  }
 `;
 
 const StatsContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
+  padding: 2px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: ${theme.spacing.xl};
@@ -88,53 +78,46 @@ const StatsContainer = styled.div`
   }
 `;
 
-// Individual stat card styled like energy tank / HP bar
-const StatCard = styled(motion.div)`
+// Individual stat card styled like an energy tank window
+const StatCard = styled(motion.div, {
+  shouldForwardProp: (prop) => prop !== 'tone',
+})<{ tone: string }>`
+  ${pixelFrame('muted')}
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, 6px 6px 0 0 ${theme.colors.neutral.black};
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: ${theme.spacing.lg};
-  background: ${theme.colors.background.card};
-  border: 2px solid ${theme.colors.secondary.medium};
-  border-radius: ${theme.borderRadius.md};
   position: relative;
 
-  /* Corner accents */
-  &::before,
-  &::after {
+  /* Tiny corner block in the stat color */
+  &::before {
     content: '';
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border: 2px solid ${theme.colors.primary.main};
-  }
-
-  &::before {
-    top: -2px;
-    left: -2px;
-    border-right: none;
-    border-bottom: none;
-  }
-
-  &::after {
-    bottom: -2px;
-    right: -2px;
-    border-left: none;
-    border-top: none;
+    top: 6px;
+    left: 6px;
+    width: 6px;
+    height: 6px;
+    background: ${props => props.tone};
   }
 `;
 
+// Reserves two lines so the bars line up when a label wraps
 const StatLabel = styled.div`
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 2.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: ${theme.colors.neutral.silver};
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: ${theme.spacing.md};
+  letter-spacing: 0.05em;
+  margin-bottom: ${theme.spacing.sm};
   text-align: center;
 `;
 
-// Energy bar container (vertical like Megaman HP)
 const EnergyBarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -142,77 +125,20 @@ const EnergyBarContainer = styled.div`
   gap: ${theme.spacing.sm};
 `;
 
-const EnergyBarWrapper = styled.div`
-  width: 32px;
-  height: 120px;
-  background: ${theme.colors.neutral.darkGray};
-  border: 2px solid ${theme.colors.secondary.light};
-  border-radius: 4px;
-  position: relative;
-  overflow: hidden;
+// Vertical HP track: cells stack bottom-up
+const Track = styled.div`
   display: flex;
   flex-direction: column-reverse;
-
-  /* Inner shadow */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
-    z-index: 2;
-  }
+  gap: 2px;
+  padding: 2px;
+  background: ${theme.colors.neutral.black};
 `;
 
-const EnergyBarFill = styled(motion.div)<{ barColor: string }>`
-  width: 100%;
-  background: linear-gradient(
-    180deg,
-    ${props => props.barColor} 0%,
-    ${props => adjustColor(props.barColor, -30)} 100%
-  );
-  position: relative;
-  border-radius: 2px;
-
-  /* Shine effect */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 2px;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      transparent 100%
-    );
-  }
-`;
-
-// Segments overlay for the energy bar
-const EnergySegments = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  pointer-events: none;
-`;
-
-const Segment = styled.div`
-  flex: 1;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-
-  &:last-child {
-    border-bottom: none;
-  }
+const Cell = styled.span<{ filled: boolean; tone: string }>`
+  display: block;
+  width: 24px;
+  height: 10px;
+  ${props => segmentCell(props.filled, props.tone)}
 `;
 
 const StatValue = styled.div`
@@ -221,60 +147,69 @@ const StatValue = styled.div`
   font-weight: ${theme.typography.weights.bold};
   color: ${theme.colors.neutral.white};
   margin-top: ${theme.spacing.sm};
-  text-shadow: 0 0 10px ${theme.colors.primary.main}40;
+  text-shadow: 2px 2px 0 ${theme.colors.primary.deep};
 `;
 
-// E-Tank icon for decoration
-const ETankIcon = styled.div<{ color: string }>`
-  width: 24px;
-  height: 28px;
-  background: linear-gradient(
-    180deg,
-    ${props => props.color} 0%,
-    ${props => adjustColor(props.color, -40)} 100%
+// 12x14 pixel E-Tank drawn at 2x: outline, cap, body, shading, shine and the "E"
+const ETank: React.FC<{ tone: string }> = ({ tone }) => {
+  const ink = theme.colors.neutral.black;
+  return (
+    <svg
+      width="24"
+      height="28"
+      viewBox="0 0 12 14"
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect x="3" y="0" width="6" height="4" fill={ink} />
+      <rect x="4" y="1" width="4" height="2" fill={tone} />
+      <rect x="4" y="1" width="4" height="2" fill={ink} fillOpacity="0.35" />
+      <rect x="0" y="3" width="12" height="11" fill={ink} />
+      <rect x="1" y="4" width="10" height="9" fill={tone} />
+      <rect x="8" y="4" width="3" height="9" fill={ink} fillOpacity="0.3" />
+      <rect x="1" y="12" width="10" height="1" fill={ink} fillOpacity="0.3" />
+      <rect x="2" y="5" width="1" height="4" fill={theme.colors.neutral.white} fillOpacity="0.7" />
+      <rect x="3" y="5" width="1" height="1" fill={theme.colors.neutral.white} fillOpacity="0.7" />
+      <path d="M5 6h3v1H6v1h2v1H6v1h2v1H5z" fill={ink} />
+    </svg>
   );
-  border: 2px solid ${props => adjustColor(props.color, -60)};
-  border-radius: 4px 4px 8px 8px;
-  position: relative;
-  margin-bottom: ${theme.spacing.xs};
+};
 
-  /* Cap */
-  &::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 6px;
-    background: ${props => adjustColor(props.color, -20)};
-    border: 2px solid ${props => adjustColor(props.color, -60)};
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
-  }
+// Fills one cell at a time once the bar scrolls into view; reduced motion shows it filled
+const EnergyBar: React.FC<{ target: number; tone: string; delay: number }> = ({
+  target,
+  tone,
+  delay,
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+  const reduced = useReducedMotion();
+  const [lit, setLit] = useState(0);
 
-  /* Shine */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 3px;
-    width: 6px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
-  }
-`;
+  useEffect(() => {
+    if (!inView || reduced) return;
+    let count = 0;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      count += 1;
+      setLit(count);
+      if (count < target) timer = setTimeout(tick, FILL_STEP_MS);
+    };
+    timer = setTimeout(tick, delay);
+    return () => clearTimeout(timer);
+  }, [inView, reduced, target, delay]);
 
-// Helper function
-function adjustColor(color: string, amount: number): string {
-  const hex = color.replace('#', '');
-  const num = parseInt(hex, 16);
-  const r = Math.min(255, Math.max(0, (num >> 16) + amount));
-  const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00ff) + amount));
-  const b = Math.min(255, Math.max(0, (num & 0x0000ff) + amount));
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-}
+  const shown = reduced ? target : lit;
+
+  return (
+    <Track ref={ref} aria-hidden="true">
+      {Array.from({ length: BAR_CELLS }, (_, i) => (
+        <Cell key={i} filled={i < shown} tone={tone} />
+      ))}
+    </Track>
+  );
+};
 
 const statKeys = ['experience', 'projects', 'companies', 'technologies'] as const;
 const statValues = ['13+', '20+', '6', '20+'];
@@ -288,11 +223,12 @@ const statColors = [
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation('home');
+  const reduced = useReducedMotion();
 
   const stats = statKeys.map((key, i) => ({
     value: statValues[i],
     label: t(`stats.${key}`),
-    fill: statFills[i],
+    cells: Math.round(statFills[i] / 10),
     color: statColors[i],
   }));
 
@@ -311,36 +247,22 @@ export const HomePage: React.FC = () => {
           <StatsContainer>
             {stats.map((stat, index) => (
               <StatCard
-                key={stat.label}
-                initial={{ opacity: 0, y: 30 }}
+                key={statKeys[index]}
+                tone={stat.color}
+                initial={reduced ? false : { opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.15, duration: 0.5 }}
+                transition={{ delay: index * 0.15, duration: 0.3, ease: steps4 }}
               >
                 <StatLabel>{stat.label}</StatLabel>
 
                 <EnergyBarContainer>
-                  <ETankIcon color={stat.color} />
-
-                  <EnergyBarWrapper>
-                    <EnergySegments>
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <Segment key={i} />
-                      ))}
-                    </EnergySegments>
-
-                    <EnergyBarFill
-                      barColor={stat.color}
-                      initial={{ height: 0 }}
-                      whileInView={{ height: `${stat.fill}%` }}
-                      viewport={{ once: true }}
-                      transition={{
-                        delay: index * 0.15 + 0.3,
-                        duration: 1,
-                        ease: 'easeOut'
-                      }}
-                    />
-                  </EnergyBarWrapper>
+                  <ETank tone={stat.color} />
+                  <EnergyBar
+                    target={stat.cells}
+                    tone={stat.color}
+                    delay={index * 150 + 300}
+                  />
                 </EnergyBarContainer>
 
                 <StatValue>{stat.value}</StatValue>

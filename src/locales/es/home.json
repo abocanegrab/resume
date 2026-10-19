@@ -10,6 +10,7 @@
     "stage": "ESCENARIO: BASE",
     "sceneAlt": "Héroe de pie en una azotea, mirando el amanecer sobre una ciudad futurista",
     "equipped": "EQUIPADO",
+    "equippedLink": "ver todos los poderes",
     "hintPhoto": "[ HOVER: MODO 8-BIT ]",
     "photoAlt": "Foto de Aarón Bocanegra; al pasar el cursor se convierte en su personaje de 8 bits",
     "hud": {

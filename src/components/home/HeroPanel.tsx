@@ -419,6 +419,7 @@ export const HeroPanel: React.FC = () => {
             </Tag>
           ))}
         </Tags>
+        <SrOnly>{t('hero.equippedLink')}</SrOnly>
       </Equipped>
 
       <Menu aria-label={t('hero.playerData')}>

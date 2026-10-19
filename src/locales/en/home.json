@@ -10,6 +10,7 @@
     "stage": "STAGE: BASE",
     "sceneAlt": "Hero standing on a rooftop, looking at a sunrise over a futuristic city",
     "equipped": "EQUIPPED",
+    "equippedLink": "view all skills",
     "hintPhoto": "[ HOVER: 8-BIT MODE ]",
     "photoAlt": "Photo of Aarón Bocanegra; on hover it turns into his 8-bit character",
     "hud": {
