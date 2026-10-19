@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { pulseGlow } from '../../styles/animations';
+import { dither, pixelFrameShadow } from '../../styles/pixel';
 
 interface PixelMorphPhotoProps {
   photoSrc: string;
@@ -29,6 +29,10 @@ const PhotoContainer = styled(motion.div)`
   height: 320px;
   cursor: pointer;
 
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+
   @media (max-width: ${theme.breakpoints.laptop}) {
     width: 260px;
     height: 260px;
@@ -40,44 +44,15 @@ const PhotoContainer = styled(motion.div)`
   }
 `;
 
+// Square character-select portrait: pixel outline (notched corners) + dark inner line
 const PhotoFrame = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   overflow: hidden;
-  border: 4px solid ${theme.colors.primary.main};
-  box-shadow: ${theme.shadows.glow.cyan};
-  background: linear-gradient(135deg,
-    ${theme.colors.secondary.dark} 0%,
-    ${theme.colors.secondary.main} 50%,
-    ${theme.colors.secondary.dark} 100%
-  );
-
-  /* Outer rings */
-  &::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
-    border: 2px solid ${theme.colors.primary.dark};
-    border-radius: 50%;
-    opacity: 0.5;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: -25px;
-    left: -25px;
-    right: -25px;
-    bottom: -25px;
-    border: 1px solid ${theme.colors.primary.dark};
-    border-radius: 50%;
-    opacity: 0.3;
-  }
+  border-radius: 0;
+  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)};
+  ${dither(theme.colors.secondary.dark, theme.colors.background.card, 4)}
 `;
 
 const Layer = styled.div<{ visible: boolean }>`
@@ -120,29 +95,15 @@ const Flash = styled.div<{ isOn: boolean }>`
   pointer-events: none;
 `;
 
-const StatusBadge = styled(motion.div)`
+// Online LED in the corner, square like the rest of the HUD
+const StatusBadge = styled.div`
   position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 24px;
-  height: 24px;
+  bottom: 6px;
+  right: 6px;
+  width: 12px;
+  height: 12px;
   background: ${theme.colors.accent.green};
-  border-radius: 50%;
-  border: 3px solid ${theme.colors.background.primary};
-  box-shadow: 0 0 10px ${theme.colors.accent.green};
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-  }
+  box-shadow: 0 0 0 2px ${theme.colors.neutral.black};
 `;
 
 const HintText = styled.span<{ visible: boolean }>`
@@ -279,9 +240,6 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
       onFocus={activate}
       onBlur={deactivate}
       onClick={handleClick}
-      variants={pulseGlow}
-      initial="initial"
-      animate="animate"
     >
       <PhotoFrame>
         <Layer visible={showPhoto} aria-hidden="true">
@@ -310,11 +268,7 @@ export const PixelMorphPhoto: React.FC<PixelMorphPhotoProps> = ({
         <Flash isOn={flashOn} aria-hidden="true" />
       </PhotoFrame>
 
-      <StatusBadge
-        aria-hidden="true"
-        animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-      />
+      <StatusBadge aria-hidden="true" />
 
       {showHint && (
         <HintText visible={!photoFailed && phase === 'photo'} aria-hidden="true">

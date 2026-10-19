@@ -1,30 +1,48 @@
 import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef } from 'react';
 import { theme } from '../../styles/theme';
+import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
 import heroCitySvg from '../../assets/hero-city.svg?raw';
 
-// Handoff asset is pixel-perfect; only the root sizing attributes are swapped so it
-// covers the container (character sits on the left, so anchor the crop there).
-const HERO_SVG = heroCitySvg.replace(
-  'width="1200" height="680"',
-  'preserveAspectRatio="xMinYMax slice" role="img" aria-label="Hero standing on a rooftop, looking at a sunrise over a futuristic city"'
-);
+// Handoff asset is pixel-perfect; only the root sizing attributes are swapped.
+// The screen has the art's exact ratio, so the whole scene is shown (no crop).
+// The accessible name lives on the wrapper (localized) so a language change never
+// re-creates the <svg> and restarts its animations.
+const HERO_SVG = {
+  __html: heroCitySvg.replace(
+    'width="1200" height="680"',
+    'preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false"'
+  ),
+};
 
-const SceneWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 240 / 136;
-  min-height: 340px;
-  max-height: 100svh;
-  overflow: hidden;
-  background: #0a0d1f;
-  line-height: 0;
+const ledBlink = keyframes`
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 `;
 
-const SceneArt = styled.div`
-  position: absolute;
-  inset: 0;
+const SceneColumn = styled.div`
+  grid-area: scene;
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.md};
+  min-width: 0;
+`;
+
+// CRT-style monitor: blue pixel frame + black bezel + hard shadow
+const Monitor = styled.div`
+  ${pixelFrame('blue')}
+  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  background: ${theme.colors.neutral.black};
+  padding: 6px;
+`;
+
+const Screen = styled.div`
+  width: 100%;
+  aspect-ratio: 240 / 136;
+  line-height: 0;
+  background: ${theme.colors.background.primary};
 
   svg {
     display: block;
@@ -34,109 +52,50 @@ const SceneArt = styled.div`
   }
 `;
 
-const Hud = styled.div`
-  position: absolute;
-  top: calc(${theme.spacing['3xl']} + ${theme.spacing.xl});
-  left: ${theme.spacing.xl};
+const StatusStrip = styled.p`
   display: flex;
-  align-items: flex-start;
-  gap: ${theme.spacing.md};
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    left: ${theme.spacing.md};
-    top: calc(${theme.spacing['3xl']} + ${theme.spacing.md});
-  }
-
-  // On narrow screens the scene is short and the bars would cover the hero's head
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    display: none;
-  }
-`;
-
-const BarColumn = styled.div`
-  display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
-`;
-
-const HudLabel = styled.span`
+  gap: ${theme.spacing.xs} ${theme.spacing.sm};
+  margin: 0;
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
-  color: ${theme.colors.neutral.white};
-  text-shadow: 2px 2px 0 ${theme.colors.neutral.black};
+  font-size: 14px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: ${theme.colors.neutral.lightGray};
 `;
 
-// Vertical life-bar style track, like the MMX HUD: cells stack bottom-up
-const BarTrack = styled.div`
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 2px;
-  padding: 3px;
-  background: ${theme.colors.neutral.black}cc;
-  border: 2px solid ${theme.colors.neutral.silver};
-  border-radius: 2px;
+const Sep = styled.span`
+  color: ${theme.colors.neutral.lightGray};
 `;
 
-const BarCell = styled.span<{ filled: boolean; tone: string }>`
-  width: 14px;
-  height: 6px;
-  background: ${props =>
-    props.filled
-      ? `linear-gradient(90deg, #FFFFFF 0%, #FFFFFF 20%, ${props.tone} 20%, ${props.tone} 100%)`
-      : theme.colors.neutral.darkGray};
+const Stage = styled.span`
+  color: ${theme.colors.primary.main};
 `;
 
-const StatusTag = styled.div`
-  position: absolute;
-  top: calc(${theme.spacing['3xl']} + ${theme.spacing.xl});
-  right: ${theme.spacing.xl};
-  display: flex;
+const Online = styled.span`
+  display: inline-flex;
   align-items: center;
   gap: ${theme.spacing.sm};
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
   color: ${theme.colors.accent.green};
-  text-shadow: 2px 2px 0 ${theme.colors.neutral.black};
 
   &::before {
     content: '';
     width: 8px;
     height: 8px;
     background: ${theme.colors.accent.green};
-    border-radius: 50%;
-    animation: statusPulse 1.5s infinite;
+    animation: ${ledBlink} 1.2s step-end infinite;
   }
 
-  @keyframes statusPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  @media (max-width: ${theme.breakpoints.tablet}) {
-    right: ${theme.spacing.md};
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+    }
   }
 `;
 
-const HudBar: React.FC<{ label: string; filled: number; total: number; tone: string }> = ({
-  label,
-  filled,
-  total,
-  tone,
-}) => (
-  <BarColumn>
-    <BarTrack>
-      {Array.from({ length: total }, (_, i) => (
-        <BarCell key={i} filled={i < filled} tone={tone} />
-      ))}
-    </BarTrack>
-    <HudLabel>{label}</HudLabel>
-  </BarColumn>
-);
-
 export const GameScene: React.FC = () => {
   const { t } = useTranslation('home');
-
   const artRef = useRef<HTMLDivElement>(null);
 
   // Freeze the SMIL animations for users who prefer reduced motion
@@ -151,16 +110,24 @@ export const GameScene: React.FC = () => {
   }, []);
 
   return (
-    <SceneWrapper>
-      <SceneArt ref={artRef} dangerouslySetInnerHTML={{ __html: HERO_SVG }} />
+    <SceneColumn>
+      <Monitor>
+        <Screen
+          ref={artRef}
+          role="img"
+          aria-label={t('hero.sceneAlt')}
+          dangerouslySetInnerHTML={HERO_SVG}
+        />
+      </Monitor>
 
-      <Hud aria-hidden="true">
-        <HudBar label={t('hero.hud.energy')} filled={16} total={16} tone={theme.colors.primary.main} />
-        <HudBar label={t('hero.hud.exp')} filled={14} total={16} tone={theme.colors.accent.green} />
-      </Hud>
-
-      <StatusTag aria-hidden="true">{t('hero.online')}</StatusTag>
-    </SceneWrapper>
+      <StatusStrip>
+        <span>{t('hero.player')}</span>
+        <Sep aria-hidden="true">·</Sep>
+        <Stage>{t('hero.stage')}</Stage>
+        <Sep aria-hidden="true">·</Sep>
+        <Online>{t('hero.online')}</Online>
+      </StatusStrip>
+    </SceneColumn>
   );
 };
 
