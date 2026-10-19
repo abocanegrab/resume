@@ -1,28 +1,60 @@
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { staggerContainer, staggerItem } from '../../styles/animations';
+import { pixelOutline } from '../../styles/pixel';
+import { buildSkyline } from '../../styles/skyline';
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+
+const SKYLINE_HEIGHT = 64;
+const WINDOW_COLORS = [theme.colors.primary.main, '#f8b06a'];
+
+// Static two-layer pixel skyline (seeded, built once at module load)
+const FAR_SKYLINE = buildSkyline({
+  seed: 20261019,
+  width: 640,
+  height: SKYLINE_HEIGHT,
+  color: theme.colors.background.card, // #191a44
+  windowColors: WINDOW_COLORS,
+  minHeight: 0.35,
+  maxGap: 28,
+  maxHeight: 0.8,
+});
+const NEAR_SKYLINE = buildSkyline({
+  seed: 19930117,
+  width: 520,
+  height: SKYLINE_HEIGHT,
+  color: '#0c0f26',
+  windowColors: WINDOW_COLORS,
+  minHeight: 0.2,
+  maxHeight: 0.55,
+  minWidth: 32,
+  maxWidth: 88,
+});
 
 const FooterWrapper = styled.footer`
   position: relative;
-  background: ${theme.colors.background.secondary};
-  border-top: 1px solid ${theme.colors.secondary.main};
-  padding: ${theme.spacing['3xl']} 0 ${theme.spacing.xl};
+  background: ${theme.colors.background.primary};
+  padding: 0 0 ${theme.spacing.xl};
   overflow: hidden;
 `;
 
-const CircuitPattern = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%235cbdf5' stroke-width='1'%3E%3Cpath d='M0 30h60M30 0v60M15 0v15h15M45 0v15h-15M15 60v-15h15M45 60v-15h-15M0 15h15v15M60 15h-15v15M0 45h15v-15M60 45h-15v-15'/%3E%3Ccircle cx='15' cy='15' r='3'/%3E%3Ccircle cx='45' cy='15' r='3'/%3E%3Ccircle cx='15' cy='45' r='3'/%3E%3Ccircle cx='45' cy='45' r='3'/%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  pointer-events: none;
+// Skyline strip over hard-stop sky bands (night at the top, horizon below).
+// The near layer's color sits just above the footer fill, so the city "grounds" into it.
+const SkylineStrip = styled.div`
+  height: ${SKYLINE_HEIGHT}px;
+  border-top: 2px solid ${theme.colors.secondary.medium};
+  background:
+    ${NEAR_SKYLINE} repeat-x left bottom / auto ${SKYLINE_HEIGHT}px,
+    ${FAR_SKYLINE} repeat-x left bottom / auto ${SKYLINE_HEIGHT}px,
+    linear-gradient(
+      180deg,
+      ${theme.colors.sky[1]} 0 35%,
+      ${theme.colors.sky[2]} 35% 65%,
+      ${theme.colors.sky[3]} 65% 100%
+    );
+  image-rendering: pixelated;
+  margin-bottom: ${theme.spacing['2xl']};
 `;
 
 const FooterContainer = styled.div`
@@ -30,10 +62,9 @@ const FooterContainer = styled.div`
   margin: 0 auto;
   padding: 0 ${theme.spacing.lg};
   position: relative;
-  z-index: 1;
 `;
 
-const FooterContent = styled(motion.div)`
+const FooterContent = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: ${theme.spacing['2xl']};
@@ -45,7 +76,7 @@ const FooterContent = styled(motion.div)`
   }
 `;
 
-const FooterSection = styled(motion.div)`
+const FooterSection = styled.div`
   h4 {
     font-family: ${theme.typography.fonts.heading};
     font-size: ${theme.typography.sizes.md};
@@ -93,24 +124,28 @@ const FooterLinks = styled.ul`
   }
 `;
 
-const FooterLink = styled(motion.li)`
+const FooterLink = styled.li`
   a {
     font-size: ${theme.typography.sizes.sm};
     color: ${theme.colors.neutral.silver};
     text-decoration: none;
-    transition: color ${theme.transitions.fast};
     display: inline-flex;
     align-items: center;
     gap: ${theme.spacing.sm};
-
-    &:hover {
-      color: ${theme.colors.primary.main};
-    }
 
     &::before {
       content: '>';
       color: ${theme.colors.primary.dark};
       font-family: ${theme.typography.fonts.mono};
+    }
+
+    &:hover {
+      color: ${theme.colors.accent.gold};
+      transform: translateX(4px);
+    }
+
+    &:hover::before {
+      color: ${theme.colors.accent.gold};
     }
   }
 `;
@@ -118,28 +153,36 @@ const FooterLink = styled(motion.li)`
 const SocialLinksContainer = styled.div`
   display: flex;
   gap: ${theme.spacing.md};
+  padding: 2px;
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     justify-content: center;
   }
 `;
 
-const SocialLink = styled(motion.a)`
+const SocialLink = styled.a`
   width: 40px;
   height: 40px;
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.md};
+  background: ${theme.colors.secondary.dark};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   display: flex;
   align-items: center;
   justify-content: center;
   color: ${theme.colors.neutral.silver};
-  transition: all ${theme.transitions.fast};
 
-  &:hover {
-    border-color: ${theme.colors.primary.main};
+  &:hover,
+  &:focus-visible {
     color: ${theme.colors.primary.main};
-    box-shadow: ${theme.shadows.glow.cyan};
-    transform: translateY(-3px);
+    box-shadow: ${pixelOutline(theme.colors.primary.main)};
+    transform: translateY(-4px);
+  }
+
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+
+  &:active {
+    transform: translate(1px, 1px);
   }
 
   svg {
@@ -153,7 +196,7 @@ const FooterBottom = styled.div`
   justify-content: space-between;
   align-items: center;
   padding-top: ${theme.spacing.xl};
-  border-top: 1px solid ${theme.colors.secondary.main};
+  border-top: 2px solid ${theme.colors.secondary.medium};
 
   @media (max-width: ${theme.breakpoints.tablet}) {
     flex-direction: column;
@@ -161,19 +204,21 @@ const FooterBottom = styled.div`
   }
 `;
 
+// Low-key secret link (lightGray keeps AA on the footer fill); lights up gold on hover/focus
 const SecretCabinLink = styled(Link)`
-  font-size: 12px;
+  font-size: 14px;
   color: ${theme.colors.neutral.lightGray};
   font-family: ${theme.typography.fonts.pixel};
   text-decoration: none;
-  opacity: 0.4;
-  transition: all ${theme.transitions.fast};
   line-height: 1.6;
 
-  &:hover {
-    opacity: 1;
-    color: ${theme.colors.primary.main};
-    text-shadow: 0 0 10px ${theme.colors.primary.glow};
+  &:hover,
+  &:focus-visible {
+    color: ${theme.colors.accent.gold};
+  }
+
+  &:focus-visible {
+    outline-offset: 4px;
   }
 `;
 
@@ -181,26 +226,21 @@ const StatusIndicator = styled.div`
   display: flex;
   align-items: center;
   gap: ${theme.spacing.sm};
-  font-size: ${theme.typography.sizes.xs};
+  font-size: 14px;
+  line-height: 1;
   color: ${theme.colors.neutral.lightGray};
-  font-family: ${theme.typography.fonts.mono};
+  font-family: ${theme.typography.fonts.pixel};
 
   &::before {
     content: '';
     width: 8px;
     height: 8px;
     background: ${theme.colors.accent.green};
-    border-radius: 50%;
-    animation: pulse 2s infinite;
+    animation: statusBlink 2s step-end infinite;
   }
 
-  @keyframes pulse {
-    0%, 100% {
-      box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.5);
-    }
-    50% {
-      box-shadow: 0 0 0 5px rgba(57, 255, 20, 0);
-    }
+  @keyframes statusBlink {
+    50% { opacity: 0.35; }
   }
 `;
 
@@ -217,15 +257,10 @@ export const Footer: React.FC = () => {
 
   return (
     <FooterWrapper>
-      <CircuitPattern />
+      <SkylineStrip aria-hidden="true" />
       <FooterContainer>
-        <FooterContent
-          variants={staggerContainer}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-        >
-          <FooterSection variants={staggerItem}>
+        <FooterContent>
+          <FooterSection>
             <FooterLogo>
               <span>AARON</span>
               <span>.DEV</span>
@@ -235,30 +270,25 @@ export const Footer: React.FC = () => {
             </FooterDescription>
           </FooterSection>
 
-          <FooterSection variants={staggerItem}>
+          <FooterSection>
             <h4>{t('footer.quickLinks')}</h4>
             <FooterLinks>
               {quickLinks.map((link) => (
-                <FooterLink
-                  key={link.path}
-                  whileHover={{ x: 5 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
+                <FooterLink key={link.path}>
                   <Link to={link.path}>{link.label}</Link>
                 </FooterLink>
               ))}
             </FooterLinks>
           </FooterSection>
 
-          <FooterSection variants={staggerItem}>
+          <FooterSection>
             <h4>{t('footer.connect')}</h4>
             <SocialLinksContainer>
               <SocialLink
                 href="https://github.com/abocanegra"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                aria-label="GitHub"
               >
                 <FaGithub />
               </SocialLink>
@@ -266,15 +296,13 @@ export const Footer: React.FC = () => {
                 href="https://www.linkedin.com/in/aaronbocanegra/"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                aria-label="LinkedIn"
               >
                 <FaLinkedin />
               </SocialLink>
               <SocialLink
                 href="mailto:abocanegrab@gmail.com"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                aria-label="Email"
               >
                 <FaEnvelope />
               </SocialLink>
