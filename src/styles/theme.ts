@@ -56,7 +56,7 @@ export const theme = {
     fonts: {
       heading: "'Orbitron', sans-serif",
       body: "'Rajdhani', sans-serif",
-      pixel: "'Press Start 2P', cursive",
+      pixel: "'Silkscreen', monospace",
       mono: "'JetBrains Mono', monospace",
     },
     sizes: {

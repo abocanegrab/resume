@@ -109,8 +109,8 @@ export const globalStyles = css`
 
   h2 {
     font-family: ${theme.typography.fonts.pixel};
-    /* Press Start 2P ships only weight 400; stepped sizes keep it crisp */
-    font-weight: ${theme.typography.weights.normal};
+    /* Silkscreen ships a real 700; stepped sizes keep it crisp */
+    font-weight: ${theme.typography.weights.bold};
     font-size: 24px;
     letter-spacing: 0.04em;
     line-height: 1.4;

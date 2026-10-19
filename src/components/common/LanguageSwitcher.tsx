@@ -14,7 +14,7 @@ const SwitcherButton = styled.button`
   box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   cursor: pointer;
   font-family: ${theme.typography.fonts.pixel};
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
   letter-spacing: 0.1em;
   color: ${theme.colors.neutral.silver};

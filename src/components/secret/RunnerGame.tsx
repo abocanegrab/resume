@@ -393,7 +393,7 @@ export const RunnerGame: React.FC = () => {
       drawPlayer(ctx, p, onGround);
 
       // HUD
-      ctx.font = '16px "Press Start 2P", monospace';
+      ctx.font = `16px ${theme.typography.fonts.pixel}`;
       ctx.textAlign = 'right';
       ctx.fillStyle = theme.colors.neutral.white;
       ctx.fillText(
@@ -414,10 +414,10 @@ export const RunnerGame: React.FC = () => {
         ctx.fillStyle = 'rgba(10, 10, 26, 0.6)';
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.textAlign = 'center';
-        ctx.font = '20px "Press Start 2P", monospace';
+        ctx.font = `20px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.primary.main;
         ctx.fillText(t('secret.game.title'), CANVAS_W / 2, CANVAS_H / 2 - 30);
-        ctx.font = '10px "Press Start 2P", monospace';
+        ctx.font = `10px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.neutral.silver;
         const startText = isMobile ? t('secret.game.startMobile') : t('secret.game.start');
         ctx.fillText(startText, CANVAS_W / 2, CANVAS_H / 2 + 20);
@@ -427,17 +427,17 @@ export const RunnerGame: React.FC = () => {
         ctx.fillStyle = 'rgba(10, 10, 26, 0.7)';
         ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
         ctx.textAlign = 'center';
-        ctx.font = '20px "Press Start 2P", monospace';
+        ctx.font = `20px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.accent.red;
         ctx.fillText(t('secret.game.gameOver'), CANVAS_W / 2, CANVAS_H / 2 - 40);
-        ctx.font = '14px "Press Start 2P", monospace';
+        ctx.font = `14px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.neutral.white;
         ctx.fillText(
           `${t('secret.game.score')}: ${Math.floor(scoreRef.current)}`,
           CANVAS_W / 2,
           CANVAS_H / 2 + 10
         );
-        ctx.font = '10px "Press Start 2P", monospace';
+        ctx.font = `10px ${theme.typography.fonts.pixel}`;
         ctx.fillStyle = theme.colors.neutral.silver;
         const retryText = isMobile ? t('secret.game.startMobile') : t('secret.game.retry');
         ctx.fillText(retryText, CANVAS_W / 2, CANVAS_H / 2 + 50);

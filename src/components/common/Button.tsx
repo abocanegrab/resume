@@ -53,9 +53,9 @@ const getVariantStyles = (variant: string) => {
 // Horizontal padding leaves room for the absolutely positioned ▶ cursor,
 // so showing it on hover never shifts the layout.
 const sizeStyles: Record<string, { padding: string; fontSize: string; cursorLeft: string }> = {
-  sm: { padding: '8px 24px', fontSize: '12px', cursorLeft: '7px' },
-  md: { padding: '12px 32px', fontSize: '12px', cursorLeft: '11px' },
-  lg: { padding: '16px 40px', fontSize: '14px', cursorLeft: '14px' },
+  sm: { padding: '8px 24px', fontSize: '14px', cursorLeft: '7px' },
+  md: { padding: '12px 32px', fontSize: '14px', cursorLeft: '11px' },
+  lg: { padding: '16px 40px', fontSize: '16px', cursorLeft: '14px' },
 };
 
 const getSizeStyles = (size: string) => {
