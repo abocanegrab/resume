@@ -44,7 +44,7 @@ export const skillCategories: SkillCategory[] = [
     id: 'frontend',
     name: 'Frontend',
     description: 'Building responsive and interactive user interfaces',
-    color: '#00D4FF',
+    color: '#5cbdf5',
   },
   {
     id: 'database',
