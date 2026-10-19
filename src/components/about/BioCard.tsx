@@ -1,32 +1,11 @@
 import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { windowEntry } from '../../styles/animations';
+import { HARD_SHADOW, pixelCard, pixelLabel, pixelOutline } from '../../styles/pixel';
+import { InfoTile } from '../common/InfoTile';
 import { FaMapMarkerAlt, FaEnvelope, FaCalendarAlt, FaHeart } from 'react-icons/fa';
-
-// 4-frame stepped ease: windows snap in instead of gliding
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
-
-const windowEntry: Variants = {
-  initial: { opacity: 0, y: 12 },
-  animate: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.24, ease: stepEase, delay: i * 0.08 },
-  }),
-};
-
-const hardShadow = `${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black}`;
-
-const pixelLabel = `
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 14px;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-`;
 
 const BioContainer = styled.div`
   display: grid;
@@ -42,8 +21,7 @@ const BioContainer = styled.div`
 
 // Main dossier window
 const BioContent = styled(motion.article)`
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${hardShadow};
+  ${pixelCard('blue')}
   margin: 2px;
   padding: ${theme.spacing.xl};
 
@@ -90,45 +68,11 @@ const BioInfo = styled.ul`
   list-style: none;
 `;
 
-const InfoItem = styled(motion.li)`
-  ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${hardShadow};
+const InfoItem = styled(InfoTile)`
   margin: 2px;
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.md};
-  padding: ${theme.spacing.md};
-  min-width: 0;
-`;
-
-const IconBox = styled.span`
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: 2px;
-  background: ${theme.colors.neutral.black};
-  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
-  color: ${theme.colors.primary.main};
-  font-size: 18px;
-`;
-
-const InfoContent = styled.div`
-  min-width: 0;
-
-  .label {
-    ${pixelLabel}
-    color: ${theme.colors.neutral.silver};
-    margin-bottom: ${theme.spacing.xs};
-  }
 
   .value {
-    font-size: ${theme.typography.sizes.md};
-    color: ${theme.colors.neutral.white};
     font-weight: ${theme.typography.weights.medium};
-    overflow-wrap: anywhere;
   }
 `;
 
@@ -183,22 +127,17 @@ export const BioCard: React.FC = () => {
       </BioContent>
 
       <BioInfo>
-        {infoItems.map(({ key, icon: Icon }, i) => (
+        {infoItems.map(({ key, icon }, i) => (
           <InfoItem
             key={key}
+            icon={icon}
+            label={t(`info.${key}.label`)}
+            value={t(`info.${key}.value`)}
             custom={i + 1}
             variants={windowEntry}
             initial={reduced ? false : 'initial'}
             animate="animate"
-          >
-            <IconBox aria-hidden="true">
-              <Icon />
-            </IconBox>
-            <InfoContent>
-              <div className="label">{t(`info.${key}.label`)}</div>
-              <div className="value">{t(`info.${key}.value`)}</div>
-            </InfoContent>
-          </InfoItem>
+          />
         ))}
       </BioInfo>
     </BioContainer>

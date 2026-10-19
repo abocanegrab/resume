@@ -5,7 +5,7 @@ import { css, keyframes } from '@emotion/react';
 import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { pixelCard, pixelOutline } from '../../styles/pixel';
 import { SegmentBar } from '../common/SegmentBar';
 import { visuallyHidden } from '../../styles/a11y';
 import { skills } from '../../data/skills';
@@ -24,8 +24,7 @@ const cursorBlink = keyframes`
 // Character-select panel: portrait, name, class, stats and the main menu
 const Panel = styled.div`
   grid-area: panel;
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('blue')}
   padding: ${theme.spacing.lg};
   display: flex;
   flex-direction: column;

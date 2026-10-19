@@ -1,27 +1,16 @@
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { motion, useReducedMotion } from 'framer-motion';
-import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
 import { SectionTitle } from '../components/common/SectionTitle';
 import { SocialLinks } from '../components/contact/SocialLinks';
 import { Button } from '../components/common/Button';
 import { theme } from '../styles/theme';
-import { HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../styles/pixel';
+import { windowEntry } from '../styles/animations';
+import { HARD_SHADOW, pixelCard, pixelLabel, pixelOutline } from '../styles/pixel';
+import { InfoTile } from '../components/common/InfoTile';
 import { FaMapMarkerAlt, FaEnvelope, FaClock, FaPaperPlane } from 'react-icons/fa';
-
-// 4-frame stepped ease: windows snap in instead of gliding
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
-
-const panelEntry: Variants = {
-  initial: { opacity: 0, y: 12 },
-  animate: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.24, ease: stepEase, delay: i * 0.08 },
-  }),
-};
 
 const blink = keyframes`
   0%, 49% { opacity: 1; }
@@ -32,16 +21,6 @@ const blink = keyframes`
 const ledBlink = keyframes`
   0%, 49% { background: ${theme.colors.accent.green}; }
   50%, 100% { background: #1c5e14; }
-`;
-
-const hardShadow = `${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black}`;
-
-const pixelLabel = `
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 14px;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 `;
 
 const ContactContainer = styled.div`
@@ -62,8 +41,7 @@ const ContentWrapper = styled.div`
 
 // Main transmission terminal window
 const Terminal = styled(motion.section)`
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${hardShadow};
+  ${pixelCard('blue')}
   margin: ${theme.spacing.xs} ${HARD_SHADOW}px ${HARD_SHADOW}px ${theme.spacing.xs};
   padding: ${theme.spacing.xl};
 
@@ -111,45 +89,10 @@ const InfoGrid = styled.ul`
   list-style: none;
 `;
 
-const InfoCard = styled(motion.li)`
-  ${pixelFrame('muted')}
+// Info tiles sit on the darkest fill inside the terminal and top-align their text
+const InfoCard = styled(InfoTile)`
   background: ${theme.colors.background.primary};
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${hardShadow};
-  padding: ${theme.spacing.md};
-  display: flex;
   align-items: flex-start;
-  gap: ${theme.spacing.md};
-  min-width: 0;
-`;
-
-const IconBox = styled.span`
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  margin: 2px;
-  background: ${theme.colors.neutral.black};
-  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
-  color: ${theme.colors.primary.main};
-  font-size: 18px;
-`;
-
-const InfoContent = styled.div`
-  min-width: 0;
-
-  .label {
-    ${pixelLabel}
-    color: ${theme.colors.neutral.silver};
-    margin-bottom: ${theme.spacing.xs};
-  }
-
-  .value {
-    font-size: ${theme.typography.sizes.md};
-    color: ${theme.colors.neutral.white};
-    overflow-wrap: anywhere;
-  }
 `;
 
 const CTASection = styled.div`
@@ -213,7 +156,7 @@ export const ContactPage: React.FC = () => {
           <Terminal
             aria-label={t('terminal.label')}
             custom={0}
-            variants={panelEntry}
+            variants={windowEntry}
             initial={reduced ? false : 'initial'}
             animate="animate"
           >
@@ -224,22 +167,17 @@ export const ContactPage: React.FC = () => {
             </TerminalHeader>
 
             <InfoGrid>
-              {infoItems.map(({ key, icon: Icon }, i) => (
+              {infoItems.map(({ key, icon }, i) => (
                 <InfoCard
                   key={key}
+                  icon={icon}
+                  label={t(`info.${key}.label`)}
+                  value={t(`info.${key}.value`)}
                   custom={i + 1}
-                  variants={panelEntry}
+                  variants={windowEntry}
                   initial={reduced ? false : 'initial'}
                   animate="animate"
-                >
-                  <IconBox aria-hidden="true">
-                    <Icon />
-                  </IconBox>
-                  <InfoContent>
-                    <div className="label">{t(`info.${key}.label`)}</div>
-                    <div className="value">{t(`info.${key}.value`)}</div>
-                  </InfoContent>
-                </InfoCard>
+                />
               ))}
             </InfoGrid>
 

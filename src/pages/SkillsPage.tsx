@@ -8,7 +8,7 @@ import { CharacterSprite } from '../components/skills/CharacterSprite';
 import { skills, skillCategories } from '../data/skills';
 import type { Skill } from '../data/skills';
 import { theme } from '../styles/theme';
-import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../styles/pixel';
+import { dither, pixelCard, pixelOutline } from '../styles/pixel';
 
 const SkillsContainer = styled.div`
   min-height: 100vh;
@@ -46,8 +46,7 @@ const SpriteColumn = styled.div`
   align-items: stretch;
   gap: ${theme.spacing.md};
   padding: ${theme.spacing.lg};
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('blue')}
 
   @media (max-width: ${theme.breakpoints.laptop}) {
     position: relative;

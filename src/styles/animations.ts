@@ -1,5 +1,18 @@
 import type { Variants, Transition } from 'framer-motion';
 
+// 4-frame stepped ease for Framer transitions: elements snap in instead of gliding.
+export const stepEase = (t: number) => Math.floor(t * 4) / 4;
+
+// Window/panel entry: snaps up 12px in 4 frames; `custom` is the stagger index.
+export const windowEntry: Variants = {
+  initial: { opacity: 0, y: 12 },
+  animate: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.24, ease: stepEase, delay: i * 0.08 },
+  }),
+};
+
 // Transition Presets
 export const springTransition: Transition = {
   type: 'spring',

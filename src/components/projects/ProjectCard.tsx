@@ -6,7 +6,8 @@ import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { dither, HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { stepEase } from '../../styles/animations';
+import { dither, pixelCard, pixelCardShadow, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 
@@ -18,9 +19,6 @@ interface ProjectCardProps {
   // Receives the trigger so focus can return to it (Safari does not focus buttons on click)
   onOpen: (project: Project, trigger: HTMLButtonElement) => void;
 }
-
-// 4-frame stepped ease: the window snaps in instead of gliding
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
 
 const cursorBlink = keyframes`
   0%, 49% { opacity: 1; }
@@ -37,14 +35,13 @@ const StageCard = styled(motion.li)`
   display: flex;
   flex-direction: column;
   min-width: 0;
-  ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('muted')}
   cursor: pointer;
 
   /* Selected stage: gold frame (discrete swap, no easing) */
   &:hover,
   &:focus-within {
-    box-shadow: ${pixelFrameShadow(theme.colors.accent.gold)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+    box-shadow: ${pixelCardShadow(theme.colors.accent.gold)};
   }
 
   &:hover .${TRIGGER}::before {

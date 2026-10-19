@@ -3,7 +3,7 @@ import { keyframes } from '@emotion/react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef } from 'react';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
+import { pixelCard } from '../../styles/pixel';
 import heroCitySvg from '../../assets/hero-city.svg?raw';
 
 // Handoff asset is pixel-perfect; only the root sizing attributes are swapped.
@@ -32,8 +32,7 @@ const SceneColumn = styled.div`
 
 // CRT-style monitor: blue pixel frame + black bezel + hard shadow
 const Monitor = styled.div`
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('blue')}
   background: ${theme.colors.neutral.black};
   padding: 6px;
 `;

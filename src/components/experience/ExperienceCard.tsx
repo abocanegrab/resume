@@ -5,7 +5,8 @@ import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaMapMarkerAlt, FaCalendarAlt } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { stepEase } from '../../styles/animations';
+import { HARD_SHADOW, pixelCard, pixelLabel, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import type { Experience, ExperienceEntry } from '../../data/experience';
 
@@ -21,11 +22,6 @@ const RAIL_WIDTH_MOBILE = 24;
 const NODE_SIZE = 16;
 const HEADER_ROW = 24; // first grid row (node + STAGE label); node center = HEADER_ROW / 2
 const ROW_GAP = 48;
-// Hard drop shadow offset of the card; the last row reserves the same space below
-const HARD_SHADOW = 6;
-
-// 4-frame stepped ease: the card snaps in instead of gliding
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
 
 const stageEntry: Variants = {
   initial: { opacity: 0, x: -16 },
@@ -71,6 +67,7 @@ const StageRow = styled(motion.li)`
     );
   }
 
+  /* the last row reserves the card's hard shadow below */
   &:last-of-type {
     margin-bottom: ${HARD_SHADOW}px;
 
@@ -117,14 +114,6 @@ const StageHeader = styled.div`
   min-width: 0;
 `;
 
-const pixelLabel = `
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 14px;
-  line-height: 1.2;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-`;
-
 // Visible text (not only the gold node) so the current status survives color blindness and screen readers
 const CurrentTag = styled.span`
   ${pixelLabel}
@@ -145,9 +134,7 @@ const StageLabel = styled('span', { shouldForwardProp: prop => prop !== 'isCurre
 const CardContent = styled.article`
   grid-column: 2;
   min-width: 0;
-  ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)},
-    ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('muted')}
   padding: ${theme.spacing.xl};
 
   @media (max-width: ${theme.breakpoints.tablet}) {

@@ -5,7 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { dither, FRAME_WIDTH, HARD_SHADOW, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { stepEase } from '../../styles/animations';
+import { dither, FRAME_WIDTH, HARD_SHADOW, pixelCard, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 import { Button } from '../common/Button';
@@ -24,9 +25,6 @@ const OVERLAY_PAD = theme.spacing.lg;
 const OVERLAY_PAD_MOBILE = theme.spacing.md;
 const panelMaxHeight = (pad: string, vh: 'vh' | 'dvh') =>
   `calc(100${vh} - 2 * ${pad} - ${2 * FRAME_WIDTH + HARD_SHADOW}px)`;
-
-// 4-frame stepped ease: the window pops in like a game menu
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
 
 // Solid dark overlay (no blur). Never put a filter on this or its ancestors.
 const Overlay = styled(motion.div)`
@@ -54,8 +52,7 @@ const ModalPanel = styled(motion.div)`
   max-height: ${panelMaxHeight(OVERLAY_PAD, 'dvh')};
   overflow-y: auto;
   overscroll-behavior: contain;
-  ${pixelFrame('blue')}
-  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('blue')}
 
   &:focus {
     outline: none;

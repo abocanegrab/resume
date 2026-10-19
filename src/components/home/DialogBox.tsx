@@ -4,7 +4,7 @@ import { keyframes } from '@emotion/react';
 import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
+import { pixelCard } from '../../styles/pixel';
 import { visuallyHidden } from '../../styles/a11y';
 
 const advanceBlink = keyframes`
@@ -16,8 +16,7 @@ const advanceBlink = keyframes`
 const Box = styled.section`
   grid-area: dialog;
   align-self: start;
-  ${pixelFrame('sunset')}
-  box-shadow: ${pixelFrameShadow(theme.colors.accent.gold)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('sunset')}
   padding: ${theme.spacing.md} ${theme.spacing.lg};
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

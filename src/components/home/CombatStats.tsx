@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { dither, pixelFrame, pixelFrameShadow } from '../../styles/pixel';
+import { dither, pixelCard } from '../../styles/pixel';
 import { SegmentBar } from '../common/SegmentBar';
 import { ETank } from './ETank';
 
@@ -86,8 +86,7 @@ const StatsGrid = styled.div`
 const StatCard = styled(motion.div, {
   shouldForwardProp: (prop) => prop !== 'tone',
 })<{ tone: string }>`
-  ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+  ${pixelCard('muted')}
   display: flex;
   flex-direction: column;
   align-items: center;

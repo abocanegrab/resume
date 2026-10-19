@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { theme } from '../../styles/theme';
+import { stepEase } from '../../styles/animations';
 import { dither, pixelOutline, segmentCell } from '../../styles/pixel';
 import { makeRand } from '../../styles/skyline';
 
@@ -11,9 +12,6 @@ interface LoadingScreenProps {
 }
 
 const SEGMENTS = 16;
-
-// Discrete 4-frame easing for the exit fade (no smooth easing)
-const stepEase = (t: number) => Math.floor(t * 4) / 4;
 
 // Seeded star field, generated once at module load (no Math.random in render)
 const STARS = (() => {

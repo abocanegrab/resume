@@ -33,18 +33,40 @@ export const pixelFrameShadow = (color: string) =>
 
 // Window frame: light outer line (notched corners), dark inner line, flat fill.
 // The outline paints 2px outside the box; consumers need spacing around it.
-// Wrap in pixelShadowWrap for the hard shadow (drop-shadow follows the notched outline).
+// Use pixelCard for the variant with the hard drop shadow.
 export const pixelFrame = (tone: FrameTone = 'blue') => `
   background: ${theme.colors.background.card};
   border-radius: 0;
   box-shadow: ${pixelFrameShadow(toneBorder[tone])};
 `;
 
-// Hard 4px shadow that follows the notched outline.
-// WARNING: a filter creates a containing block for position:fixed/absolute descendants
-// and a new stacking context. Never wrap subtrees containing position:fixed overlays
-// (navbar drawer, modals); wrap only small, mostly static boxes.
-export const pixelShadowWrap = `filter: drop-shadow(4px 4px 0 ${theme.colors.neutral.black});`;
+// Width of the outer pixel frame line (pixelOutline default) and offset of the hard
+// drop shadow used on windows/cards; layouts reserve this space around framed boxes.
+export const FRAME_WIDTH = 2;
+export const HARD_SHADOW = 6;
+
+// Hard black drop shadow (no blur) offset down-right by HARD_SHADOW.
+export const hardShadow = `${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black}`;
+
+// Frame lines + hard shadow. Hover/focus states that recolor the frame use this
+// with the new color so the shadow is kept.
+export const pixelCardShadow = (color: string) => `${pixelFrameShadow(color)}, ${hardShadow}`;
+
+// pixelFrame plus the hard drop shadow (windows and cards).
+export const pixelCard = (tone: FrameTone = 'blue') => `
+  background: ${theme.colors.background.card};
+  border-radius: 0;
+  box-shadow: ${pixelCardShadow(toneBorder[tone])};
+`;
+
+// Small uppercase label in the pixel font (14px is the minimum for Silkscreen legibility).
+export const pixelLabel = `
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+`;
 
 // Checkerboard dither between two colors (like the sky bands in the SVG).
 // `size` is the tile size (each square is size/2 px): use even sizes.
@@ -60,8 +82,3 @@ export const segmentCell = (filled: boolean, tone: string) => `
     ? `linear-gradient(180deg, ${theme.colors.neutral.white} 0 25%, ${tone} 25% 100%)`
     : theme.colors.neutral.gray};
 `;
-
-// Width of the outer pixel frame line (pixelOutline default) and offset of the hard
-// drop shadow used on windows/cards; layouts reserve this space around framed boxes.
-export const FRAME_WIDTH = 2;
-export const HARD_SHADOW = 6;

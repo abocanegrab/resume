@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { pixelCard, pixelCardShadow, pixelOutline } from '../../styles/pixel';
 import { readableTone } from '../../styles/color';
 import { SegmentBar } from '../common/SegmentBar';
 import type { Skill } from '../../data/skills';
@@ -13,17 +13,14 @@ interface SkillCardProps {
   index?: number;
 }
 
-const HARD_SHADOW = `6px 6px 0 0 ${theme.colors.neutral.black}`;
-
 const CardContainer = styled.div`
-  ${pixelFrame('muted')}
-  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${HARD_SHADOW};
+  ${pixelCard('muted')}
   padding: ${theme.spacing.lg};
   text-align: center;
 
   /* Discrete hover: the frame switches to the armor blue */
   &:hover {
-    box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${HARD_SHADOW};
+    box-shadow: ${pixelCardShadow(theme.colors.primary.main)};
   }
 `;
 

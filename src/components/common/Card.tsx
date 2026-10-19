@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
-import { pixelFrame, pixelFrameShadow } from '../../styles/pixel';
+import { pixelCardShadow, pixelFrame } from '../../styles/pixel';
 
 interface CardProps {
   children: React.ReactNode;
@@ -10,10 +10,6 @@ interface CardProps {
   className?: string;
   onClick?: () => void;
 }
-
-// Hard pixel drop shadow appended after the frame lines (no filter: cards hold
-// animated Framer Motion children and a filter would force repaints).
-const hardShadow = `6px 6px 0 0 ${theme.colors.neutral.black}`;
 
 const frameColor = (variant: string) =>
   variant === 'bordered' ? theme.colors.primary.main : theme.colors.secondary.medium;
@@ -46,7 +42,7 @@ const StyledCard = styled('div', {
   padding: ${props => getPaddingStyles(props.padding)};
   overflow: hidden;
   cursor: ${props => props.isClickable ? 'pointer' : 'default'};
-  box-shadow: ${props => pixelFrameShadow(frameColor(props.variant))}, ${hardShadow};
+  box-shadow: ${props => pixelCardShadow(frameColor(props.variant))};
 
   /* Corner accent: small square pixel block */
   &::after {
@@ -61,7 +57,7 @@ const StyledCard = styled('div', {
 
   ${props => props.hoverable ? `
     &:hover {
-      box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, ${hardShadow};
+      box-shadow: ${pixelCardShadow(theme.colors.primary.main)};
       transform: translate(-2px, -2px);
     }
 
