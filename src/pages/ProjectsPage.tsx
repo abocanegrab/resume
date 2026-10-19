@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
 import { SectionTitle } from '../components/common/SectionTitle';
@@ -9,11 +8,17 @@ import { ProjectModal } from '../components/projects/ProjectModal';
 import { projects } from '../data/projects';
 import type { Project } from '../data/projects';
 import { theme } from '../styles/theme';
+import { pixelOutline } from '../styles/pixel';
 
 const ProjectsContainer = styled.div`
   min-height: 100vh;
   padding: ${theme.spacing['5xl']} ${theme.spacing.lg};
   padding-top: calc(${theme.spacing['5xl']} + 80px);
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding-left: ${theme.spacing.md};
+    padding-right: ${theme.spacing.md};
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -24,47 +29,52 @@ const ContentWrapper = styled.div`
 const FilterTabs = styled.div`
   display: flex;
   justify-content: center;
-  gap: ${theme.spacing.sm};
+  gap: ${theme.spacing.md};
   margin-bottom: ${theme.spacing['2xl']};
   flex-wrap: wrap;
 `;
 
-const FilterTab = styled.button<{ isActive: boolean }>`
-  padding: ${theme.spacing.sm} ${theme.spacing.lg};
-  background: ${props => props.isActive
-    ? theme.colors.primary.main
-    : 'transparent'};
-  color: ${props => props.isActive
-    ? theme.colors.neutral.black
-    : theme.colors.neutral.silver};
-  border: 1px solid ${props => props.isActive
-    ? theme.colors.primary.main
-    : theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.full};
-  font-family: ${theme.typography.fonts.body};
-  font-size: ${theme.typography.sizes.sm};
+// Same pixel tab as the skills filter
+const FilterTab = styled('button', { shouldForwardProp: prop => prop !== 'isActive' })<{
+  isActive: boolean;
+}>`
+  padding: 8px 12px;
+  border: none;
+  border-radius: 0;
+  background: ${props => (props.isActive ? theme.colors.primary.deep : theme.colors.background.primary)};
+  box-shadow: ${props => pixelOutline(props.isActive ? theme.colors.primary.main : theme.colors.secondary.medium)};
+  color: ${props => (props.isActive ? theme.colors.neutral.white : theme.colors.neutral.silver)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all ${theme.transitions.fast};
 
-  &:hover {
-    border-color: ${theme.colors.primary.main};
-    color: ${props => props.isActive
-      ? theme.colors.neutral.black
-      : theme.colors.primary.main};
+  /* Gold on the deep-blue active tab would drop below 4.5:1, so only inactive tabs */
+  ${props => (props.isActive ? '' : `&:hover { color: ${theme.colors.accent.gold}; }`)}
+
+  /* Global focus ring, pushed past the 2px pixel outline */
+  &:focus-visible {
+    outline-offset: 4px;
+  }
+
+  &:active {
+    transform: translate(1px, 1px);
   }
 `;
 
-const ProjectsGrid = styled(motion.div)`
+// Stage-select grid; the gap leaves room for the 2px frame + 6px hard shadow
+const ProjectsGrid = styled.ul`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: ${theme.spacing.xl};
-
-  @media (max-width: ${theme.breakpoints.mobile}) {
-    grid-template-columns: 1fr;
-  }
+  margin: 0;
+  padding: 2px 8px 8px 2px;
+  list-style: none;
 `;
 
-const NoProjects = styled.div`
+const NoProjects = styled.p`
   text-align: center;
   padding: ${theme.spacing['3xl']};
   color: ${theme.colors.neutral.silver};
@@ -74,24 +84,13 @@ const NoProjects = styled.div`
 const categoryIds = ['all', 'enterprise', 'startup', 'government', 'industrial', 'fullstack'] as const;
 
 export const ProjectsPage: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation('projects');
 
   const filteredProjects = activeFilter === 'all'
     ? projects
     : projects.filter(project => project.category === activeFilter);
-
-  const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedProject(null), 300);
-  };
 
   return (
     <PageTransition>
@@ -103,11 +102,13 @@ export const ProjectsPage: React.FC = () => {
             align="center"
           />
 
-          <FilterTabs>
+          <FilterTabs role="group" aria-label={t('filterLabel')}>
             {categoryIds.map((catId) => (
               <FilterTab
                 key={catId}
+                type="button"
                 isActive={activeFilter === catId}
+                aria-pressed={activeFilter === catId}
                 onClick={() => setActiveFilter(catId)}
               >
                 {t(`categories.${catId}`)}
@@ -115,37 +116,28 @@ export const ProjectsPage: React.FC = () => {
             ))}
           </FilterTabs>
 
-          <AnimatePresence mode="wait">
-            <ProjectsGrid
-              key={activeFilter}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {filteredProjects.length > 0 ? (
-                filteredProjects.map((project, index) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    index={index}
-                    onClick={() => handleProjectClick(project)}
-                  />
-                ))
-              ) : (
-                <NoProjects>
-                  {t('noProjects')}
-                </NoProjects>
-              )}
+          {filteredProjects.length > 0 ? (
+            // Keyed by filter so the stage windows snap in again on every switch
+            <ProjectsGrid key={activeFilter}>
+              {filteredProjects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  index={index}
+                  stage={projects.indexOf(project) + 1}
+                  onOpen={setSelectedProject}
+                />
+              ))}
             </ProjectsGrid>
-          </AnimatePresence>
+          ) : (
+            <NoProjects>{t('noProjects')}</NoProjects>
+          )}
         </ContentWrapper>
       </ProjectsContainer>
 
       <ProjectModal
         project={selectedProject}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => setSelectedProject(null)}
       />
     </PageTransition>
   );

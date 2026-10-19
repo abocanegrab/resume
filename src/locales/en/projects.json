@@ -1,6 +1,8 @@
 {
   "title": "Conquered Stages",
   "subtitle": "Boss battles won and stages cleared",
+  "filterLabel": "Filter stages by category",
+  "stage": "Stage",
   "categories": {
     "all": "All Stages",
     "enterprise": "Enterprise",
@@ -11,6 +13,7 @@
   },
   "noProjects": "No stages found in this zone.",
   "modal": {
+    "close": "Close stage details",
     "highlights": "Key Battle Tactics",
     "technologies": "Weapon Systems Used"
   },

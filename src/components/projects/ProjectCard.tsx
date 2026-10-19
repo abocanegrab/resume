@@ -1,104 +1,119 @@
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
+import { keyframes } from '@emotion/react';
+import { motion, useReducedMotion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { theme } from '../../styles/theme';
-import { scaleIn } from '../../styles/animations';
-import type { Project } from '../../data/projects';
 import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa';
+import { theme } from '../../styles/theme';
+import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { readableTone } from '../../styles/color';
+import type { Project } from '../../data/projects';
 
 interface ProjectCardProps {
   project: Project;
   index?: number;
-  onClick?: () => void;
+  // Fixed stage number (position in the full list, not the filtered one)
+  stage: number;
+  onOpen: (project: Project) => void;
 }
 
-const CardContainer = styled(motion.div)<{ isFeatured: boolean }>`
-  background: ${theme.colors.background.card};
-  border: 1px solid ${props =>
-    props.isFeatured ? theme.colors.accent.gold : theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.lg};
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
+// Hard drop shadow offset of the stage window
+const HARD_SHADOW = 6;
 
-  ${props => props.isFeatured && `
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, ${theme.colors.accent.gold}, ${theme.colors.accent.orange});
-    }
-  `}
+// 4-frame stepped ease: the window snaps in instead of gliding
+const stepEase = (t: number) => Math.floor(t * 4) / 4;
+
+const cursorBlink = keyframes`
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 `;
 
-const ImageContainer = styled.div`
-  position: relative;
-  height: 200px;
-  overflow: hidden;
-  background: ${theme.colors.secondary.dark};
+const CARD = 'stage-card';
+const TRIGGER = 'stage-trigger';
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      180deg,
-      transparent 50%,
-      ${theme.colors.background.card} 100%
-    );
+// Stage-select window. The whole card is clickable through the title button's
+// stretched ::after, so the markup keeps a real heading and a single real <button>.
+const StageCard = styled(motion.li)`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  ${pixelFrame('muted')}
+  box-shadow: ${pixelFrameShadow(theme.colors.secondary.medium)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+  cursor: pointer;
+
+  /* Selected stage: gold frame (discrete swap, no easing) */
+  &:hover,
+  &:focus-within {
+    box-shadow: ${pixelFrameShadow(theme.colors.accent.gold)}, ${HARD_SHADOW}px ${HARD_SHADOW}px 0 0 ${theme.colors.neutral.black};
+  }
+
+  &:hover .${TRIGGER}::before {
+    display: block;
   }
 `;
 
-const ProjectImage = styled.img`
+// Square viewport for the stage art, inset like a screen in the window
+const StageScreen = styled.div`
+  position: relative;
+  margin: 10px 10px 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  ${dither(theme.colors.sky[1], theme.colors.sky[2], 4)}
+  box-shadow: inset 0 0 0 2px ${theme.colors.neutral.black};
+`;
+
+const StageImage = styled.img`
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform ${theme.transitions.slow};
-
-  .project-card:hover & {
-    transform: scale(1.05);
-  }
 `;
 
-const PlaceholderImage = styled.div`
-  width: 100%;
-  height: 100%;
+// Placeholder: the stage initial as a big pixel glyph on the night-sky dither
+const StageGlyph = styled.span`
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg,
-    ${theme.colors.secondary.dark} 0%,
-    ${theme.colors.secondary.main} 100%
-  );
-
-  span {
-    font-family: ${theme.typography.fonts.heading};
-    font-size: ${theme.typography.sizes['3xl']};
-    color: ${theme.colors.primary.main};
-    opacity: 0.3;
-  }
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 64px;
+  line-height: 1;
+  color: ${theme.colors.primary.main};
+  text-shadow: 4px 4px 0 ${theme.colors.neutral.black};
 `;
 
-const FeaturedBadge = styled.div`
+const StageNumber = styled.span`
   position: absolute;
-  top: ${theme.spacing.md};
-  right: ${theme.spacing.md};
-  display: flex;
+  left: 8px;
+  bottom: 8px;
+  padding: 2px 6px;
+  background: ${theme.colors.neutral.black};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: ${theme.colors.neutral.white};
+`;
+
+const FeaturedBadge = styled.span`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
   align-items: center;
-  gap: ${theme.spacing.xs};
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
-  background: ${theme.colors.accent.gold}20;
-  border: 1px solid ${theme.colors.accent.gold};
-  border-radius: ${theme.borderRadius.full};
-  font-size: ${theme.typography.sizes.xs};
+  gap: 6px;
+  padding: 2px 6px;
+  background: ${theme.colors.neutral.black};
+  box-shadow: ${pixelOutline(theme.colors.accent.gold)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: ${theme.colors.accent.gold};
-  z-index: 2;
 
   svg {
     font-size: 12px;
@@ -106,132 +121,222 @@ const FeaturedBadge = styled.div`
 `;
 
 const CardContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding: ${theme.spacing.lg};
 `;
 
 const CategoryBadge = styled.span`
-  display: inline-block;
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
-  background: ${theme.colors.primary.main}20;
-  border-radius: ${theme.borderRadius.sm};
-  font-size: ${theme.typography.sizes.xs};
-  color: ${theme.colors.primary.light};
-  text-transform: uppercase;
+  align-self: flex-start;
+  padding: 2px 6px;
+  margin: 2px 2px ${theme.spacing.md};
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.primary.dark)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
   letter-spacing: 0.05em;
-  margin-bottom: ${theme.spacing.sm};
+  text-transform: uppercase;
+  color: ${readableTone(theme.colors.primary.light, 0.35)};
 `;
 
 const ProjectTitle = styled.h3`
+  margin: 0 0 ${theme.spacing.sm};
   font-family: ${theme.typography.fonts.heading};
   font-size: ${theme.typography.sizes.xl};
+  line-height: 1.2;
   color: ${theme.colors.neutral.white};
-  margin-bottom: ${theme.spacing.sm};
-  transition: color ${theme.transitions.fast};
+`;
 
-  .project-card:hover & {
-    color: ${theme.colors.primary.main};
+// The real control. ::after stretches over the whole card (click target + focus
+// frame), ::before is the blinking ▶ selection cursor in the top-left corner.
+const StageTrigger = styled.button`
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  .${CARD}:hover & {
+    color: ${theme.colors.accent.gold};
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &::before {
+    content: '▶';
+    content: '▶' / '';
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 2;
+    padding: 2px 4px;
+    background: ${theme.colors.neutral.black};
+    font-family: ${theme.typography.fonts.pixel};
+    font-size: 16px;
+    line-height: 1;
+    color: ${theme.colors.accent.gold};
+    display: none;
+    animation: ${cursorBlink} 0.8s step-end infinite;
+  }
+
+  &:focus-visible {
+    outline: none;
+    color: ${theme.colors.accent.gold};
+  }
+
+  &:focus-visible::before {
+    display: block;
+  }
+
+  /* Focus ring around the whole window, pushed past the 2px pixel frame */
+  &:focus-visible::after {
+    outline: 2px solid ${theme.colors.primary.main};
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before {
+      animation: none;
+    }
   }
 `;
 
 const ProjectDescription = styled.p`
+  margin: 0 0 ${theme.spacing.md};
   font-size: ${theme.typography.sizes.sm};
   color: ${theme.colors.neutral.silver};
   line-height: ${theme.typography.lineHeights.relaxed};
-  margin-bottom: ${theme.spacing.md};
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 `;
 
-const TechStack = styled.div`
+const TechStack = styled.ul`
   display: flex;
   flex-wrap: wrap;
-  gap: ${theme.spacing.xs};
-  margin-bottom: ${theme.spacing.md};
+  gap: 10px;
+  margin: auto 0 0;
+  padding: 2px;
+  list-style: none;
 `;
 
-const TechTag = styled.span`
-  padding: ${theme.spacing.xs} ${theme.spacing.sm};
-  background: ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.sm};
-  font-size: ${theme.typography.sizes.xs};
-  color: ${theme.colors.neutral.silver};
+const TechTag = styled.li`
+  padding: 2px 6px;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   font-family: ${theme.typography.fonts.mono};
+  font-size: 14px;
+  line-height: 1.3;
+  color: ${theme.colors.neutral.silver};
 `;
 
 const CardActions = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: ${theme.spacing.md};
+  margin-top: ${theme.spacing.md};
   padding-top: ${theme.spacing.md};
-  border-top: 1px solid ${theme.colors.secondary.main};
+  border-top: 2px solid ${theme.colors.secondary.medium};
 `;
 
+// Sits above the stretched trigger so it stays independently clickable
 const ActionLink = styled.a`
-  display: flex;
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
   align-items: center;
   gap: ${theme.spacing.xs};
-  font-size: ${theme.typography.sizes.sm};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  text-transform: uppercase;
   color: ${theme.colors.neutral.silver};
   text-decoration: none;
-  transition: color ${theme.transitions.fast};
 
   &:hover {
-    color: ${theme.colors.primary.main};
+    color: ${theme.colors.accent.gold};
   }
 
-  svg {
-    font-size: ${theme.typography.sizes.md};
+  &:focus-visible {
+    outline-offset: 4px;
   }
 `;
+
+const stageEntry: Variants = {
+  initial: { opacity: 0, y: 12 },
+  animate: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.24, ease: stepEase, delay: Math.min(i, 8) * 0.06 },
+  }),
+};
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   project,
   index = 0,
-  onClick,
+  stage,
+  onOpen,
 }) => {
   const { t } = useTranslation('projects');
   const { t: tc } = useTranslation('common');
+  const reduced = useReducedMotion();
 
-  // Find the translation entry for this project
   const entries = t('entries', { returnObjects: true }) as Array<{
     id: string;
     title: string;
     description: string;
   }>;
   const entry = entries.find(e => e.id === project.id);
+  const title = entry?.title || project.title;
+  const descId = `stage-desc-${project.id}`;
+  const stageLabel = `${t('stage')} ${String(stage).padStart(2, '0')}`;
 
   return (
-    <CardContainer
-      className="project-card"
-      isFeatured={project.featured}
-      variants={scaleIn}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      whileHover="hover"
-      onClick={onClick}
+    <StageCard
+      className={CARD}
+      custom={index}
+      variants={stageEntry}
+      initial={reduced ? false : 'initial'}
+      animate="animate"
     >
-      <ImageContainer>
+      <StageScreen>
         {project.image ? (
-          <ProjectImage src={project.image} alt={entry?.title || project.title} />
+          <StageImage src={project.image} alt="" />
         ) : (
-          <PlaceholderImage>
-            <span>{(entry?.title || project.title).charAt(0)}</span>
-          </PlaceholderImage>
+          <StageGlyph aria-hidden="true">{title.charAt(0)}</StageGlyph>
         )}
+        <StageNumber aria-hidden="true">{stageLabel}</StageNumber>
         {project.featured && (
           <FeaturedBadge>
-            <FaStar /> {tc('buttons.featured')}
+            <FaStar aria-hidden="true" /> {tc('buttons.featured')}
           </FeaturedBadge>
         )}
-      </ImageContainer>
+      </StageScreen>
 
       <CardContent>
         <CategoryBadge>{t(`categories.${project.category}`)}</CategoryBadge>
-        <ProjectTitle>{entry?.title || project.title}</ProjectTitle>
-        <ProjectDescription>{entry?.description || project.description}</ProjectDescription>
+        <ProjectTitle>
+          <StageTrigger
+            type="button"
+            className={TRIGGER}
+            aria-haspopup="dialog"
+            aria-describedby={descId}
+            onClick={() => onOpen(project)}
+          >
+            {title}
+          </StageTrigger>
+        </ProjectTitle>
+        <ProjectDescription id={descId}>{entry?.description || project.description}</ProjectDescription>
 
         <TechStack>
           {project.technologies.slice(0, 4).map((tech) => (
@@ -242,30 +347,22 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           )}
         </TechStack>
 
-        <CardActions>
-          {project.githubUrl && (
-            <ActionLink
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <FaGithub /> {tc('buttons.viewCode')}
-            </ActionLink>
-          )}
-          {project.liveUrl && (
-            <ActionLink
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <FaExternalLinkAlt /> {tc('buttons.liveDemo')}
-            </ActionLink>
-          )}
-        </CardActions>
+        {(project.githubUrl || project.liveUrl) && (
+          <CardActions>
+            {project.githubUrl && (
+              <ActionLink href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                <FaGithub aria-hidden="true" /> {tc('buttons.viewCode')}
+              </ActionLink>
+            )}
+            {project.liveUrl && (
+              <ActionLink href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                <FaExternalLinkAlt aria-hidden="true" /> {tc('buttons.liveDemo')}
+              </ActionLink>
+            )}
+          </CardActions>
+        )}
       </CardContent>
-    </CardContainer>
+    </StageCard>
   );
 };
 

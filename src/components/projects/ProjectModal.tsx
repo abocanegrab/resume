@@ -1,148 +1,202 @@
+import { useEffect, useId, useRef } from 'react';
 import styled from '@emotion/styled';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 import { theme } from '../../styles/theme';
-import { modalOverlay, modalContent } from '../../styles/animations';
+import { dither, pixelFrame, pixelFrameShadow, pixelOutline } from '../../styles/pixel';
+import { readableTone } from '../../styles/color';
 import type { Project } from '../../data/projects';
 import { Button } from '../common/Button';
-import { FaGithub, FaExternalLinkAlt, FaTimes, FaCheck } from 'react-icons/fa';
 
 interface ProjectModalProps {
   project: Project | null;
-  isOpen: boolean;
   onClose: () => void;
 }
 
+// 4-frame stepped ease: the window pops in like a game menu
+const stepEase = (t: number) => Math.floor(t * 4) / 4;
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+// Solid dark overlay (no blur). Never put a filter on this or its ancestors.
 const Overlay = styled(motion.div)`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: ${theme.colors.background.overlay};
-  backdrop-filter: blur(5px);
   z-index: ${theme.zIndex.modal};
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${theme.spacing.lg};
-`;
 
-const ModalContainer = styled(motion.div)`
-  background: ${theme.colors.background.secondary};
-  border: 1px solid ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.lg};
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: ${theme.spacing.md};
-  right: ${theme.spacing.md};
-  width: 40px;
-  height: 40px;
-  background: ${theme.colors.secondary.main};
-  border: 1px solid ${theme.colors.secondary.medium};
-  border-radius: ${theme.borderRadius.md};
-  color: ${theme.colors.neutral.silver};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 10;
-  transition: all ${theme.transitions.fast};
-
-  &:hover {
-    background: ${theme.colors.primary.main};
-    color: ${theme.colors.neutral.black};
-    border-color: ${theme.colors.primary.main};
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.md};
   }
 `;
 
-const ModalImage = styled.div`
-  height: 300px;
-  background: ${theme.colors.secondary.dark};
+// Blue window with a hard box-shadow (not a filter, see pixel.ts)
+const ModalPanel = styled(motion.div)`
   position: relative;
+  width: 100%;
+  max-width: 800px;
+  max-height: calc(100vh - 48px);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  ${pixelFrame('blue')}
+  box-shadow: ${pixelFrameShadow(theme.colors.primary.main)}, 6px 6px 0 0 ${theme.colors.neutral.black};
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+// Sticky title bar so [X] stays reachable while the window scrolls
+const TitleBar = styled.div`
+  position: sticky;
+  top: 2px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: ${theme.spacing.md};
+  padding: 10px 10px 10px ${theme.spacing.lg};
+  background: ${theme.colors.primary.deep};
+  box-shadow: inset 0 -2px 0 0 ${theme.colors.neutral.black};
+  margin: 2px 2px 0;
+`;
+
+const TitleBarLabel = styled.span`
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: ${theme.colors.neutral.white};
+`;
+
+// Square [X] pixel button
+const CloseButton = styled.button`
+  flex-shrink: 0;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 8px;
+  margin: 2px;
+  border: none;
+  border-radius: 0;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.neutral.white)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 16px;
+  line-height: 1;
+  color: ${theme.colors.neutral.white};
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: ${theme.colors.accent.gold};
+    color: ${theme.colors.neutral.black};
+    box-shadow: ${pixelOutline(theme.colors.neutral.black)};
+  }
+
+  /* Global focus ring, pushed past the 2px pixel outline */
+  &:focus-visible {
+    outline-color: ${theme.colors.neutral.white};
+    outline-offset: 4px;
+  }
+
+  &:active {
+    transform: translate(1px, 1px);
+  }
+`;
+
+const ModalScreen = styled.div`
+  position: relative;
+  margin: ${theme.spacing.lg} ${theme.spacing.lg} 0;
+  aspect-ratio: 16 / 4;
+  overflow: hidden;
+  ${dither(theme.colors.sky[1], theme.colors.sky[2], 4)}
+  box-shadow: inset 0 0 0 2px ${theme.colors.neutral.black};
 
   img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    background: linear-gradient(transparent, ${theme.colors.background.secondary});
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    margin: ${theme.spacing.md} ${theme.spacing.md} 0;
+    aspect-ratio: 16 / 6;
   }
 `;
 
-const PlaceholderImage = styled.div`
-  width: 100%;
-  height: 100%;
+const ScreenGlyph = styled.span`
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg,
-    ${theme.colors.secondary.dark} 0%,
-    ${theme.colors.secondary.main} 100%
-  );
-
-  span {
-    font-family: ${theme.typography.fonts.heading};
-    font-size: ${theme.typography.sizes['5xl']};
-    color: ${theme.colors.primary.main};
-    opacity: 0.3;
-  }
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 80px;
+  line-height: 1;
+  color: ${theme.colors.primary.main};
+  text-shadow: 4px 4px 0 ${theme.colors.neutral.black};
 `;
 
 const ModalContent = styled.div`
-  padding: ${theme.spacing['2xl']};
+  padding: ${theme.spacing.xl};
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    padding: ${theme.spacing.lg} ${theme.spacing.md};
+  }
 `;
 
 const CategoryBadge = styled.span`
   display: inline-block;
-  padding: ${theme.spacing.xs} ${theme.spacing.md};
-  background: ${theme.colors.primary.main}20;
-  border: 1px solid ${theme.colors.primary.dark};
-  border-radius: ${theme.borderRadius.full};
-  font-size: ${theme.typography.sizes.sm};
-  color: ${theme.colors.primary.light};
-  text-transform: uppercase;
+  padding: 2px 6px;
+  margin: 2px 2px ${theme.spacing.md};
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.primary.dark)};
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 14px;
+  line-height: 1.2;
   letter-spacing: 0.05em;
-  margin-bottom: ${theme.spacing.md};
+  text-transform: uppercase;
+  color: ${readableTone(theme.colors.primary.light, 0.35)};
 `;
 
 const ProjectTitle = styled.h2`
+  margin: 0 0 ${theme.spacing.lg};
   font-family: ${theme.typography.fonts.heading};
   font-size: ${theme.typography.sizes['3xl']};
+  line-height: 1.15;
   color: ${theme.colors.neutral.white};
-  margin-bottom: ${theme.spacing.lg};
+
+  @media (max-width: ${theme.breakpoints.mobile}) {
+    font-size: ${theme.typography.sizes['2xl']};
+  }
 `;
 
 const ProjectDescription = styled.p`
+  margin: 0 0 ${theme.spacing.xl};
   font-size: ${theme.typography.sizes.md};
   color: ${theme.colors.neutral.silver};
   line-height: ${theme.typography.lineHeights.relaxed};
-  margin-bottom: ${theme.spacing.xl};
 `;
 
-const Section = styled.div`
+const Section = styled.section`
   margin-bottom: ${theme.spacing.xl};
 
-  h4 {
-    font-family: ${theme.typography.fonts.heading};
-    font-size: ${theme.typography.sizes.md};
+  h3 {
+    margin: 0 0 ${theme.spacing.md};
+    font-family: ${theme.typography.fonts.pixel};
+    font-size: 16px;
+    font-weight: ${theme.typography.weights.normal};
+    line-height: 1.2;
     color: ${theme.colors.primary.main};
-    margin-bottom: ${theme.spacing.md};
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -150,56 +204,119 @@ const Section = styled.div`
 
 const HighlightsList = styled.ul`
   list-style: none;
+  margin: 0;
+  padding: 0;
 `;
 
+// Square green "cleared" pip instead of a check icon
 const HighlightItem = styled.li`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-  font-size: ${theme.typography.sizes.md};
-  color: ${theme.colors.neutral.silver};
+  position: relative;
+  padding-left: 24px;
   margin-bottom: ${theme.spacing.sm};
+  font-size: ${theme.typography.sizes.md};
+  line-height: ${theme.typography.lineHeights.snug};
+  color: ${theme.colors.neutral.silver};
 
-  svg {
-    color: ${theme.colors.accent.green};
-    flex-shrink: 0;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.45em;
+    width: 8px;
+    height: 8px;
+    background: ${theme.colors.accent.green};
+    box-shadow: ${pixelOutline(theme.colors.neutral.black)};
   }
 `;
 
-const TechStack = styled.div`
+const TechStack = styled.ul`
   display: flex;
   flex-wrap: wrap;
-  gap: ${theme.spacing.sm};
+  gap: 10px;
+  margin: 0;
+  padding: 2px;
+  list-style: none;
 `;
 
-const TechTag = styled.span`
-  padding: ${theme.spacing.sm} ${theme.spacing.md};
-  background: ${theme.colors.secondary.main};
-  border-radius: ${theme.borderRadius.md};
-  font-size: ${theme.typography.sizes.sm};
-  color: ${theme.colors.primary.light};
+const TechTag = styled.li`
+  padding: 4px 8px;
+  background: ${theme.colors.background.primary};
+  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
   font-family: ${theme.typography.fonts.mono};
+  font-size: 14px;
+  line-height: 1.3;
+  color: ${readableTone(theme.colors.primary.light, 0.35)};
 `;
 
 const ActionButtons = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: ${theme.spacing.md};
   margin-top: ${theme.spacing.xl};
   padding-top: ${theme.spacing.xl};
-  border-top: 1px solid ${theme.colors.secondary.main};
+  border-top: 2px solid ${theme.colors.secondary.medium};
 `;
 
-export const ProjectModal: React.FC<ProjectModalProps> = ({
-  project,
-  isOpen,
-  onClose,
-}) => {
+export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
   const { t } = useTranslation('projects');
   const { t: tc } = useTranslation('common');
+  const reduced = useReducedMotion();
+  const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  const isOpen = project !== null;
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Focus management, Escape, focus trap and body scroll lock while open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const { body, documentElement } = document;
+    const prevOverflow = body.style.overflow;
+    const prevPadding = body.style.paddingRight;
+    const scrollbar = window.innerWidth - documentElement.clientWidth;
+    body.style.overflow = 'hidden';
+    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+
+    closeRef.current?.focus();
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+      if (e.key !== 'Tab' || !panelRef.current) return;
+      const items = Array.from(panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE));
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || !panelRef.current.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !panelRef.current.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPadding;
+      opener?.focus();
+    };
+  }, [isOpen]);
 
   if (!project) return null;
 
-  // Find the translation entry for this project
   const entries = t('entries', { returnObjects: true }) as Array<{
     id: string;
     title: string;
@@ -213,88 +330,91 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const highlights = entry?.highlights || project.highlights;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <Overlay
-          variants={modalOverlay}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          onClick={onClose}
-        >
-          <ModalContainer
-            variants={modalContent}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            onClick={(e) => e.stopPropagation()}
+    <Overlay
+      initial={reduced ? false : { opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: 0.12, ease: stepEase } }}
+      onClick={onClose}
+    >
+      <ModalPanel
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        initial={reduced ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0, transition: { duration: 0.2, ease: stepEase } }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <TitleBar>
+          <TitleBarLabel aria-hidden="true">{t('title')}</TitleBarLabel>
+          <CloseButton
+            ref={closeRef}
+            type="button"
+            aria-label={t('modal.close')}
+            onClick={onClose}
           >
-            <CloseButton onClick={onClose}>
-              <FaTimes />
-            </CloseButton>
+            [X]
+          </CloseButton>
+        </TitleBar>
 
-            <ModalImage>
-              {project.image ? (
-                <img src={project.image} alt={title} />
-              ) : (
-                <PlaceholderImage>
-                  <span>{title.charAt(0)}</span>
-                </PlaceholderImage>
+        <ModalScreen>
+          {project.image ? (
+            <img src={project.image} alt="" />
+          ) : (
+            <ScreenGlyph aria-hidden="true">{title.charAt(0)}</ScreenGlyph>
+          )}
+        </ModalScreen>
+
+        <ModalContent>
+          <CategoryBadge>{t(`categories.${project.category}`)}</CategoryBadge>
+          <ProjectTitle id={titleId}>{title}</ProjectTitle>
+          <ProjectDescription>{description}</ProjectDescription>
+
+          <Section>
+            <h3>{t('modal.highlights')}</h3>
+            <HighlightsList>
+              {highlights.map((highlight) => (
+                <HighlightItem key={highlight}>{highlight}</HighlightItem>
+              ))}
+            </HighlightsList>
+          </Section>
+
+          <Section>
+            <h3>{t('modal.technologies')}</h3>
+            <TechStack>
+              {project.technologies.map((tech) => (
+                <TechTag key={tech}>{tech}</TechTag>
+              ))}
+            </TechStack>
+          </Section>
+
+          {(project.githubUrl || project.liveUrl) && (
+            <ActionButtons>
+              {project.githubUrl && (
+                <Button
+                  variant="outline"
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaGithub aria-hidden="true" /> {tc('buttons.viewCode')}
+                </Button>
               )}
-            </ModalImage>
-
-            <ModalContent>
-              <CategoryBadge>{t(`categories.${project.category}`)}</CategoryBadge>
-              <ProjectTitle>{title}</ProjectTitle>
-              <ProjectDescription>{description}</ProjectDescription>
-
-              <Section>
-                <h4>{t('modal.highlights')}</h4>
-                <HighlightsList>
-                  {highlights.map((highlight, index) => (
-                    <HighlightItem key={index}>
-                      <FaCheck /> {highlight}
-                    </HighlightItem>
-                  ))}
-                </HighlightsList>
-              </Section>
-
-              <Section>
-                <h4>{t('modal.technologies')}</h4>
-                <TechStack>
-                  {project.technologies.map((tech) => (
-                    <TechTag key={tech}>{tech}</TechTag>
-                  ))}
-                </TechStack>
-              </Section>
-
-              <ActionButtons>
-                {project.githubUrl && (
-                  <Button
-                    variant="outline"
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaGithub /> {tc('buttons.viewCode')}
-                  </Button>
-                )}
-                {project.liveUrl && (
-                  <Button
-                    variant="primary"
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaExternalLinkAlt /> {tc('buttons.liveDemo')}
-                  </Button>
-                )}
-              </ActionButtons>
-            </ModalContent>
-          </ModalContainer>
-        </Overlay>
-      )}
-    </AnimatePresence>
+              {project.liveUrl && (
+                <Button
+                  variant="primary"
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FaExternalLinkAlt aria-hidden="true" /> {tc('buttons.liveDemo')}
+                </Button>
+              )}
+            </ActionButtons>
+          )}
+        </ModalContent>
+      </ModalPanel>
+    </Overlay>
   );
 };
 

@@ -1,6 +1,8 @@
 {
   "title": "Etapas Conquistadas",
   "subtitle": "Batallas de jefes ganadas y etapas completadas",
+  "filterLabel": "Filtrar etapas por categoría",
+  "stage": "Etapa",
   "categories": {
     "all": "Todas las Etapas",
     "enterprise": "Empresarial",
@@ -11,6 +13,7 @@
   },
   "noProjects": "No se encontraron etapas en esta zona.",
   "modal": {
+    "close": "Cerrar detalles de la etapa",
     "highlights": "Tácticas de Batalla Clave",
     "technologies": "Sistemas de Armas Usados"
   },
