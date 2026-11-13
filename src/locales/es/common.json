@@ -6,7 +6,8 @@
       "CARGANDO RECURSOS...",
       "CALIBRANDO INTERFAZ...",
       "LISTO PARA DESPLIEGUE..."
-    ]
+    ],
+    "skip": "Saltar la presentación"
   },
   "nav": {
     "home": "Base",
@@ -14,20 +15,21 @@
     "skills": "Poderes",
     "experience": "Misiones",
     "projects": "Etapas",
-    "contact": "Transmitir"
+    "contact": "Contacto"
   },
   "footer": {
-    "description": "Maverick Hunter con más de 13 años de experiencia en combate construyendo sistemas de armas empresariales, fortalezas en la nube y plataformas de batalla escalables.",
+    "description": "Ingeniero de sistemas con más de 13 años de experiencia construyendo aplicaciones empresariales sobre .NET, AWS y React.",
     "quickLinks": "Enlaces Rápidos",
     "connect": "Conectar",
     "links": {
       "home": "Base",
-      "about": "Perfil del Cazador",
-      "skills": "Poderes Equipados",
-      "projects": "Etapas Conquistadas",
-      "contact": "Transmitir Señal"
+      "about": "Perfil",
+      "skills": "Tecnologías",
+      "projects": "Proyectos",
+      "contact": "Contacto",
+      "game": "Jugar DevMan"
     },
-    "copyright": "Construido con React y Pasión de Batalla",
+    "copyright": "Construido con React y el arte de DevMan",
     "status": "SISTEMA EN LÍNEA",
     "secretCabin": "Acceder a la Cabina Secreta"
   },
@@ -36,16 +38,16 @@
       "title": "INGRESE CONTRASEÑA",
       "submit": "ENVIAR",
       "denied": "ACCESO DENEGADO",
-      "hint": "Solo los verdaderos Maverick Hunters conocen el código",
+      "hint": "Solo quien terminó el juego conoce el código",
       "cellLabel": "Celda {{n}}"
     },
     "reveal": {
-      "loading": "DESENCRIPTANDO DATOS DEL CAZADOR...",
-      "complete": "DATOS DEL CAZADOR CARGADOS",
+      "loading": "DESCIFRANDO DATOS...",
+      "complete": "DATOS CARGADOS",
       "start": "INICIAR MISIÓN"
     },
     "game": {
-      "title": "MAVERICK RUNNER",
+      "title": "DEV RUNNER",
       "start": "PRESIONA ESPACIO PARA INICIAR",
       "startMobile": "TOCA PARA INICIAR",
       "gameOver": "MISIÓN FALLIDA",
@@ -56,13 +58,13 @@
     "back": "Volver a la Base"
   },
   "buttons": {
-    "viewProjects": "Ver Batallas",
-    "downloadCV": "Descargar Chip de Datos",
-    "sendMessage": "Transmitir Señal",
-    "contactHQ": "Contactar Base",
+    "viewProjects": "Ver proyectos",
+    "downloadCV": "Descargar CV",
+    "sendMessage": "Enviar mensaje",
+    "contactHQ": "Contactar",
     "viewCode": "Ver Código",
     "liveDemo": "Demo en Vivo",
-    "sending": "Transmitiendo...",
+    "sending": "Enviando...",
     "featured": "Destacado"
   },
   "menu": {

@@ -6,28 +6,30 @@
       "LOADING ASSETS...",
       "CALIBRATING INTERFACE...",
       "READY FOR DEPLOYMENT..."
-    ]
+    ],
+    "skip": "Skip intro"
   },
   "nav": {
-    "home": "HQ",
-    "about": "Hunter Profile",
+    "home": "Base",
+    "about": "Profile",
     "skills": "Powers",
-    "experience": "Mission Log",
+    "experience": "Missions",
     "projects": "Stages",
-    "contact": "Transmit"
+    "contact": "Contact"
   },
   "footer": {
-    "description": "Maverick Hunter with 13+ years of combat experience building enterprise-grade weapon systems, cloud fortresses, and scalable battle platforms.",
+    "description": "Systems engineer with 13+ years of experience building enterprise applications on .NET, AWS, and React.",
     "quickLinks": "Quick Links",
     "connect": "Connect",
     "links": {
-      "home": "HQ",
-      "about": "Hunter Profile",
-      "skills": "Equipped Powers",
-      "projects": "Conquered Stages",
-      "contact": "Transmit Signal"
+      "home": "Base",
+      "about": "Profile",
+      "skills": "Technologies",
+      "projects": "Projects",
+      "contact": "Contact",
+      "game": "Play DevMan"
     },
-    "copyright": "Built with React & Battle Passion",
+    "copyright": "Built with React and DevMan art",
     "status": "SYSTEM ONLINE",
     "secretCabin": "Access the Secret Cabin"
   },
@@ -36,16 +38,16 @@
       "title": "ENTER PASSWORD",
       "submit": "SUBMIT",
       "denied": "ACCESS DENIED",
-      "hint": "Only true Maverick Hunters know the code",
+      "hint": "Only those who finished the game know the code",
       "cellLabel": "Cell {{n}}"
     },
     "reveal": {
-      "loading": "DECRYPTING HUNTER DATA...",
-      "complete": "HUNTER DATA LOADED",
+      "loading": "DECRYPTING DATA...",
+      "complete": "DATA LOADED",
       "start": "START MISSION"
     },
     "game": {
-      "title": "MAVERICK RUNNER",
+      "title": "DEV RUNNER",
       "start": "PRESS SPACE TO START",
       "startMobile": "TAP TO START",
       "gameOver": "MISSION FAILED",
@@ -53,16 +55,16 @@
       "highScore": "BEST",
       "retry": "PRESS SPACE TO RETRY"
     },
-    "back": "Back to Base"
+    "back": "Back to base"
   },
   "buttons": {
-    "viewProjects": "View Battles",
-    "downloadCV": "Download Data Chip",
-    "sendMessage": "Transmit Signal",
-    "contactHQ": "Contact HQ",
+    "viewProjects": "View projects",
+    "downloadCV": "Download résumé",
+    "sendMessage": "Send message",
+    "contactHQ": "Contact me",
     "viewCode": "View Code",
     "liveDemo": "Live Demo",
-    "sending": "Transmitting...",
+    "sending": "Sending...",
     "featured": "Featured"
   },
   "menu": {

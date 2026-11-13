@@ -6,6 +6,7 @@ import { theme } from '../../styles/theme';
 import { dither, pixelOutline } from '../../styles/pixel';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { Wordmark } from '../../game/Wordmark';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useScrollLock } from '../../hooks/useScrollLock';
 
@@ -51,59 +52,17 @@ const NavContainer = styled.div`
   align-items: center;
 `;
 
+// Wordmark: the hero's face and the name in the game font. It lifts a pixel on hover.
 const Logo = styled(Link)`
-  font-family: ${theme.typography.fonts.heading};
-  font-size: ${theme.typography.sizes.xl};
-  font-weight: ${theme.typography.weights.bold};
-  color: ${theme.colors.primary.main};
+  display: block;
   text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
 
-  span {
-    color: ${theme.colors.neutral.white};
-  }
-
-  &:hover span {
-    color: ${theme.colors.accent.gold};
+  &:hover {
+    transform: translateY(-2px);
   }
 
   &:focus-visible {
     outline-offset: 4px;
-  }
-`;
-
-// Square "AB" badge with a pixel outline and a blinking status LED
-const LogoIcon = styled.div`
-  width: 36px;
-  height: 36px;
-  margin: 2px;
-  background: ${theme.colors.secondary.dark};
-  box-shadow: ${pixelOutline(theme.colors.primary.main)};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 14px;
-  font-weight: ${theme.typography.weights.bold};
-  line-height: 1;
-  color: ${theme.colors.primary.main};
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 4px;
-    height: 4px;
-    background: ${theme.colors.accent.green};
-    animation: ledBlink 1.5s step-end infinite;
-  }
-
-  @keyframes ledBlink {
-    50% { opacity: 0.3; }
   }
 `;
 
@@ -386,9 +345,8 @@ export const NavBar: React.FC = () => {
     <>
       <Nav>
         <NavContainer>
-          <Logo to="/">
-            <LogoIcon>AB</LogoIcon>
-            <span>DEV</span>
+          <Logo to="/" aria-label="Aarón Bocanegra">
+            <Wordmark name="AARÓN" tag="DEV" />
           </Logo>
 
           <NavRight>

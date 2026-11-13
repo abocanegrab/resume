@@ -77,6 +77,8 @@ export const SkillBar: React.FC<SkillBarProps> = ({ skill, index = 0, onHover })
       onPointerLeave={e => {
         if (e.pointerType === 'mouse') onHover?.(null);
       }}
+      // Touch: a tap equips it
+      onClick={() => onHover?.(skill)}
     >
       <SkillHeader>
         <SkillName>

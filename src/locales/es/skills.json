@@ -1,7 +1,7 @@
 {
-  "title": "Poderes Equipados",
-  "subtitle": "Sistemas de armas y herramientas de batalla en el arsenal",
-  "filterLabel": "Filtrar poderes por categoría",
+  "title": "Poderes",
+  "subtitle": "Lenguajes, plataformas y herramientas con las que trabajo",
+  "filterLabel": "Filtrar tecnologías por categoría",
   "allCategory": "Todos",
   "categories": {
     "backend": "Backend",
@@ -10,11 +10,18 @@
     "devops": "DevOps & Cloud",
     "tools": "Herramientas"
   },
-  "spriteTitle": "Armadura de Poder",
-  "helpText": "Pasa el cursor sobre un poder para cambiar el color de la armadura",
+  "spriteTitle": "Arma equipada",
+  "helpText": "Pasa el cursor o toca una tecnología para equiparla",
   "sprite": {
     "ready": "Listo",
     "standby": "[ EN ESPERA ]",
-    "powerUp": "[ PODER AL MÁXIMO ]"
+    "powerUp": "[ ARMA EQUIPADA ]"
+  },
+  "techniques": {
+    "backend": "Disparo cargado",
+    "frontend": "Ráfaga",
+    "database": "Pila de datos",
+    "devops": "Rayo de nube",
+    "tools": "Búmeran"
   }
 }

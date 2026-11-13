@@ -1,10 +1,11 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaExternalLinkAlt, FaStar } from 'react-icons/fa';
+import { StageArt } from '../../game/StageArt';
 import { theme } from '../../styles/theme';
 import { stepEase } from '../../styles/animations';
 import { dither, pixelCard, pixelCardShadow, pixelOutline } from '../../styles/pixel';
@@ -64,20 +65,6 @@ const StageImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-`;
-
-// Placeholder: the stage initial as a big pixel glyph on the night-sky dither
-const StageGlyph = styled.span`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 64px;
-  line-height: 1;
-  color: ${theme.colors.primary.main};
-  text-shadow: 4px 4px 0 ${theme.colors.neutral.black};
 `;
 
 const StageNumber = styled.span`
@@ -295,6 +282,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   const entry = entries.find(e => e.id === project.id);
   const title = entry?.title || project.title;
   const descId = useId();
+  // Hovered or focused: the stage art comes alive
+  const [active, setActive] = useState(false);
   const stageLabel = `${t('stage')} ${String(stage).padStart(2, '0')}`;
 
   return (
@@ -304,12 +293,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       variants={stageEntry}
       initial={reduced ? false : 'initial'}
       animate="animate"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      onFocus={() => setActive(true)}
+      onBlur={() => setActive(false)}
     >
       <StageScreen>
         {project.image ? (
           <StageImage src={project.image} alt="" />
         ) : (
-          <StageGlyph aria-hidden="true">{title.charAt(0)}</StageGlyph>
+          <StageArt stage={stage} active={active} />
         )}
         <StageNumber aria-hidden="true">{stageLabel}</StageNumber>
         {project.featured && (

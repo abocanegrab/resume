@@ -1,8 +1,10 @@
+import { useRef } from 'react';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
 import { SectionTitle } from '../components/common/SectionTitle';
 import { ExperienceCard } from '../components/experience/ExperienceCard';
+import { TimelineRunner } from '../components/experience/TimelineRunner';
 import { experiences } from '../data/experience';
 import type { ExperienceEntry } from '../data/experience';
 import { theme } from '../styles/theme';
@@ -31,6 +33,7 @@ const currentIds = new Set(experiences.filter(e => e.current).map(e => e.id));
 export const ExperiencePage: React.FC = () => {
   const { t } = useTranslation('experience');
   const entries = t('entries', { returnObjects: true }) as ExperienceEntry[];
+  const timeline = useRef<HTMLOListElement>(null);
 
   return (
     <PageTransition>
@@ -43,7 +46,8 @@ export const ExperiencePage: React.FC = () => {
             align="center"
           />
 
-          <TimelineContainer>
+          <TimelineContainer ref={timeline}>
+            <TimelineRunner target={timeline} />
             {entries.map((entry, index) => (
               <ExperienceCard
                 key={entry.id}

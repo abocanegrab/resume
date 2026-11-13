@@ -1,22 +1,22 @@
 {
-  "title": "Transmitir Señal",
-  "subtitle": "Abre un canal de comunicación para tu próxima misión",
+  "title": "Contacto",
+  "subtitle": "Hablemos de tu próximo proyecto",
   "info": {
     "location": {
-      "label": "Base de Operaciones",
-      "value": "Perú (Operaciones Remotas)"
+      "label": "Ubicación",
+      "value": "Perú (remoto)"
     },
     "email": {
-      "label": "Canal de Comunicación"
+      "label": "Correo"
     },
     "responseTime": {
-      "label": "Tiempo de Respuesta",
+      "label": "Tiempo de respuesta",
       "value": "Dentro de 24 horas"
     }
   },
-  "ctaText": "¿Listo para iniciar una nueva misión juntos? Envía una transmisión directa a mi canal de comunicación y responderé dentro de 24 horas.",
-  "ctaButton": "Enviar Transmisión",
-  "availability": "Disponible para nuevas misiones",
+  "ctaText": "¿Tienes un proyecto o una vacante en mente? Escríbeme por correo y te respondo dentro de 24 horas.",
+  "ctaButton": "Enviar correo",
+  "availability": "Disponible para nuevos proyectos",
   "social": {
     "title": "O <1>conecta</1> conmigo",
     "links": {
@@ -27,7 +27,7 @@
     }
   },
   "terminal": {
-    "label": "Terminal de transmisión",
+    "label": "Panel de contacto",
     "status": "Canal abierto"
   }
 }

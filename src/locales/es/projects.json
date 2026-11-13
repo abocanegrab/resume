@@ -1,28 +1,28 @@
 {
-  "title": "Etapas Conquistadas",
-  "subtitle": "Batallas de jefes ganadas y etapas completadas",
-  "filterLabel": "Filtrar etapas por categoría",
+  "title": "Etapas",
+  "subtitle": "Proyectos en los que he trabajado",
+  "filterLabel": "Filtrar proyectos por categoría",
   "stage": "Etapa",
   "categories": {
-    "all": "Todas las Etapas",
+    "all": "Todos",
     "enterprise": "Empresarial",
     "startup": "Startup",
     "government": "Gobierno",
     "industrial": "Industrial",
     "fullstack": "Full-Stack"
   },
-  "noProjects": "No se encontraron etapas en esta zona.",
+  "noProjects": "No hay proyectos en esta categoría.",
   "modal": {
     "close": "Cerrar detalles de la etapa",
-    "highlights": "Tácticas de Batalla Clave",
-    "technologies": "Sistemas de Armas Usados"
+    "highlights": "Puntos clave",
+    "technologies": "Tecnologías"
   },
   "entries": [
     {
       "id": "1",
       "title": "JobStack 2.0",
-      "description": "Plataforma de batalla empresarial de staffing para TrueBlue con arquitectura de microservicios, micro-frontends React e integraciones de armas AWS.",
-      "longDescription": "Lidero el asalto a JobStack 2.0, una plataforma de staffing integral para TrueBlue. Construida con microservicios .NET y micro-frontends React, con Hangfire para operaciones en segundo plano, Amazon Aurora (PostgreSQL) para persistencia de datos, y extensas integraciones de armas AWS incluyendo SNS, SQS y CloudFormation para infraestructura como código.",
+      "description": "Plataforma empresarial de staffing para TrueBlue con arquitectura de microservicios, micro-frontends React e integraciones con AWS.",
+      "longDescription": "Trabajo en JobStack 2.0, una plataforma de staffing integral para TrueBlue. Construida con microservicios .NET y micro-frontends React, con Hangfire para tareas en segundo plano, Amazon Aurora (PostgreSQL) para persistencia de datos, y integraciones con AWS incluyendo SNS, SQS y CloudFormation para infraestructura como código.",
       "highlights": [
         "Arquitectura de microservicios con .NET",
         "Micro-frontends React",
@@ -33,20 +33,20 @@
     {
       "id": "2",
       "title": "TAP - Sistema de Cultura Organizacional",
-      "description": "Plataforma de batalla SaaS para medir y analizar cultura organizacional, construida desde cero como cofundador del gremio.",
-      "longDescription": "Cofundé el gremio Grodivo y lidero el desarrollo de TAP, un sistema para medir cultura organizacional. Diseñé toda la arquitectura de batalla incluyendo microservicios .NET 9, frontend React con TypeScript y Styled Components, y una fortaleza serverless AWS con Lambda, SNS, SQS, SES y S3.",
+      "description": "Plataforma SaaS para medir y analizar cultura organizacional, construida desde cero como cofundador.",
+      "longDescription": "Cofundé Grodivo y lidero el desarrollo de TAP, un sistema para medir cultura organizacional. Diseñé toda la arquitectura incluyendo microservicios .NET 9, frontend React con TypeScript y Styled Components, y una infraestructura serverless en AWS con Lambda, SNS, SQS, SES y S3.",
       "highlights": [
-        "Construido desde cero como cofundador del gremio",
-        "Arquitectura de fortaleza serverless AWS",
-        "MediatR para patrón de batalla CQRS",
+        "Construido desde cero como cofundador",
+        "Arquitectura serverless en AWS",
+        "MediatR para el patrón CQRS",
         "Monorepo con TurboRepo"
       ]
     },
     {
       "id": "3",
       "title": "Apps de Trazabilidad Minera",
-      "description": "Apps móviles de batalla para el Ministerio de Energía y Minas de Perú para rastrear transporte de minerales con generación y escaneo de códigos QR.",
-      "longDescription": "Desarrollé dos aplicaciones móviles de batalla .NET MAUI para apoyar el plan de formalización de la minería informal de Perú. La app de Registro de Transferencias registra transporte de minerales y genera códigos QR, mientras la app de Fiscalización permite a operativos de campo escanear y validar registros contra bases de datos en la nube.",
+      "description": "Apps móviles para el Ministerio de Energía y Minas de Perú para rastrear transporte de minerales con generación y escaneo de códigos QR.",
+      "longDescription": "Desarrollé dos aplicaciones móviles .NET MAUI para apoyar el plan de formalización de la minería informal de Perú. La app de Registro de Transferencias registra transporte de minerales y genera códigos QR, mientras la app de Fiscalización permite a inspectores de campo escanear y validar registros contra bases de datos en la nube.",
       "highlights": [
         "Apps móviles multiplataforma con .NET MAUI",
         "Generación y escaneo de códigos QR",
@@ -57,8 +57,8 @@
     {
       "id": "4",
       "title": "SJE - Sistema de Gestión Electoral",
-      "description": "Campaña de transformación digital para el JNE (Jurado Nacional de Elecciones) con módulos de gestión electoral y archivo de documentos.",
-      "longDescription": "Operativo senior en el proyecto SJE como parte de la campaña de transformación digital del JNE. Diseñé y desplegué módulos para gestión electoral, registro, candidatos, autoridades y archivo de documentos. Construí una aplicación WinForms para escaneo de documentos con reconocimiento de código de barras integrado con FTP y servicios cloud.",
+      "description": "Transformación digital para el JNE (Jurado Nacional de Elecciones) con módulos de gestión electoral y archivo de documentos.",
+      "longDescription": "Desarrollador senior en el proyecto SJE como parte de la proceso de transformación digital del JNE. Diseñé y implementé módulos para gestión electoral, registro, candidatos, autoridades y archivo de documentos. Construí una aplicación WinForms para escaneo de documentos con reconocimiento de código de barras integrado con FTP y servicios cloud.",
       "highlights": [
         "Módulos de gestión electoral",
         "Archivo de documentos con reconocimiento de código de barras",

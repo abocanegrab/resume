@@ -6,12 +6,9 @@ import { useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
 import { pixelCard, pixelOutline } from '../../styles/pixel';
-import { SegmentBar } from '../common/SegmentBar';
 import { visuallyHidden } from '../../styles/a11y';
 import { skills } from '../../data/skills';
-import { PixelMorphPhoto } from './PixelMorphPhoto';
-
-const BAR_CELLS = 16;
+import { HeroCanvas } from '../../game/HeroCanvas';
 
 // Four highest-level skills, shown as the "equipped" loadout
 const TOP_SKILLS = [...skills].sort((a, b) => b.level - a.level).slice(0, 4);
@@ -50,22 +47,19 @@ const Header = styled.div`
   }
 `;
 
-// Leaves room for the portrait's 2px outline and sizes it (beats its own media queries)
+// Framed viewport for the sprite, like the portrait in a status screen
 const PortraitCell = styled.div`
   flex-shrink: 0;
-  padding: 2px;
-
-  & > div {
-    width: 128px;
-    height: 128px;
-  }
-
-  @container (max-width: 400px) {
-    & > div {
-      width: 96px;
-      height: 96px;
-    }
-  }
+  margin: 2px;
+  padding: 4px 0 0;
+  width: 112px;
+  height: 112px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background: ${theme.colors.sky[1]};
+  box-shadow: ${pixelOutline(theme.colors.primary.main)}, inset 0 0 0 2px ${theme.colors.neutral.black};
 `;
 
 const Identity = styled.div`
@@ -125,45 +119,6 @@ const TypeCursor = styled.span`
     animation: none;
   }
 `;
-
-const Stats = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.sm};
-`;
-
-const StatRow = styled.div`
-  display: grid;
-  grid-template-columns: 3.5em minmax(0, 1fr) 4.5em;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 14px;
-  line-height: 1.4;
-`;
-
-const StatLabel = styled.span`
-  color: ${theme.colors.neutral.white};
-`;
-
-const StatValue = styled.span`
-  color: ${theme.colors.neutral.lightGray};
-  text-align: right;
-`;
-
-const StatBar: React.FC<{ label: string; filled: number; tone: string }> = ({
-  label,
-  filled,
-  tone,
-}) => (
-  <StatRow>
-    <StatLabel>{label}</StatLabel>
-    <SegmentBar cells={BAR_CELLS} filled={filled} tone={tone} />
-    <StatValue>
-      {filled}/{BAR_CELLS}
-    </StatValue>
-  </StatRow>
-);
 
 // Loadout row: the whole row links to the skills page
 const Equipped = styled(Link)`
@@ -364,9 +319,6 @@ const RoleTicker: React.FC = () => {
   );
 };
 
-// Set to `${import.meta.env.BASE_URL}images/profile/developer-photo.png` once the photo is added
-const PROFILE_PHOTO: string | undefined = undefined;
-
 export const HeroPanel: React.FC = () => {
   const { t, i18n } = useTranslation('home');
   const { t: tc } = useTranslation('common');
@@ -375,12 +327,7 @@ export const HeroPanel: React.FC = () => {
     <Panel>
       <Header>
         <PortraitCell>
-          <PixelMorphPhoto
-            photoSrc={PROFILE_PHOTO}
-            pixelSrc={`${import.meta.env.BASE_URL}images/profile/pixel-portrait.svg`}
-            alt={t('hero.photoAlt')}
-            showHint={false}
-          />
+          <HeroCanvas pose="idle" scale={3} />
         </PortraitCell>
 
         <Identity>
@@ -389,11 +336,6 @@ export const HeroPanel: React.FC = () => {
           <RoleTicker key={i18n.resolvedLanguage} />
         </Identity>
       </Header>
-
-      <Stats aria-hidden="true">
-        <StatBar label={t('hero.hud.energy')} filled={16} tone={theme.colors.primary.main} />
-        <StatBar label={t('hero.hud.exp')} filled={14} tone={theme.colors.accent.green} />
-      </Stats>
 
       <Equipped to="/skills">
         <EquippedLabel>{t('hero.equipped')}</EquippedLabel>

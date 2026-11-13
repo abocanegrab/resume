@@ -1,28 +1,28 @@
 {
-  "title": "Conquered Stages",
-  "subtitle": "Boss battles won and stages cleared",
-  "filterLabel": "Filter stages by category",
+  "title": "Stages",
+  "subtitle": "Projects I have worked on",
+  "filterLabel": "Filter projects by category",
   "stage": "Stage",
   "categories": {
-    "all": "All Stages",
+    "all": "All",
     "enterprise": "Enterprise",
     "startup": "Startup",
     "government": "Government",
     "industrial": "Industrial",
     "fullstack": "Full-Stack"
   },
-  "noProjects": "No stages found in this zone.",
+  "noProjects": "No projects in this category.",
   "modal": {
     "close": "Close stage details",
-    "highlights": "Key Battle Tactics",
-    "technologies": "Weapon Systems Used"
+    "highlights": "Key points",
+    "technologies": "Technologies"
   },
   "entries": [
     {
       "id": "1",
       "title": "JobStack 2.0",
-      "description": "Enterprise staffing battle platform for TrueBlue with microservices architecture, React micro-frontends, and AWS weapon integrations.",
-      "longDescription": "Led the assault on JobStack 2.0, a comprehensive staffing platform for TrueBlue. Built with .NET microservices and React micro-frontends, featuring Hangfire for background operations, Amazon Aurora (PostgreSQL) for data persistence, and extensive AWS weapon integrations including SNS, SQS, CloudFormation for infrastructure as code.",
+      "description": "Enterprise staffing platform for TrueBlue with microservices architecture, React micro-frontends, and AWS integrations.",
+      "longDescription": "Working on JobStack 2.0, a comprehensive staffing platform for TrueBlue. Built with .NET microservices and React micro-frontends, featuring Hangfire for background jobs, Amazon Aurora (PostgreSQL) for data persistence, and AWS integrations including SNS, SQS, CloudFormation for infrastructure as code.",
       "highlights": [
         "Microservices architecture with .NET",
         "React micro-frontends",
@@ -33,20 +33,20 @@
     {
       "id": "2",
       "title": "TAP - Organizational Culture System",
-      "description": "SaaS battle platform to measure and analyze organizational culture, built from scratch as a guild co-founder.",
-      "longDescription": "Co-founded Grodivo guild and led the development of TAP, a system to measure organizational culture. Designed the entire battle architecture including .NET 9 microservices, React frontend with TypeScript and Styled Components, and AWS serverless fortress with Lambda, SNS, SQS, SES, and S3.",
+      "description": "SaaS platform to measure and analyze organizational culture, built from scratch as a co-founder.",
+      "longDescription": "Co-founded Grodivo and led the development of TAP, a system to measure organizational culture. Designed the entire architecture including .NET 9 microservices, React frontend with TypeScript and Styled Components, and serverless AWS infrastructure with Lambda, SNS, SQS, SES, and S3.",
       "highlights": [
-        "Built from scratch as guild co-founder",
-        "Serverless AWS fortress architecture",
-        "MediatR for CQRS battle pattern",
+        "Built from scratch as co-founder",
+        "Serverless AWS architecture",
+        "MediatR for the CQRS pattern",
         "Monorepo with TurboRepo"
       ]
     },
     {
       "id": "3",
       "title": "Mining Traceability Apps",
-      "description": "Mobile battle apps for Peru's Ministry of Energy and Mines to track mineral transport with QR code generation and scanning.",
-      "longDescription": "Developed two .NET MAUI mobile battle applications to support Peru's informal-mining formalization campaign. The Transfer Registration app records mineral transport and generates QR codes, while the Enforcement app allows field operatives to scan and validate records against cloud databases.",
+      "description": "Mobile apps for Peru's Ministry of Energy and Mines to track mineral transport with QR code generation and scanning.",
+      "longDescription": "Developed two .NET MAUI mobile applications to support Peru's informal-mining formalization plan. The Transfer Registration app records mineral transport and generates QR codes, while the Enforcement app allows field inspectors to scan and validate records against cloud databases.",
       "highlights": [
         "Cross-platform mobile apps with .NET MAUI",
         "QR code generation and scanning",
@@ -57,8 +57,8 @@
     {
       "id": "4",
       "title": "SJE - Electoral Management System",
-      "description": "Digital transformation campaign for JNE (National Electoral Jury) with electoral management and document archiving modules.",
-      "longDescription": "Senior operative on the SJE project as part of JNE's digital transformation campaign. Designed and deployed modules for electoral management, registration, candidates, authorities, and document archiving. Built a WinForms application for document scanning with barcode recognition integrated with FTP and cloud services.",
+      "description": "Digital transformation for JNE (National Electoral Jury) with electoral management and document archiving modules.",
+      "longDescription": "Senior developer on the SJE project as part of JNE's digital transformation effort. Designed and implemented modules for electoral management, registration, candidates, authorities, and document archiving. Built a WinForms application for document scanning with barcode recognition integrated with FTP and cloud services.",
       "highlights": [
         "Electoral management modules",
         "Document archiving with barcode recognition",

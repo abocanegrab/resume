@@ -1,22 +1,22 @@
 {
-  "title": "Transmit Signal",
-  "subtitle": "Open a comm channel for your next mission",
+  "title": "Contact",
+  "subtitle": "Let's talk about your next project",
   "info": {
     "location": {
-      "label": "Base Location",
-      "value": "Peru (Remote Ops)"
+      "label": "Location",
+      "value": "Peru (remote)"
     },
     "email": {
-      "label": "Comm Channel"
+      "label": "Email"
     },
     "responseTime": {
-      "label": "Response Time",
+      "label": "Response time",
       "value": "Within 24 hours"
     }
   },
-  "ctaText": "Ready to start a new mission together? Send a direct transmission to my comm channel and I'll respond within 24 hours.",
-  "ctaButton": "Send Transmission",
-  "availability": "Available for new missions",
+  "ctaText": "Have a project or an opening in mind? Send me an email and I will reply within 24 hours.",
+  "ctaButton": "Send email",
+  "availability": "Available for new projects",
   "social": {
     "title": "Or <1>connect</1> with me",
     "links": {
@@ -27,7 +27,7 @@
     }
   },
   "terminal": {
-    "label": "Transmission terminal",
+    "label": "Contact panel",
     "status": "Channel open"
   }
 }

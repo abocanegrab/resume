@@ -1,71 +1,35 @@
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
-import { dither } from '../../styles/pixel';
 import { GameScene } from './GameScene';
 import { HeroPanel } from './HeroPanel';
 import { DialogBox } from './DialogBox';
+import { GameCapsule } from './GameCapsule';
 
 // Fixed navbar: 74px bar (incl. 2px border) + 4px dither strip
 const NAV_CLEARANCE = '78px';
-// Dithered night band behind the top of the hero; below it the section is solid
-const SKY_BAND = '240px';
 
 const HeroWrapper = styled.section`
   position: relative;
+  padding-top: ${NAV_CLEARANCE};
   background: ${theme.colors.background.primary};
-
-  /* Subtle sky: dithered sky[0]/sky[1] band that steps down into the page color */
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: ${SKY_BAND};
-    ${dither(theme.colors.sky[0], theme.colors.sky[1], 4)}
-    pointer-events: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: ${SKY_BAND};
-    left: 0;
-    right: 0;
-    height: 8px;
-    ${dither(theme.colors.background.primary, theme.colors.sky[0], 8)}
-    pointer-events: none;
-  }
 `;
 
+// The windows sit on the lower edge of the stage, like a HUD laid over the game
 const HeroGrid = styled.div`
   position: relative;
   z-index: 1;
   max-width: 1280px;
-  margin: 0 auto;
-  padding: calc(${NAV_CLEARANCE} + ${theme.spacing.lg}) ${theme.spacing.lg} ${theme.spacing.xl};
+  margin: -40px auto 0;
+  padding: 0 ${theme.spacing.lg} ${theme.spacing.xl};
   display: grid;
-  /* 720px screen (3x the 240px art) + 6px bezel on each side */
-  grid-template-columns: minmax(0, 732px) minmax(300px, 1fr);
-  grid-template-areas:
-    'scene panel'
-    'dialog dialog';
+  grid-template-columns: minmax(300px, 440px) minmax(0, 1fr);
+  grid-template-areas: 'panel dialog';
+  align-items: start;
   gap: ${theme.spacing.lg};
 
-  /* Narrower desktops: the panel gets tall, so it spans both rows and the
-     dialog sits under the scene instead of leaving a gap there */
-  @media (max-width: 1199px) {
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-      'scene panel'
-      'dialog panel';
-  }
-
   @media (max-width: ${theme.breakpoints.laptop}) {
-    grid-template-rows: none;
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
-      'scene'
       'panel'
       'dialog';
   }
@@ -76,13 +40,24 @@ const HeroGrid = styled.div`
   }
 `;
 
+const Side = styled.div`
+  grid-area: dialog;
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.lg};
+  min-width: 0;
+`;
+
 export const HeroSection: React.FC = () => {
   return (
     <HeroWrapper>
+      <GameScene />
       <HeroGrid>
-        <GameScene />
         <HeroPanel />
-        <DialogBox />
+        <Side>
+          <DialogBox />
+          <GameCapsule />
+        </Side>
       </HeroGrid>
     </HeroWrapper>
   );

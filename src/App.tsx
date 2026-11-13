@@ -31,7 +31,7 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -68,18 +68,33 @@ const AppLayout = () => {
   );
 };
 
+// The title screen plays once per browser session
+const BOOT_KEY = 'portfolio.booted';
+const alreadyBooted = () => {
+  try {
+    return sessionStorage.getItem(BOOT_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [boot, setBoot] = useState<'title' | 'opening' | 'done'>(() => (alreadyBooted() ? 'done' : 'title'));
+
+  const finishBoot = () => {
+    try {
+      sessionStorage.setItem(BOOT_KEY, '1');
+    } catch {
+      // Private mode: the title just plays again next time
+    }
+    setBoot('done');
+  };
 
   return (
     <>
       <Global styles={globalStyles} />
-      {isLoading ? (
-        <LoadingScreen
-          minDuration={2500}
-          onComplete={() => setIsLoading(false)}
-        />
-      ) : (
+      {boot !== 'done' && <LoadingScreen onReveal={() => setBoot('opening')} onComplete={finishBoot} />}
+      {boot !== 'title' && (
         <Router>
           <ScrollToTop />
           <AppLayout />

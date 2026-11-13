@@ -1,101 +1,74 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import styled from '@emotion/styled';
 import { theme } from '../../styles/theme';
+import { HeroCanvas } from '../../game/HeroCanvas';
 
 interface PageTransitionProps {
   children: React.ReactNode;
 }
 
-const ENTER_S = 0.45;
+const WIPE_S = 0.7;
+const TOOTH = 12;
 
 const PageWrapper = styled(motion.div)`
   min-height: 100vh;
   width: 100%;
 `;
 
-const TeleportOverlay = styled(motion.div)`
+// Dark curtain over the new page. The hero dashes across the screen and takes it with him.
+const Curtain = styled(motion.div)`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: ${theme.colors.background.primary};
+  inset: 0;
   z-index: ${theme.zIndex.overlay};
-  display: flex;
-  justify-content: center;
+  background: ${theme.colors.background.primary};
+  border-left: 2px solid ${theme.colors.primary.main};
   pointer-events: none;
+
+  /* Crenellated trailing edge, so the wipe reads as pixels and not as a sliding panel */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -${TOOTH + 2}px;
+    width: ${TOOTH}px;
+    background: repeating-linear-gradient(
+      180deg,
+      ${theme.colors.background.primary} 0 ${TOOTH}px,
+      transparent ${TOOTH}px ${TOOTH * 2}px
+    );
+  }
 `;
 
-const Beam = styled(motion.div)`
-  width: 10px;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    ${theme.colors.primary.light} 0%,
-    ${theme.colors.primary.main} 60%,
-    transparent 100%
-  );
-  box-shadow: 0 0 24px 6px ${theme.colors.primary.glow};
-  transform-origin: top;
+const Dasher = styled.div`
+  position: absolute;
+  left: -8px;
+  top: 56%;
 `;
 
-const Flash = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ffffff;
-  z-index: ${theme.zIndex.overlay + 1};
-  pointer-events: none;
+// Speed lines trailing behind him, over the page being uncovered
+const Streak = styled.span`
+  position: absolute;
+  right: 100%;
+  height: 2px;
+  background: ${theme.colors.primary.light};
 `;
 
-// Mega Man teleport: beam drops in, flash, content materializes in one step
-const overlayVariants = {
-  initial: { opacity: 1 },
+const curtainVariants = {
+  initial: { x: '0%' },
   animate: {
-    opacity: [1, 1, 0],
-    transition: { duration: ENTER_S, times: [0, 0.75, 0.8], ease: 'linear' as const },
+    // Far enough for the speed lines trailing behind him to leave the screen too
+    x: '170%',
+    transition: { duration: WIPE_S, ease: 'linear' as const },
+    transitionEnd: { display: 'none' },
   },
-  exit: {
-    opacity: 1,
-    transition: { duration: 0.01, delay: 0.14 },
-  },
-};
-
-const beamVariants = {
-  initial: { scaleY: 0, opacity: 1 },
-  animate: {
-    scaleY: [0, 1, 1],
-    opacity: [1, 1, 0],
-    transition: { duration: ENTER_S, times: [0, 0.35, 0.8], ease: 'linear' as const },
-  },
-  exit: {
-    scaleY: [0, 1],
-    opacity: 1,
-    transition: { duration: 0.2, times: [0, 1], ease: 'linear' as const },
-  },
-};
-
-const flashVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: [0, 0, 1, 0],
-    transition: { duration: ENTER_S, times: [0, 0.5, 0.55, 0.7], ease: 'linear' as const },
-  },
-  exit: { opacity: 0 },
+  exit: { opacity: 0, transition: { duration: 0 } },
 };
 
 const contentVariants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: [0, 0, 1],
-    transition: { duration: ENTER_S, times: [0, 0.55, 0.6], ease: 'linear' as const },
-  },
-  exit: {
-    opacity: 0,
-    transition: { duration: 0.12 },
-  },
+  initial: { opacity: 1 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0, transition: { duration: 0.12 } },
 };
 
 const fadeVariants = {
@@ -109,12 +82,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
 
   if (reduced) {
     return (
-      <PageWrapper
-        variants={fadeVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
+      <PageWrapper variants={fadeVariants} initial="initial" animate="animate" exit="exit">
         {children}
       </PageWrapper>
     );
@@ -122,28 +90,15 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
 
   return (
     <>
-      <TeleportOverlay
-        aria-hidden="true"
-        variants={overlayVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
-        <Beam variants={beamVariants} />
-      </TeleportOverlay>
-      <Flash
-        aria-hidden="true"
-        variants={flashVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      />
-      <PageWrapper
-        variants={contentVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-      >
+      <Curtain aria-hidden="true" variants={curtainVariants} initial="initial" animate="animate" exit="exit">
+        <Dasher>
+          <Streak style={{ top: 44, width: 120 }} />
+          <Streak style={{ top: 62, width: 200, opacity: 0.6 }} />
+          <Streak style={{ top: 84, width: 90, opacity: 0.8 }} />
+          <HeroCanvas pose="dash" scale={3} />
+        </Dasher>
+      </Curtain>
+      <PageWrapper variants={contentVariants} initial="initial" animate="animate" exit="exit">
         {children}
       </PageWrapper>
     </>

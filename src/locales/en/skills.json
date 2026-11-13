@@ -1,7 +1,7 @@
 {
-  "title": "Equipped Powers",
-  "subtitle": "Weapon systems and battle tools in the arsenal",
-  "filterLabel": "Filter powers by category",
+  "title": "Powers",
+  "subtitle": "Languages, platforms, and tools I work with",
+  "filterLabel": "Filter technologies by category",
   "allCategory": "All",
   "categories": {
     "backend": "Backend",
@@ -10,11 +10,18 @@
     "devops": "DevOps & Cloud",
     "tools": "Tools"
   },
-  "spriteTitle": "Power Armor",
-  "helpText": "Hover over a power to change armor color",
+  "spriteTitle": "Equipped weapon",
+  "helpText": "Hover or tap a technology to equip it",
   "sprite": {
     "ready": "Ready",
     "standby": "[ STANDBY ]",
-    "powerUp": "[ POWER UP ]"
+    "powerUp": "[ WEAPON EQUIPPED ]"
+  },
+  "techniques": {
+    "backend": "Charged shot",
+    "frontend": "Burst",
+    "database": "Data stack",
+    "devops": "Cloud strike",
+    "tools": "Boomerang"
   }
 }

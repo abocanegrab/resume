@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { PageTransition } from '../components/common/PageTransition';
 import { SectionTitle } from '../components/common/SectionTitle';
 import { SkillBar } from '../components/skills/SkillBar';
-import { CharacterSprite } from '../components/skills/CharacterSprite';
+import { SuitPreview } from '../components/skills/SuitPreview';
 import { skills, skillCategories } from '../data/skills';
 import type { Skill } from '../data/skills';
 import { theme } from '../styles/theme';
-import { dither, pixelCard, pixelOutline } from '../styles/pixel';
+import { pixelCard, pixelOutline } from '../styles/pixel';
 
 const SkillsContainer = styled.div`
   min-height: 100vh;
@@ -23,7 +23,7 @@ const ContentWrapper = styled.div`
 
 const TwoColumnLayout = styled.div`
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 360px;
   gap: ${theme.spacing['2xl']};
   align-items: start;
 
@@ -66,12 +66,6 @@ const SpriteTitle = styled.h2`
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-align: center;
-`;
-
-// Night-sky dither behind the sprite, inset like a viewport in the window
-const SpriteStage = styled.div`
-  ${dither(theme.colors.sky[0], theme.colors.sky[1], 4)}
-  box-shadow: inset 0 0 0 2px ${theme.colors.neutral.black};
 `;
 
 const CategoryTabs = styled.div`
@@ -134,7 +128,8 @@ const HelpText = styled.p`
 
 export const SkillsPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [hoveredSkill, setHoveredSkill] = useState<Skill | null>(null);
+  // The last technology pointed at stays equipped
+  const [equipped, setEquipped] = useState<Skill>(skills[0]);
   const { t } = useTranslation('skills');
 
   const filteredSkills = activeCategory === 'all'
@@ -142,7 +137,7 @@ export const SkillsPage: React.FC = () => {
     : skills.filter(skill => skill.category === activeCategory);
 
   const handleSkillHover = (skill: Skill | null) => {
-    setHoveredSkill(skill);
+    if (skill) setEquipped(skill);
   };
 
   return (
@@ -195,13 +190,7 @@ export const SkillsPage: React.FC = () => {
 
             <SpriteColumn>
               <SpriteTitle>{t('spriteTitle')}</SpriteTitle>
-              <SpriteStage>
-                <CharacterSprite
-                  armorColor={hoveredSkill?.color || theme.colors.primary.main}
-                  isCharging={hoveredSkill !== null}
-                  skillName={hoveredSkill?.name}
-                />
-              </SpriteStage>
+              <SuitPreview skill={equipped} />
               <HelpText>
                 {t('helpText')}
               </HelpText>

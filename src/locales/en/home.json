@@ -1,28 +1,43 @@
 {
   "hero": {
-    "playerData": "Hunter Data",
+    "playerData": "Player data",
     "name": "Aarón Bocanegra",
-    "classLabel": "Class:",
-    "roles": ["Senior Combat Engineer", "Fullstack Maverick", "Systems Architect", "Tech Commander"],
-    "description": "Maverick Hunter with 13+ years of combat experience building enterprise weapon systems. Specialized in .NET arsenal, AWS cloud fortresses, and modern React battle interfaces. Co-founded a tech guild & passionate about turning ideas into scalable war machines.",
+    "classLabel": "Role:",
+    "roles": [
+      "Senior Fullstack Developer",
+      "Senior .NET Developer",
+      "Software Architect",
+      "Grodivo Co-Founder"
+    ],
+    "description": "Systems engineer with 13+ years building web and desktop applications on .NET. I have worked on cloud enterprise platforms with AWS and React, industrial automation, and public sector projects. I co-founded Grodivo and enjoy turning ideas into products that scale.",
     "online": "ONLINE",
     "player": "PLAYER 1",
-    "stage": "STAGE: BASE",
-    "sceneAlt": "Hero standing on a rooftop, looking at a sunrise over a futuristic city",
+    "stage": "STAGE: CITY",
+    "sceneAlt": "Scene from the DevMan game: the hero runs across the city shooting bugs. Press to shoot.",
     "equipped": "EQUIPPED",
-    "equippedLink": "view all skills",
+    "equippedLink": "see all technologies",
     "hintPhoto": "[ HOVER: 8-BIT MODE ]",
     "photoAlt": "Photo of Aarón Bocanegra; on hover it turns into his 8-bit character",
     "hud": {
       "energy": "HP",
       "exp": "EXP"
-    }
+    },
+    "sceneHint": "CLICK: SHOOT"
   },
   "stats": {
-    "title": "Combat Status",
-    "experience": "Combat Years",
-    "projects": "Missions Complete",
-    "companies": "Allied Bases",
-    "technologies": "Weapons Mastered"
+    "title": "Stats",
+    "experience": "Years of experience",
+    "projects": "Projects delivered",
+    "companies": "Companies",
+    "technologies": "Technologies"
+  },
+  "game": {
+    "eyebrow": "Incoming transmission",
+    "title": "DevMan: the game",
+    "speaker": "Dr. Dilly",
+    "message": "This portfolio is the front door. Behind it there is a full game: eight stages, eight bugs turned into bosses, and an armor hidden in capsules like this one. I am building it with Phaser and TypeScript, and all the art is generated from code.",
+    "play": "Play DevMan",
+    "note": "Opens in a new tab · keyboard or gamepad",
+    "sceneAlt": "Game capsule with the hologram of Dr. Dilly"
   }
 }

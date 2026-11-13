@@ -1,57 +1,101 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { keyframes } from '@emotion/react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { theme } from '../../styles/theme';
-import { stepEase } from '../../styles/animations';
-import { dither, pixelOutline, segmentCell } from '../../styles/pixel';
-import { makeRand } from '../../styles/skyline';
+import { dither } from '../../styles/pixel';
+import { HeroCanvas } from '../../game/HeroCanvas';
+import { HERO_W, loadImage } from '../../game/assets';
+import { pixelText } from '../../game/pixelText';
 
 interface LoadingScreenProps {
   minDuration?: number;
+  /** The title starts to open: the page behind it can mount now. */
+  onReveal?: () => void;
   onComplete?: () => void;
 }
 
-const SEGMENTS = 16;
+const BLINDS = 8;
+const BLIND_S = 0.45;
+const RUNNER_ZOOM = 2;
+const LOGO_LINES = ['AARÓN', 'BOCANEGRA'];
 
-// Seeded star field, generated once at module load (no Math.random in render)
-const STARS = (() => {
-  const rand = makeRand(19870625);
-  return Array.from({ length: 36 }, (_, i) => ({
-    id: i,
-    x: Math.floor(rand() * 100),
-    y: Math.floor(rand() * 70),
-    bright: rand() > 0.6,
-    twinkle: rand() > 0.5,
-    duration: 1 + Math.floor(rand() * 3),
-    delay: Math.floor(rand() * 4) * 0.5,
-  }));
-})();
+const blink = keyframes`
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+`;
 
-// No filter on this fixed overlay. Night sky with a subtle dithered horizon band.
-const LoadingWrapper = styled(motion.div)`
+const slashIn = keyframes`
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+`;
+
+const riseIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+// Title screen of a cartridge: the name as the logo, the hero running as the progress bar
+const Wrapper = styled.div`
   position: fixed;
   inset: 0;
-  background: ${theme.colors.sky[0]};
   z-index: ${theme.zIndex.overlay + 100};
+  overflow: hidden;
+`;
+
+// The backdrop is cut into horizontal blinds that slide apart when the title opens
+const Blind = styled(motion.div)`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: ${100 / BLINDS + 0.2}%;
+  background: ${theme.colors.neutral.black};
+`;
+
+const Content = styled.button`
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: ${theme.spacing['2xl']};
-  overflow: hidden;
+  gap: ${theme.spacing.lg};
+  padding: ${theme.spacing.lg};
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+`;
 
-  /* Dithered band (sky[0] -> sky[1]) above a solid sky[1] horizon */
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 16%;
-    height: 16%;
-    ${dither(theme.colors.sky[0], theme.colors.sky[1], 4)}
-    pointer-events: none;
+const Logo = styled.canvas`
+  width: min(84vw, 560px);
+  height: auto;
+  image-rendering: pixelated;
+  animation: ${slashIn} 0.5s steps(9, end) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
+`;
+
+const Tagline = styled.span`
+  font-family: ${theme.typography.fonts.pixel};
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  color: ${theme.colors.accent.gold};
+  animation: ${riseIn} 0.01s linear 0.55s both;
+`;
+
+// The hero runs along this strip; how far he got is how much has loaded
+const Track = styled.div`
+  position: relative;
+  width: min(84vw, 420px);
+  height: ${40 * RUNNER_ZOOM + 6}px;
+  margin-top: ${theme.spacing.lg};
 
   &::after {
     content: '';
@@ -59,191 +103,126 @@ const LoadingWrapper = styled(motion.div)`
     left: 0;
     right: 0;
     bottom: 0;
-    height: 16%;
-    background: ${theme.colors.sky[1]};
-    pointer-events: none;
+    height: 6px;
+    ${dither(theme.colors.primary.dark, theme.colors.primary.deep, 4)}
   }
 `;
 
-const StarsLayer = styled.div`
+const Runner = styled.div`
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  @keyframes starTwinkle {
-    50% { opacity: 0.2; }
-  }
+  bottom: 6px;
+  left: 0;
 `;
 
-const Star = styled.span`
-  position: absolute;
-  width: 2px;
-  height: 2px;
-`;
-
-const Content = styled.div`
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${theme.spacing['2xl']};
-`;
-
-const LoadingLogo = styled.div`
-  font-family: ${theme.typography.fonts.heading};
-  font-size: ${theme.typography.sizes['4xl']};
-  font-weight: ${theme.typography.weights.bold};
-  line-height: 1;
-  color: ${theme.colors.neutral.white};
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.md};
-`;
-
-// Same badge as the NavBar logo, scaled up
-const LogoBadge = styled.span`
-  width: 64px;
-  height: 64px;
-  margin: 4px;
-  background: ${theme.colors.secondary.dark};
-  box-shadow: ${pixelOutline(theme.colors.primary.main, 4)};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${theme.typography.fonts.pixel};
-  font-size: 24px;
-  font-weight: ${theme.typography.weights.bold};
-  color: ${theme.colors.primary.main};
-`;
-
-const EnergyContainer = styled.div`
-  display: flex;
-  gap: 2px;
-  padding: 4px;
-  margin: 2px;
-  background: ${theme.colors.neutral.black};
-  box-shadow: ${pixelOutline(theme.colors.secondary.medium)};
-`;
-
-const EnergyCell = styled('span', {
-  shouldForwardProp: prop => prop !== 'filled',
-})<{ filled: boolean }>`
-  width: 12px;
-  height: 16px;
-  ${props => segmentCell(props.filled, theme.colors.primary.main)}
-`;
-
-const LoadingText = styled.div`
+const Start = styled.span`
   font-family: ${theme.typography.fonts.pixel};
   font-size: 16px;
-  line-height: 1;
-  letter-spacing: 0.05em;
-  color: ${theme.colors.neutral.silver};
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-`;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: ${theme.colors.neutral.white};
+  animation: ${blink} 0.9s step-end infinite;
 
-const Cursor = styled.span`
-  display: inline-block;
-  width: 8px;
-  height: 16px;
-  background: ${theme.colors.primary.main};
-  animation: loadCursorBlink 0.8s step-end infinite;
-
-  @keyframes loadCursorBlink {
-    50% { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `;
 
-export const LoadingScreen: React.FC<LoadingScreenProps> = ({
-  minDuration = 2000,
-  onComplete,
-}) => {
+export const LoadingScreen: React.FC<LoadingScreenProps> = ({ minDuration = 2200, onReveal, onComplete }) => {
   const { t } = useTranslation('common');
-  const loadingMessages = t('loading.messages', { returnObjects: true }) as string[];
+  const reduced = useReducedMotion();
+  const logoRef = useRef<HTMLCanvasElement>(null);
   const [progress, setProgress] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const [leaving, setLeaving] = useState(false);
+
+  // The logo is drawn with the game's own font: white-to-blue bands over a hard shadow
+  useEffect(() => {
+    let cancelled = false;
+    void loadImage('font').then((font) => {
+      const canvas = logoRef.current;
+      if (cancelled || !canvas) return;
+      const ctx = canvas.getContext('2d')!;
+      LOGO_LINES.forEach((line, i) => {
+        const face = pixelText(font, line, 1, (g, _w, h) => {
+          const grad = g.createLinearGradient(0, 0, 0, h);
+          grad.addColorStop(0, '#f2f5fb');
+          grad.addColorStop(0.3, '#f2f5fb');
+          grad.addColorStop(0.3, '#9ad8fa');
+          grad.addColorStop(0.55, '#9ad8fa');
+          grad.addColorStop(0.55, '#5cbdf5');
+          grad.addColorStop(0.8, '#5cbdf5');
+          grad.addColorStop(0.8, '#3480c4');
+          return grad;
+        });
+        const x = Math.floor((canvas.width - 1 - face.width) / 2);
+        ctx.drawImage(pixelText(font, line, 1, '#0b4ad0'), x + 1, i * 10 + 1);
+        ctx.drawImage(face, x, i * 10);
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / minDuration) * 100, 100);
-      setProgress(newProgress);
+    if (leaving) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const value = Math.min(1, (now - start) / minDuration);
+      setProgress(value);
+      if (value >= 1) setLeaving(true);
+      else raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    // Any key works as START
+    const skip = () => setLeaving(true);
+    window.addEventListener('keydown', skip);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', skip);
+    };
+  }, [minDuration, leaving]);
 
-      if (newProgress >= 100) {
-        clearInterval(interval);
-        // onComplete fires from AnimatePresence once the exit fade has played
-        setTimeout(() => setIsComplete(true), 300);
-      }
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [minDuration]);
-
-  const filledCells = Math.floor((progress / 100) * SEGMENTS);
-  // Message follows progress (one per quarter with the 4 default messages)
-  const messageIndex = Math.min(
-    Math.floor((progress / 100) * loadingMessages.length),
-    loadingMessages.length - 1,
-  );
+  useEffect(() => {
+    if (!leaving) return;
+    onReveal?.();
+    const done = setTimeout(() => onComplete?.(), reduced ? 0 : BLIND_S * 1000 + 80);
+    return () => clearTimeout(done);
+    // The callbacks are fired once, when the title starts to open
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leaving]);
 
   return (
-    <AnimatePresence onExitComplete={onComplete}>
-      {!isComplete && (
-        <LoadingWrapper
-          initial={{ opacity: 1 }}
-          exit={{
-            opacity: 0,
-            transition: { duration: reduceMotion ? 0 : 0.4, ease: stepEase },
-          }}
-        >
-          <StarsLayer aria-hidden="true">
-            {STARS.map((star) => (
-              <Star
-                key={star.id}
-                style={{
-                  left: `${star.x}%`,
-                  top: `${star.y}%`,
-                  background: star.bright ? theme.colors.neutral.white : theme.colors.primary.light,
-                  opacity: star.bright ? 0.9 : 0.5,
-                  animation: star.twinkle
-                    ? `starTwinkle ${star.duration}s step-end ${star.delay}s infinite`
-                    : undefined,
-                }}
-              />
-            ))}
-          </StarsLayer>
-
-          <Content>
-            <LoadingLogo>
-              <LogoBadge>AB</LogoBadge>
-              <span>DEV</span>
-            </LoadingLogo>
-
-            <EnergyContainer
-              role="progressbar"
-              aria-label={t('loading.label')}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(progress)}
-            >
-              {Array.from({ length: SEGMENTS }, (_, i) => (
-                <EnergyCell key={i} filled={i < filledCells} />
-              ))}
-            </EnergyContainer>
-
-            <LoadingText aria-live="polite">
-              {loadingMessages[messageIndex]}
-              <Cursor aria-hidden="true" />
-            </LoadingText>
-          </Content>
-        </LoadingWrapper>
+    <Wrapper>
+      {Array.from({ length: BLINDS }, (_, i) => (
+        <Blind
+          key={i}
+          aria-hidden="true"
+          style={{ top: `${(i * 100) / BLINDS}%` }}
+          animate={leaving ? { x: i % 2 ? '100%' : '-100%' } : { x: '0%' }}
+          transition={{ duration: reduced ? 0 : BLIND_S, ease: 'linear' }}
+        />
+      ))}
+      {!leaving && (
+        <Content type="button" onClick={() => setLeaving(true)} aria-label={t('loading.skip')}>
+          <Logo ref={logoRef} width={55} height={19} aria-hidden="true" />
+          <Tagline aria-hidden="true">Senior Fullstack Developer</Tagline>
+          <Track
+            role="progressbar"
+            aria-label={t('loading.label')}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress * 100)}
+          >
+            <Runner style={{ left: `calc(${progress} * (100% - ${HERO_W * RUNNER_ZOOM}px))` }}>
+              <HeroCanvas pose="run" scale={RUNNER_ZOOM} />
+            </Runner>
+          </Track>
+          <Start aria-hidden="true">Press Start</Start>
+        </Content>
       )}
-    </AnimatePresence>
+    </Wrapper>
   );
 };
 

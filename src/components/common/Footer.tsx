@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
+import { Wordmark } from '../../game/Wordmark';
 import { theme } from '../../styles/theme';
 import { pixelOutline } from '../../styles/pixel';
 import { buildSkyline } from '../../styles/skyline';
@@ -89,17 +90,6 @@ const FooterSection = styled.div`
 
 const FooterLogo = styled.div`
   margin-bottom: ${theme.spacing.md};
-
-  span {
-    font-family: ${theme.typography.fonts.heading};
-    font-size: ${theme.typography.sizes['2xl']};
-    font-weight: ${theme.typography.weights.bold};
-    color: ${theme.colors.primary.main};
-
-    &:last-child {
-      color: ${theme.colors.neutral.white};
-    }
-  }
 `;
 
 const FooterDescription = styled.p`
@@ -280,8 +270,7 @@ export const Footer: React.FC = () => {
         <FooterContent>
           <FooterSection>
             <FooterLogo>
-              <span>AARON</span>
-              <span>.DEV</span>
+              <Wordmark name="AARÓN" tag="DEV" />
             </FooterLogo>
             <FooterDescription>
               {t('footer.description')}

@@ -1,28 +1,35 @@
 {
-  "title": "Perfil del Cazador",
-  "subtitle": "Reporte de inteligencia sobre el cazador detrás del código",
-  "bioTitle": "Expediente del Cazador",
+  "title": "Perfil",
+  "subtitle": "Quién está detrás del código",
+  "bioTitle": "Sobre mí",
   "bio": {
-    "p1": "Maverick Hunter con más de 13 años de experiencia en combate construyendo sistemas de armas empresariales. Especializado en el arsenal .NET, arquitectura de fortalezas en la nube con AWS e interfaces de batalla React modernas. Lidero equipos de ataque y construyo máquinas de guerra desde cero como cofundador de un gremio tech.",
-    "p2": "Actualmente en entrenamiento avanzado en la Academia de Combate IA del TEC de Monterrey, combinando ingeniería de software forjada en batalla con tecnologías de armas IA de vanguardia. Apasionado por protocolos de arquitectura limpia, formaciones de batalla con microservicios y creación de sistemas escalables que neutralizan amenazas de negocio reales.",
-    "p3": "Fuera del campo de batalla, disfruto entrenando cazadores novatos, contribuyendo a comunidades de gremios tech y liderando la iniciativa de crecimiento Hatch-Futures Perú. En tiempo de descanso, me encuentras rejugando misiones clásicas de Megaman X."
+    "p1": "Ingeniero de sistemas con más de 13 años de experiencia construyendo aplicaciones web y de escritorio sobre la plataforma .NET. Me especializo en arquitectura en la nube con AWS e interfaces modernas con React. He liderado equipos de desarrollo y construido productos desde cero como cofundador de Grodivo.",
+    "p2": "Actualmente curso una especialización en inteligencia artificial en el TEC de Monterrey, para combinar años de ingeniería de software con herramientas de IA. Me interesan la arquitectura limpia, los microservicios y los sistemas escalables que resuelven problemas reales de negocio.",
+    "p3": "Fuera del trabajo soy mentor de desarrolladores que empiezan, participo en comunidades tech y lidero la iniciativa de crecimiento Hatch-Futures Perú. En mis ratos libres estoy construyendo DevMan, un juego de plataformas al estilo de los clásicos de 16 bits."
   },
-  "interests": ["IA & Machine Learning", "Arquitectura Cloud", "Microservicios", "Creación de Startups", "Juegos Retro", "Comunidad Tech"],
+  "interests": [
+    "IA & Machine Learning",
+    "Arquitectura Cloud",
+    "Microservicios",
+    "Creación de Startups",
+    "Juegos Retro",
+    "Comunidad Tech"
+  ],
   "info": {
     "location": {
-      "label": "Base de Operaciones",
-      "value": "Perú (Operaciones Remotas)"
+      "label": "Ubicación",
+      "value": "Perú (remoto)"
     },
     "email": {
-      "label": "Canal de Comunicación"
+      "label": "Correo"
     },
     "experience": {
-      "label": "Experiencia de Combate",
-      "value": "13+ Años"
+      "label": "Experiencia",
+      "value": "13+ años"
     },
     "passion": {
-      "label": "Directiva Principal",
-      "value": "Sistemas Empresariales & Misiones Startup"
+      "label": "Enfoque",
+      "value": "Sistemas empresariales y startups"
     }
   }
 }

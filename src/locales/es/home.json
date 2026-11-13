@@ -1,28 +1,43 @@
 {
   "hero": {
-    "playerData": "Datos del Cazador",
+    "playerData": "Datos del jugador",
     "name": "Aarón Bocanegra",
-    "classLabel": "Clase:",
-    "roles": ["Ingeniero de Combate Senior", "Maverick Fullstack", "Arquitecto de Sistemas", "Comandante Tech"],
-    "description": "Maverick Hunter con más de 13 años de experiencia en combate construyendo sistemas de armas empresariales. Especializado en arsenal .NET, fortalezas en la nube AWS e interfaces de batalla React modernas. Cofundé un gremio tech y me apasiona convertir ideas en máquinas de guerra escalables.",
+    "classLabel": "Rol:",
+    "roles": [
+      "Senior Fullstack Developer",
+      "Senior .NET Developer",
+      "Arquitecto de Software",
+      "Cofundador de Grodivo"
+    ],
+    "description": "Ingeniero de sistemas con más de 13 años construyendo aplicaciones web y de escritorio sobre .NET. He trabajado en plataformas empresariales en la nube con AWS y React, en automatización industrial y en proyectos del sector público. Cofundé Grodivo y me gusta llevar ideas a productos que escalan.",
     "online": "EN LÍNEA",
     "player": "JUGADOR 1",
-    "stage": "ESCENARIO: BASE",
-    "sceneAlt": "Héroe de pie en una azotea, mirando el amanecer sobre una ciudad futurista",
+    "stage": "ETAPA: CIUDAD",
+    "sceneAlt": "Escena del juego DevMan: el protagonista corre por la ciudad y dispara a los bugs. Pulsa para disparar.",
     "equipped": "EQUIPADO",
-    "equippedLink": "ver todos los poderes",
+    "equippedLink": "ver todas las tecnologías",
     "hintPhoto": "[ HOVER: MODO 8-BIT ]",
     "photoAlt": "Foto de Aarón Bocanegra; al pasar el cursor se convierte en su personaje de 8 bits",
     "hud": {
       "energy": "HP",
       "exp": "EXP"
-    }
+    },
+    "sceneHint": "CLIC: DISPARAR"
   },
   "stats": {
-    "title": "Estado de Combate",
-    "experience": "Años de Combate",
-    "projects": "Misiones Completadas",
-    "companies": "Bases Aliadas",
-    "technologies": "Armas Dominadas"
+    "title": "Estadísticas",
+    "experience": "Años de experiencia",
+    "projects": "Proyectos entregados",
+    "companies": "Empresas",
+    "technologies": "Tecnologías"
+  },
+  "game": {
+    "eyebrow": "Transmisión entrante",
+    "title": "DevMan: el juego",
+    "speaker": "Dr. Dilly",
+    "message": "Este portafolio es la puerta de entrada. Detrás hay un juego completo: ocho etapas, ocho bugs convertidos en jefes y una armadura escondida en cápsulas como esta. Lo estoy construyendo con Phaser y TypeScript, y todo el arte sale de código.",
+    "play": "Jugar DevMan",
+    "note": "Se abre en una pestaña nueva · teclado o gamepad",
+    "sceneAlt": "Cápsula del juego con el holograma del Dr. Dilly"
   }
 }

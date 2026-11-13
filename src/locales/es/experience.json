@@ -1,6 +1,6 @@
 {
-  "title": "Registro de Misiones",
-  "subtitle": "Misiones completadas y registro de combate",
+  "title": "Misiones",
+  "subtitle": "Experiencia profesional, de lo más reciente a lo más antiguo",
   "stageLabel": "MISIÓN",
   "currentLabel": "ACTUAL",
   "types": {
@@ -14,104 +14,145 @@
     {
       "id": "1",
       "company": "HatchWorks Technologies",
-      "position": "Ingeniero de Combate Senior",
-      "location": "Operaciones Remotas",
+      "position": "Senior Fullstack Developer",
+      "location": "Remoto",
       "startDate": "Ene 2021",
       "endDate": "Presente",
       "type": "full-time",
-      "description": "Desplegado en el equipo de ataque Reimagine entregando JobStack 2.0 para TrueBlue con tácticas de batalla ágiles e integraciones de armas AWS. Lidero iniciativas de comunidad de cazadores y entreno novatos a través del Buddy Program.",
+      "description": "Miembro del equipo Reimagine, con el que entregué JobStack 2.0 para TrueBlue con metodologías ágiles e integraciones con AWS. Lidero la comunidad interna de desarrolladores y soy mentor en el Buddy Program.",
       "achievements": [
-        "Desplegué la plataforma de staffing JobStack 2.0 con microservicios .NET y micro-frontends React",
-        "Conduzco entrevistas tácticas y contribuyo a protocolos de reclutamiento y mejores prácticas",
+        "Entregué la plataforma de staffing JobStack 2.0 con microservicios .NET y micro-frontends React",
+        "Conduzco entrevistas técnicas y contribuyo a estándares de contratación y mejores prácticas",
         "Lidero la comunidad e iniciativas de crecimiento Hatch-Futures Perú",
         "Formo parte del AI Labs desarrollando PoCs y demos con Python, FastAPI, GCP, React, NextJs"
       ],
-      "technologies": [".NET", "React", "AWS", "PostgreSQL", "Docker", "Jenkins", "Hangfire"]
+      "technologies": [
+        ".NET",
+        "React",
+        "AWS",
+        "PostgreSQL",
+        "Docker",
+        "Jenkins",
+        "Hangfire"
+      ]
     },
     {
       "id": "2",
       "company": "Ministerio de Energía y Minas",
-      "position": "Operativo Mobile .NET",
-      "location": "Operaciones Remotas",
+      "position": "Ingeniero Mobile .NET",
+      "location": "Remoto",
       "startDate": "Sep 2025",
       "endDate": "Nov 2025",
       "type": "contract",
-      "description": "Desarrollé aplicaciones móviles de batalla para apoyar el plan de formalización de la minería informal de Perú, incluyendo aplicaciones de Registro de Transferencias y Fiscalización para trazabilidad de transporte de minerales.",
+      "description": "Desarrollé aplicaciones móviles para apoyar el plan de formalización de la minería informal de Perú, incluyendo aplicaciones de Registro de Transferencias y Fiscalización para trazabilidad de transporte de minerales.",
       "achievements": [
         "Construí la app de Registro de Transferencias para registrar transporte mineral y generar códigos QR",
         "Creé la app de Fiscalización para escanear QR y persistir registros en base de datos cloud",
         "Implementé CI/CD en servidores on-premise usando GitHub Actions self-hosted runners",
         "Diseñé el flujo de trazabilidad end-to-end mejorando la supervisión para inspectores de campo"
       ],
-      "technologies": [".NET 9", ".NET MAUI", "Oracle", "GitHub Actions", "Git"]
+      "technologies": [
+        ".NET 9",
+        ".NET MAUI",
+        "Oracle",
+        "GitHub Actions",
+        "Git"
+      ]
     },
     {
       "id": "3",
       "company": "Grodivo",
-      "position": "Comandante Tech (Cofundador)",
-      "location": "Operaciones Remotas",
+      "position": "Ingeniero de Software (Cofundador)",
+      "location": "Remoto",
       "startDate": "Ago 2024",
       "endDate": "Presente",
       "type": "founder",
-      "description": "Cofundé el gremio Grodivo y lidero el desarrollo de armas para TAP, un sistema para medir cultura organizacional. Diseñé la arquitectura de batalla con microservicios y establecí estándares de codificación de combate.",
+      "description": "Cofundé Grodivo y lidero el desarrollo de TAP, un sistema para medir cultura organizacional. Diseñé la arquitectura de microservicios y establecí estándares de código.",
       "achievements": [
-        "Cofundé el gremio y lidero todas las iniciativas de desarrollo de armas",
-        "Diseñé e implementé microservicios y UI de batalla desde cero",
-        "Establecí estándares de codificación de combate y pipelines CI/CD con GitHub Actions",
-        "Construí una fortaleza AWS escalable con Lambda, SNS, SQS, S3"
+        "Cofundé la empresa y lidero el desarrollo de software",
+        "Diseñé e implementé microservicios y interfaz web desde cero",
+        "Establecí estándares de código y pipelines CI/CD con GitHub Actions",
+        "Construí una infraestructura AWS escalable con Lambda, SNS, SQS, S3"
       ],
-      "technologies": [".NET 9", "React", "TypeScript", "AWS", "MediatR", "TurboRepo"]
+      "technologies": [
+        ".NET 9",
+        "React",
+        "TypeScript",
+        "AWS",
+        "MediatR",
+        "TurboRepo"
+      ]
     },
     {
       "id": "4",
       "company": "JNE (Jurado Nacional de Elecciones)",
-      "position": "Operativo Senior",
+      "position": "Desarrollador Senior",
       "location": "Lima, Perú",
       "startDate": "Ago 2017",
       "endDate": "Dic 2020",
       "type": "full-time",
-      "description": "Operativo senior .NET en el proyecto SJE como parte de la campaña de transformación digital del JNE. Diseñé y desplegué módulos para gestión electoral y archivo de documentos.",
+      "description": "Desarrollador senior .NET en el proyecto SJE como parte de la proceso de transformación digital del JNE. Diseñé y implementé módulos para gestión electoral y archivo de documentos.",
       "achievements": [
-        "Desplegué módulos para gestión electoral, registro, candidatos y autoridades",
+        "Implementé módulos para gestión electoral, registro, candidatos y autoridades",
         "Desarrollé una app WinForms para escaneo de documentos con reconocimiento de código de barras",
         "Mejoré el rendimiento y la seguridad del sistema en módulos electorales",
         "Construí sistemas de manejo de documentos PDF y flujo de bandeja de entrada"
       ],
-      "technologies": ["ASP.NET MVC5", "WinForms", "WCF", "Oracle 11g", "jQuery", "AngularJS"]
+      "technologies": [
+        "ASP.NET MVC5",
+        "WinForms",
+        "WCF",
+        "Oracle 11g",
+        "jQuery",
+        "AngularJS"
+      ]
     },
     {
       "id": "5",
       "company": "Pesonor S.A.C.",
-      "position": "Operativo de Campo",
+      "position": "Desarrollador Web Externo",
       "location": "Perú",
       "startDate": "Nov 2018",
       "endDate": "Abr 2020",
       "type": "freelance",
-      "description": "Desarrollé aplicaciones industriales de batalla para la automatización de servicios de pesaje e integración con sistemas de comando corporativo para clientes principales, incluyendo Laredo S.A. y Casa Grande S.A.",
+      "description": "Desarrollé aplicaciones industriales para la automatización de servicios de pesaje e integración con sistemas corporativos para clientes principales, incluyendo Laredo S.A. y Casa Grande S.A.",
       "achievements": [
         "Construí soluciones de automatización para servicios de pesaje industrial",
-        "Integré con sistemas de comando corporativo incluyendo Oracle y SQL Server",
+        "Integré con sistemas corporativos incluyendo Oracle y SQL Server",
         "Implementé integraciones TCP y RS-232 con dispositivos industriales",
         "Entregué sistemas de captura de datos confiables para clientes de la industria azucarera"
       ],
-      "technologies": [".NET Framework", "Oracle 11g", "SQL Server", "WinForms", "TCP/RS-232"]
+      "technologies": [
+        ".NET Framework",
+        "Oracle 11g",
+        "SQL Server",
+        "WinForms",
+        "TCP/RS-232"
+      ]
     },
     {
       "id": "6",
       "company": "Proyectos Pesacon S.A.C.",
-      "position": "Comandante de Sistemas",
+      "position": "Jefe de Sistemas",
       "location": "Perú",
       "startDate": "Oct 2013",
       "endDate": "Sep 2017",
       "type": "full-time",
-      "description": "Comandé la división de sistemas y el equipo de ataque de desarrollo para soluciones de automatización y trazabilidad en ambientes de pesaje industrial.",
+      "description": "Dirigí el área de sistemas y el equipo de desarrollo para soluciones de automatización y trazabilidad en ambientes de pesaje industrial.",
       "achievements": [
         "APOLO: Construí un sistema de monitoreo para equipos de pesaje de refinería (Nexa Resources)",
         "PESACON TRUCK: Desarrollé un sistema de pesaje multipunto de camiones con intercambio de datos SAP",
         "PRODUCE: Creé un sistema de monitoreo para captura de anchoveta con servidores del Ministerio",
         "SOLDEXA: Implementé un sistema de formulación con integración industrial 920i"
       ],
-      "technologies": ["WinForms", "C#", ".NET Framework", "SQL Server", "SAP RFC", "TCP/RS-232"]
+      "technologies": [
+        "WinForms",
+        "C#",
+        ".NET Framework",
+        "SQL Server",
+        "SAP RFC",
+        "TCP/RS-232"
+      ]
     }
   ]
 }
